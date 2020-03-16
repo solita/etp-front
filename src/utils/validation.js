@@ -47,15 +47,13 @@ export const isValidHenkilotunnus = R.allPass([
 
 export const isLaatijanToteaja = R.test(/^(FISE|KIINKO)$/);
 
-export const isValidSahkoposti = R.test(
+export const isValidEmail = R.test(
   /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
 );
 
-export const isPuhelinnumero = R.test(
-  /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/
-);
+export const isPuhelin = R.test(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/);
 
-export const isVaativuusluokka = R.test(/^(1|2)$/);
+export const isPatevyystaso = R.test(/^(1|2)$/);
 
 // TODO: improve to check invalid dates
 export const isPaivamaara = R.test(/^\d{1,2}\.\d{1,2}.\d{4}$/);

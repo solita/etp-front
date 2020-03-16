@@ -6,12 +6,12 @@ export const dataFields = [
   'etunimi',
   'sukunimi',
   'henkilotunnus',
-  'osoite',
+  'jakeluosoite',
   'postinumero',
   'postitoimipaikka',
-  'sahkopostiosoite',
-  'puhelinnumero',
-  'vaativuusluokka',
+  'email',
+  'puhelin',
+  'patevyystaso',
   'toteamispaivamaara'
 ];
 
@@ -20,12 +20,12 @@ export const parse = {
   etunimi: R.trim,
   sukunimi: R.trim,
   henkilotunnus: R.trim,
-  osoite: R.trim,
+  jakeluosoite: R.trim,
   postinumero: R.trim,
   postitoimipaikka: R.trim,
-  sahkopostiosoite: R.trim,
-  puhelinnumero: R.trim,
-  vaativuusluokka: R.trim,
+  email: R.trim,
+  puhelin: R.trim,
+  patevyystaso: R.trim,
   toteamispaivamaara: R.trim
 };
 
@@ -34,12 +34,12 @@ export const validate = {
   etunimi: validation.isFilled,
   sukunimi: validation.isFilled,
   henkilotunnus: validation.isValidHenkilotunnus,
-  osoite: validation.isFilled,
+  jakeluosoite: validation.isFilled,
   postinumero: validation.isPostinumero,
   postitoimipaikka: validation.isFilled,
-  sahkopostiosoite: validation.isValidSahkoposti,
-  puhelinnumero: validation.isPuhelinnumero,
-  vaativuusluokka: validation.isVaativuusluokka,
+  email: validation.isValidEmail,
+  puhelin: validation.isPuhelin,
+  patevyystaso: validation.isPatevyystaso,
   toteamispaivamaara: validation.isPaivamaara
 };
 

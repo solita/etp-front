@@ -101,41 +101,41 @@ describe('Validation:', () => {
     });
   });
 
-  describe('Puhelinnumero validation', () => {
-    it('valid puhelinnumero', () => {
-      assert.equal(validation.isPuhelinnumero('04001234567'), true);
-      assert.equal(validation.isPuhelinnumero('0312345'), true);
+  describe('Puhelin validation', () => {
+    it('valid puhelin', () => {
+      assert.equal(validation.isPuhelin('04001234567'), true);
+      assert.equal(validation.isPuhelin('0312345'), true);
     });
 
-    it('invalid puhelinnumero', () => {
-      assert.equal(validation.isPuhelinnumero('aa333'), false);
-      assert.equal(validation.isPuhelinnumero(null), false);
-    });
-  });
-
-  describe('Vaativuusluokka validation', () => {
-    it('valid vaativuusluokka', () => {
-      assert.equal(validation.isVaativuusluokka('1'), true);
-      assert.equal(validation.isVaativuusluokka('2'), true);
-      assert.equal(validation.isVaativuusluokka(1), true);
-      assert.equal(validation.isVaativuusluokka(2), true);
-    });
-
-    it('invalid vaativuusluokka', () => {
-      assert.equal(validation.isVaativuusluokka('3'), false);
-      assert.equal(validation.isVaativuusluokka(null), false);
+    it('invalid puhelin', () => {
+      assert.equal(validation.isPuhelin('aa333'), false);
+      assert.equal(validation.isPuhelin(null), false);
     });
   });
 
-  describe('Paivamaara validation', () => {
-    it('valid paivamaara', () => {
+  describe('Pätevyystaso validation', () => {
+    it('valid pätevyystaso', () => {
+      assert.equal(validation.isPatevyystaso('1'), true);
+      assert.equal(validation.isPatevyystaso('2'), true);
+      assert.equal(validation.isPatevyystaso(1), true);
+      assert.equal(validation.isPatevyystaso(2), true);
+    });
+
+    it('invalid pätevyystaso', () => {
+      assert.equal(validation.isPatevyystaso('3'), false);
+      assert.equal(validation.isPatevyystaso(null), false);
+    });
+  });
+
+  describe('Päivämäärä validation', () => {
+    it('valid päivämäärä', () => {
       assert.equal(validation.isPaivamaara('16.12.2012'), true);
       assert.equal(validation.isPaivamaara('1.1.2012'), true);
       assert.equal(validation.isPaivamaara('1.12.2012'), true);
       assert.equal(validation.isPaivamaara('12.1.2012'), true);
     });
 
-    it('invalid paivamaara', () => {
+    it('invalid päivämäärä', () => {
       assert.equal(validation.isPaivamaara('12.2'), false);
       assert.equal(validation.isPaivamaara(null), false);
     });

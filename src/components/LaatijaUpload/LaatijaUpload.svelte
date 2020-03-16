@@ -20,17 +20,17 @@
   };
 
   export const fields = [
-    { id: 'toteaja', title: 'Toteaja' },
     { id: 'etunimi', title: 'Etunimi' },
     { id: 'sukunimi', title: 'Sukunimi' },
     { id: 'henkilotunnus', title: 'Henkilötunnus' },
-    { id: 'osoite', title: 'Osoite' },
+    { id: 'jakeluosoite', title: 'Jakeluosoite' },
     { id: 'postinumero', title: 'Postinumero' },
     { id: 'postitoimipaikka', title: 'Postitoimipaikka' },
-    { id: 'sahkopostiosoite', title: 'Sähköpostiosoite' },
-    { id: 'puhelinnumero', title: 'Puhelinnumero' },
-    { id: 'vaativuusluokka', title: 'Vaativuusluokka' },
-    { id: 'toteamispaivamaara', title: 'Toteamispäivämäärä' }
+    { id: 'email', title: 'Email' },
+    { id: 'puhelin', title: 'Puhelin' },
+    { id: 'patevyystaso', title: 'Pätevyystaso', component: Patevuustaso },
+    { id: 'toteamispaivamaara', title: 'Toteamispäivämäärä' },
+    { id: 'toteaja', title: 'Toteaja' }
   ];
 
   $: tablecontents = readData(laatijaData);

@@ -5,3 +5,5 @@ export const currentUserStore = writable();
 export const errorStore = writable();
 
 export const countryStore = writable(Either.Left('Not initialized'));
+
+export const patevyystasoStore = writable(Either.Left('Not initialized'));

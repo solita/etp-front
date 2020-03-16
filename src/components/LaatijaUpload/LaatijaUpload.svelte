@@ -7,6 +7,7 @@
   import Table from '@Component/Table/Table';
   import Button from '@Component/Button/Button';
   import { parse, validate, readData, dataValid } from './laatija-utils';
+  import Patevuustaso from './Patevyystaso';
 
   let laatijaData;
   let update = data => {

@@ -73,7 +73,8 @@
                   this={TableColumnValidation}
                   value={R.prop(field.id, row)}
                   transform={R.prop(field.id, parse)}
-                  validation={R.prop(field.id, validate)} />
+                  validation={R.prop(field.id, validate)}
+                  component={field.component} />
               {/if}
             </td>
           {/each}

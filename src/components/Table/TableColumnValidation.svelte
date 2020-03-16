@@ -5,6 +5,7 @@
   export let value;
   export let transform = R.identity;
   export let validation = R.always(true);
+  export let component;
 
   $: error = R.ifElse(
     R.compose(
@@ -27,5 +28,7 @@
 </style>
 
 <div class:error>
-  {#if value}{value}{:else}-{/if}
+  {#if component}
+    <svelte:component this={component} {value} {error} />
+  {:else if value}{value}{:else}-{/if}
 </div>

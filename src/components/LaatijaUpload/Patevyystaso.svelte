@@ -14,12 +14,18 @@
     Future.encaseP(Fetch.getFetch(fetch))
   )('api/private/patevyydet/');
 
-  $: Either.isRight($patevyystasoStore) ||
+  Either.isRight($patevyystasoStore) ||
     Future.fork(
       patevyystasoStore.set,
       patevyystasoStore.set,
       patevyystasoFuture
     );
+
+  $: Either.isRight($patevyystasoStore) ||
+    R.compose(
+      Future.fork(patevyystasoStore.set, patevyystasoStore.set),
+      R.chain(Future.after(1000))
+    )(patevyystasoFuture);
 
   $: patevyystaso = Either.foldRight(
     [],

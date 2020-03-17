@@ -9,6 +9,9 @@
   import Fileupload from '@Component/Fileupload/Fileupload';
   import Table from '@Component/Table/Table';
   import Button from '@Component/Button/Button';
+
+  import { flashMessageStore } from '@/stores';
+
   import {
     parse,
     validate,
@@ -21,12 +24,12 @@
 
   let laatijaData;
   let update = data => {
+    flashMessageStore.flush('Laatija');
     let files = R.compose(data)({});
     const reader = new FileReader();
     reader.onload = e => {
       laatijaData = e.target.result;
     };
-
     reader.readAsText(files.files[0], 'UTF-8');
   };
 
@@ -44,16 +47,44 @@
     { id: 'toteaja', title: 'Toteaja' }
   ];
 
-  const submit = R.compose(
-    Future.fork(console.error, ({ id }) => replace(`/laatijat/`)),
+  $: submit = R.compose(
+    Future.forkBothDiscardFirst(
+      R.compose(
+        flashMessageStore.add('Laatija', 'error'),
+        R.always($_('laatija.messages.save-error'))
+      ),
+      R.compose(
+        flashMessageStore.add('Laatija', 'success'),
+        R.always($_('laatija.messages.save-success'))
+      )
+    ),
     postLaatijatFuture(fetch)
   );
 
   $: tablecontents = readData(laatijaData);
   $: valid = dataValid(tablecontents);
-  $: readError = R.and(laatijaData, R.isEmpty(tablecontents));
-  $: readOk = R.and(laatijaData, R.complement(R.isEmpty)(tablecontents));
-  $: console.log(`read error ${readError}`);
+  $: isLaatijaData = R.allPass([
+    R.complement(R.isEmpty),
+    R.complement(R.isNil)
+  ])(laatijaData);
+  $: readError = R.and(isLaatijaData, R.isEmpty(tablecontents));
+  $: readOk = R.and(isLaatijaData, R.complement(R.isEmpty)(tablecontents));
+
+  $: R.when(
+    R.allPass([R.always(readOk), R.not]),
+    R.compose(
+      flashMessageStore.add('Laatija', 'error'),
+      R.always($_('laatija.messages.validation-error'))
+    )
+  )(valid);
+
+  $: R.when(
+    R.identity,
+    R.compose(
+      flashMessageStore.add('Laatija', 'error'),
+      R.always($_('laatija.messages.load-error'))
+    )
+  )(readError);
 </script>
 
 <style type="text/postcss">
@@ -73,6 +104,7 @@
         text={$_('tallenna')}
         on:click={event => {
           event.preventDefault();
+          flashMessageStore.flush('Laatija');
           submit(tablecontents);
         }} />
     </div>
@@ -82,6 +114,7 @@
         text={$_('peruuta')}
         on:click={event => {
           event.preventDefault();
+          flashMessageStore.flush('Laatija');
           laatijaData = undefined;
         }} />
     </div>

@@ -2,13 +2,17 @@
   "validation": {
     "required": "Pakollinen tieto",
     "min-length": "Pituus pitää olla vähintään {min} merkkiä",
-    "max-length": "Pituus saa olla enintään {max} merkkiä"
+    "max-length": "Pituus saa olla enintään {max} merkkiä",
+    "invalid-url": "Virheellinen www-osoite",
+    "invalid-ytunnus": "Virheellinen ytunnus",
+    "invalid-postinumero": "Virheellinen postinumero"
   },
   "login_redirect": "Odota hetki, sinut ohjataan kirjautumissivulle",
   "ladataan": "Ladataan...",
   "tallenna": "Tallenna",
   "peruuta": "Peruuta",
   "yritys": {
+    "yritykset": "Yritykset",
     "uusi_yritys": "Uusi yritys",
     "laatijat": "Laatijat",
     "y-tunnus": "Y-Tunnus",
@@ -20,7 +24,14 @@
     "postitoimipaikka": "Postitoimipaikka",
     "maa": "Maa",
     "verkkolaskuosoite": "verkkolaskuosoite",
-    "ovt-tunnus": "OVT-tunnus"
+    "ovt-tunnus": "OVT-tunnus",
+    "messages": {
+      "save-success": "Yrityksen tiedot tallennettu onnistuneesti.",
+      "save-error": "Yrityksen tietojen tallennuksessa tapahtui odottamaton virhe.",
+      "validation-error": "Lomakkeella virheitä, tarkista syötteet.",
+      "load-error": "Yrityksen tietojen haku epäonnistui."
+    }
   },
-  "file_upload_error_multiple_files": "Liikaa tiedostoja. Lisää yksi tiedosto kerrallaan."
+  "file_upload_error_multiple_files": "Liikaa tiedostoja. Lisää yksi tiedosto kerrallaan.",
+  "country-not-found": "Virheellinen maa"
 }

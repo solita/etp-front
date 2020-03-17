@@ -1,6 +1,7 @@
 import * as R from 'ramda';
 import * as Fetch from '../../utils/fetch-utils';
 import * as Maybe from '../../utils/maybe-utils';
+import * as Either from '@Utility/either-utils';
 import * as Future from '../../utils/future-utils';
 import * as validation from '../../utils/validation';
 
@@ -9,12 +10,14 @@ const yritysApi = `/api/private/yritykset`;
 export const urlForYritysId = id => `${yritysApi}/${id}`;
 
 export const deserialize = R.evolve({
+  maa: Either.Right,
   verkkolaskuosoite: Maybe.fromNull,
   wwwosoite: Maybe.fromNull
 });
 
 export const serialize = R.compose(
   R.evolve({
+    maa: Either.right,
     verkkolaskuosoite: Maybe.getOrElse(null),
     wwwosoite: Maybe.getOrElse(null)
   }),
@@ -32,26 +35,29 @@ export const emptyYritys = () => ({
   wwwosoite: Maybe.None()
 });
 
-export const formValidators = () => ({
-  ytunnus: R.allPass([validation.isFilled, validation.isValidYtunnus]),
-  nimi: validation.isFilled,
-  wwwosoite: R.anyPass([R.isEmpty, validation.isUrl]),
-  jakeluosoite: validation.isFilled,
-  postinumero: validation.isPostinumero,
-  postitoimipaikka: validation.isFilled,
-  maa: validation.isFilled,
-  verkkolaskuosoite: R.always(true)
+export const formSchema = () => ({
+  ytunnus: [validation.isRequired, validation.ytunnusValidator],
+  nimi: [
+    validation.isRequired,
+    validation.minLengthConstraint(2),
+    validation.maxLengthConstraint(200)],
+  wwwosoite: R.map(validation.liftValidator, [validation.urlValidator]),
+  jakeluosoite: [validation.isRequired],
+  postinumero: [validation.postinumeroValidator],
+  postitoimipaikka: [validation.isRequired],
+  maa: [],
+  verkkolaskuosoite: []
 });
 
-export const formTransformers = () => ({
+export const formParsers = () => ({
   ytunnus: R.trim,
   nimi: R.trim,
-  wwwosoite: R.trim,
+  wwwosoite: R.compose(Maybe.fromEmpty, R.trim),
   jakeluosoite: R.trim,
   postinumero: R.trim,
   postitoimipaikka: R.trim,
   maa: R.trim,
-  verkkolaskuosoite: R.trim
+  verkkolaskuosoite: R.compose(Maybe.fromEmpty, R.trim)
 });
 
 export const validateYritys = R.curry((validators, yritys) =>

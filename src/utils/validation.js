@@ -2,6 +2,7 @@ import moment from 'moment';
 
 import * as R from 'ramda';
 import * as Maybe from '@Utility/maybe-utils';
+import * as Either from '@Utility/either-utils';
 
 export const DATE_FORMAT = 'DD.MM.YYYY';
 
@@ -19,10 +20,15 @@ export const isValidYtunnus = R.allPass([
   R.converge(R.equals, [ytunnusChecksum, R.compose(parseInt, R.nth(8))])
 ]);
 
+export const ytunnusValidator = {
+  predicate: isValidYtunnus,
+  label: R.applyTo('validation.invalid-ytunnus')
+};
+
 export const isFilled = R.complement(R.isEmpty);
 
 export const isRequired = {
-  predicate: R.complement(R.isEmpty),
+  predicate: isFilled,
   label: R.applyTo('validation.required')
 };
 
@@ -51,6 +57,18 @@ export const maxLengthConstraint = max =>
 export const isUrl = R.test(
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
 );
+
+export const urlValidator = {
+  predicate: isUrl,
+  label: R.applyTo('validation.invalid-url')
+};
+
+export const liftValidator = validator =>
+  R.over(
+    R.lensProp('predicate'),
+    predicate => R.compose(Maybe.orSome(true), R.lift(predicate)), //value => value.map(predicate).orSome(true),
+    validator
+  );
 
 export const isPostinumero = R.test(/^\d{5}$/);
 
@@ -94,9 +112,24 @@ export const isPaivamaara = R.ifElse(
   R.curry(date => moment(date, DATE_FORMAT).isValid())
 );
 
+export const postinumeroValidator = {
+  predicate: isPostinumero,
+  label: R.applyTo('validation.invalid-postinumero')
+};
+
 export const validate = (validators, value) =>
   Maybe.fromUndefined(
     R.find(R.compose(R.not, R.applyTo(value), R.prop('predicate')), validators)
   )
     .toEither(value)
     .swap();
+
+export const validateModelValue = R.curry((validators, value) =>
+  Either.fromValueOrEither(value).flatMap(modelValue =>
+    validate(validators, modelValue).leftMap(R.prop('label'))
+  )
+);
+
+export const validateModelObject = R.curry((schemaObject, object) =>
+  R.evolve(R.map(validateModelValue, schemaObject), object)
+);

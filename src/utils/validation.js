@@ -1,5 +1,9 @@
+import moment from 'moment';
+
 import * as R from 'ramda';
 import * as Maybe from '@Utility/maybe-utils';
+
+export const DATE_FORMAT = 'DD.MM.YYYY';
 
 export const ytunnusChecksum = R.compose(
   R.unless(R.equals(0), R.subtract(11)),
@@ -84,7 +88,11 @@ export const isPuhelin = R.test(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/);
 export const isPatevyystaso = R.test(/^(1|2)$/);
 
 // TODO: improve to check invalid dates
-export const isPaivamaara = R.test(/^\d{1,2}\.\d{1,2}.\d{4}$/);
+export const isPaivamaara = R.ifElse(
+  R.compose(R.equals('Date'), R.type),
+  R.curry(date => moment(date).isValid()),
+  R.curry(date => moment(date, DATE_FORMAT).isValid())
+);
 
 export const validate = (validators, value) =>
   Maybe.fromUndefined(

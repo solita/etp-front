@@ -1,5 +1,6 @@
 import { assert } from 'chai';
 import * as R from 'ramda';
+import moment from 'moment';
 import * as validation from './validation';
 
 const assertChecksum = R.curry((value, checksum, validator) => {
@@ -130,13 +131,25 @@ describe('Validation:', () => {
   describe('Päivämäärä validation', () => {
     it('valid päivämäärä', () => {
       assert.equal(validation.isPaivamaara('16.12.2012'), true);
-      assert.equal(validation.isPaivamaara('1.1.2012'), true);
-      assert.equal(validation.isPaivamaara('1.12.2012'), true);
-      assert.equal(validation.isPaivamaara('12.1.2012'), true);
+      assert.equal(validation.isPaivamaara('01.12.2012'), true);
+      assert.equal(
+        validation.isPaivamaara(
+          moment('16.12.2012', validation.DATE_FORMAT).toDate()
+        ),
+        true
+      );
+      assert.equal(
+        validation.isPaivamaara(
+          moment('01.12.2012', validation.DATE_FORMAT).toDate()
+        ),
+        true
+      );
     });
 
     it('invalid päivämäärä', () => {
-      assert.equal(validation.isPaivamaara('12.2'), false);
+      assert.equal(validation.isPaivamaara('1.20.2012'), false);
+      assert.equal(validation.isPaivamaara('77.1.2012'), false);
+      assert.equal(validation.isPaivamaara('77.1.20122'), false);
       assert.equal(validation.isPaivamaara(null), false);
     });
   });

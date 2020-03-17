@@ -5,7 +5,6 @@
   import TableColumnValidation from './TableColumnValidation';
   export let fields = [];
   export let tablecontents = [];
-  export let parse = {};
   export let validate = {};
   export let pageCount = 0;
   export let pageNum = 0;
@@ -72,7 +71,6 @@
                 <svelte:component
                   this={TableColumnValidation}
                   value={R.prop(field.id, row)}
-                  transform={R.prop(field.id, parse)}
                   validation={R.prop(field.id, validate)}
                   component={field.component} />
               {/if}

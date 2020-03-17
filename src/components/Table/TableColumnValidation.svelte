@@ -3,21 +3,12 @@
   import * as Maybe from '@Utility/maybe-utils';
 
   export let value;
-  export let transform = R.identity;
   export let validation = R.always(true);
   export let component;
 
-  $: error = R.ifElse(
-    R.compose(
-      R.equals('String'),
-      R.type
-    ),
-    R.compose(
-      R.not,
-      validation,
-      transform
-    ),
-    R.always(true)
+  $: error = R.compose(
+    R.not,
+    validation
   )(value);
 </script>
 
@@ -29,6 +20,6 @@
 
 <div class:error>
   {#if component}
-    <svelte:component this={component} {value} {error} />
+    <svelte:component this={component} {value} />
   {:else if value}{value}{:else}-{/if}
 </div>

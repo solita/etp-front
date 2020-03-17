@@ -1,7 +1,6 @@
 <script>
   import * as R from 'ramda';
   import { locale, _ } from '@Language/i18n';
-  import * as Maybe from '@Utility/maybe-utils';
   import * as Either from '@Utility/either-utils';
   import * as Future from '@Utility/future-utils';
   import * as Fetch from '@Utility/fetch-utils';
@@ -31,7 +30,7 @@
           R.split('-')
         )($locale)}`
       ),
-      R.find(R.propEq('id', parseInt(value)))
+      R.find(R.propEq('id', value))
     ),
     $patevyystasoStore
   );

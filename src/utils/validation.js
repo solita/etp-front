@@ -104,7 +104,6 @@ export const isPuhelin = R.test(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/);
 
 export const isPatevyystaso = R.test(/^(1|2)$/);
 
-// TODO: improve to check invalid dates
 export const isPaivamaara = R.ifElse(
   R.compose(R.equals('Date'), R.type),
   R.curry(date => moment(date).isValid()),

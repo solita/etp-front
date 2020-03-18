@@ -14,6 +14,7 @@
     Future.encaseP(Fetch.getFetch(fetch))
   )('api/private/patevyydet/');
 
+  // TODO: Get patevyydet only once when store is empty
   Either.isRight($patevyystasoStore) ||
     Future.fork(
       patevyystasoStore.set,

@@ -24,6 +24,7 @@
 
   let laatijaData;
   let update = data => {
+    // TODO: Same file selection does not trigger this
     flashMessageStore.flush('Laatija');
     let files = R.compose(data)({});
     const reader = new FileReader();
@@ -101,7 +102,7 @@
       <Button
         disabled={!valid}
         type={'submit'}
-        text={$_('tallenna')}
+        text={$_('laatija.lisaa-laatijat')}
         on:click={event => {
           event.preventDefault();
           flashMessageStore.flush('Laatija');

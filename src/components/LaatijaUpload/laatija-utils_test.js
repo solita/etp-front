@@ -1,5 +1,8 @@
 import { assert } from 'chai';
+import * as R from 'ramda';
+import moment from 'moment';
 
+import * as validation from '@Utility/validation';
 import { readData, dataValid } from './laatija-utils';
 
 describe('Laatija utils', () => {
@@ -7,6 +10,28 @@ describe('Laatija utils', () => {
     it('a row', () => {
       const data = `FISE;Tarja Helena;Specimen-Pirex;061154-922D;Kirsinkatu;15150;Lahti;arja.pirex@ara.fi;0400123456;2;21.3.2019`;
 
+      let parsedData = readData(data);
+      assert.equal(
+        R.equals(parsedData, [
+          {
+            toteaja: 'FISE',
+            etunimi: 'Tarja Helena',
+            sukunimi: 'Specimen-Pirex',
+            henkilotunnus: '061154-922D',
+            jakeluosoite: 'Kirsinkatu',
+            postinumero: '15150',
+            postitoimipaikka: 'Lahti',
+            email: 'arja.pirex@ara.fi',
+            puhelin: '0400123456',
+            patevyystaso: 2,
+            toteamispaivamaara: moment(
+              '21.3.2019',
+              validation.DATE_FORMAT
+            ).toDate()
+          }
+        ]),
+        true
+      );
       assert.equal(dataValid(readData(data)), true);
     });
 
@@ -43,25 +68,33 @@ describe('Laatija utils', () => {
     it('empty data', () => {
       const data = '';
 
-      assert.equal(dataValid(readData(data)), false);
+      let parsedData = readData(data);
+      assert.equal(R.isEmpty(parsedData), true);
+      assert.equal(dataValid(parsedData), false);
     });
 
     it('null data', () => {
       const data = null;
 
-      assert.equal(dataValid(readData(data)), false);
+      let parsedData = readData(data);
+      assert.equal(R.isEmpty(parsedData), true);
+      assert.equal(dataValid(parsedData), false);
     });
 
     it('invalid row', () => {
       const data = 'FISE;Tarja Helena;Specimen-Pirex';
 
-      assert.equal(dataValid(readData(data)), false);
+      let parsedData = readData(data);
+      assert.equal(R.isEmpty(parsedData), true);
+      assert.equal(dataValid(parsedData), false);
     });
 
     it('invalid data', () => {
       const data = 'datadatadata';
 
-      assert.equal(dataValid(readData(data)), false);
+      let parsedData = readData(data);
+      assert.equal(R.isEmpty(parsedData), true);
+      assert.equal(dataValid(parsedData), false);
     });
   });
 });

@@ -60,14 +60,15 @@ export const readRow = R.ifElse(
   R.always(null)
 );
 
-export const readData = R.when(
+export const readData = R.ifElse(
   R.compose(R.equals('String'), R.type),
   R.compose(
     R.filter(R.complement(R.isNil)),
     R.map(readRow),
     R.split(/\r?\n/g),
     R.trim
-  )
+  ),
+  R.always([])
 );
 
 export const rowValid = R.compose(

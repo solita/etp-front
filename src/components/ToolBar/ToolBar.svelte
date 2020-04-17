@@ -41,8 +41,8 @@
     <span class="text-2xl font-icon">file_copy</span>
   </button>
   <button>
-    <span class="description">Tulosta PDF</span>
-    <span class="text-2xl font-icon">print</span>
+    <span class="description">Esikatselu</span>
+    <span class="text-2xl font-icon">picture_as_pdf</span>
   </button>
   <button>
     <span class="description">Poista</span>

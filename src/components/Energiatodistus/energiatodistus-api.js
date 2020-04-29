@@ -40,7 +40,9 @@ export const serialize = R.compose(
 export const url = {
   all: '/api/private/energiatodistukset',
   version: version => `${url.all}/${version}`,
-  id: (version, id) => `${url.version(version)}/${id}`
+  id: (version, id) => `${url.version(version)}/${id}`,
+  digest: (version, id) => `${url.id(version, id)}/digest`,
+  signature: (version, id) => `${url.id(version, id)}/signature`
 };
 
 export const getEnergiatodistukset = R.compose(
@@ -65,6 +67,22 @@ export const putEnergiatodistusById = R.curry(
       Future.encaseP(Fetch.fetchWithMethod(fetch, 'put', url.id(version, id))),
       serialize
     )(energiatodistus)
+);
+
+export const getEnergiatodistusDigestById = R.curry((fetch, version, id) =>
+  R.compose(
+    Fetch.responseAsJson,
+    Future.encaseP(Fetch.getFetch(fetch)),
+    url.digest
+  )(version, id)
+);
+
+export const signEnergiatodistus = R.curry((fetch, version, id, signature) =>
+  R.compose(
+    Future.encaseP(
+      Fetch.fetchWithMethod(fetch, 'put', url.signature(version, id))
+    )
+  )(signature)
 );
 
 export const postEnergiatodistus = R.curry((fetch, version, energiatodistus) =>

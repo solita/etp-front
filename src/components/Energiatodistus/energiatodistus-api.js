@@ -1,35 +1,52 @@
-import * as R from "ramda";
-import * as Fetch from "@Utility/fetch-utils";
-import * as Future from "@Utility/future-utils";
-import * as Either from "@Utility/either-utils";
-import * as Maybe from "@Utility/maybe-utils";
+import * as R from 'ramda';
+import * as Fetch from '@Utility/fetch-utils';
+import * as Future from '@Utility/future-utils';
+import * as Either from '@Utility/either-utils';
+import * as Maybe from '@Utility/maybe-utils';
 import * as deep from '@Utility/deep-objects';
 
 export const deserialize = R.compose(
-  R.evolve({id: Maybe.get, versio: Maybe.get, perustiedot: {
-    'onko-julkinen-rakennus': Maybe.get,
-    valmistumisvuosi: Either.Right }}),
+  R.evolve({
+    id: Maybe.get,
+    versio: Maybe.get,
+    perustiedot: {
+      'onko-julkinen-rakennus': Maybe.get,
+      valmistumisvuosi: Either.Right
+    }
+  }),
   deep.map(R.F, Maybe.fromNull)
 );
 
 export const serialize = R.compose(
-  deep.map(Either.isEither,
-    R.ifElse(R.allPass([R.complement(R.isNil), Either.isEither]), Either.orSome(null), R.identity)),
-  deep.map(Maybe.isMaybe,
-    R.ifElse(R.allPass([R.complement(R.isNil), Maybe.isMaybe]), Maybe.orSome(null), R.identity)),
+  deep.map(
+    Either.isEither,
+    R.ifElse(
+      R.allPass([R.complement(R.isNil), Either.isEither]),
+      Either.orSome(null),
+      R.identity
+    )
+  ),
+  deep.map(
+    Maybe.isMaybe,
+    R.ifElse(
+      R.allPass([R.complement(R.isNil), Maybe.isMaybe]),
+      Maybe.orSome(null),
+      R.identity
+    )
+  ),
   R.omit(['id', 'tila', 'laatija-fullname', 'versio'])
 );
 
 export const url = {
   all: '/api/private/energiatodistukset',
-  version: (version) => `${url.all}/${version}`,
-  id: (version, id) => `${url.version(version)}/${id}`,
+  version: version => `${url.all}/${version}`,
+  id: (version, id) => `${url.version(version)}/${id}`
 };
 
 export const getEnergiatodistukset = R.compose(
   R.map(R.map(deserialize)),
   Fetch.responseAsJson,
-  Future.encaseP(Fetch.getFetch(fetch)),
+  Future.encaseP(Fetch.getFetch(fetch))
 )(url.all);
 
 export const getEnergiatodistusById = R.curry((fetch, version, id) =>
@@ -41,12 +58,13 @@ export const getEnergiatodistusById = R.curry((fetch, version, id) =>
   )(version, id)
 );
 
-export const putEnergiatodistusById = R.curry((fetch, version, id, energiatodistus) =>
-  R.compose(
-    R.chain(Fetch.rejectWithInvalidResponse),
-    Future.encaseP(Fetch.fetchWithMethod(fetch, 'put', url.id(version, id))),
-    serialize
-  )(energiatodistus)
+export const putEnergiatodistusById = R.curry(
+  (fetch, version, id, energiatodistus) =>
+    R.compose(
+      R.chain(Fetch.rejectWithInvalidResponse),
+      Future.encaseP(Fetch.fetchWithMethod(fetch, 'put', url.id(version, id))),
+      serialize
+    )(energiatodistus)
 );
 
 export const postEnergiatodistus = R.curry((fetch, version, energiatodistus) =>
@@ -55,6 +73,13 @@ export const postEnergiatodistus = R.curry((fetch, version, energiatodistus) =>
     Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', url.version(version))),
     serialize
   )(energiatodistus)
+);
+
+export const deleteEnergiatodistus = R.curry((fetch, version, id) =>
+  R.chain(
+    Fetch.rejectWithInvalidResponse,
+    Future.attemptP(Fetch.fetchWithMethod(fetch, 'delete', url.id(version, id)))
+  )
 );
 
 export const kielisyys = R.compose(

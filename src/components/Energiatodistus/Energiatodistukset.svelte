@@ -141,10 +141,7 @@
                   <td>
                     <span
                       class="material-icons"
-                      on:click={e => {
-                        e.stopPropagation();
-                        deleteEnergiatodistus(energiatodistus.versio, energiatodistus.id);
-                      }}>
+                      on:click|stopPropagation={_ => deleteEnergiatodistus(energiatodistus.versio, energiatodistus.id)}>
                       delete
                     </span>
                   </td>

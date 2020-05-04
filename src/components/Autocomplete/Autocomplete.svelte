@@ -14,7 +14,7 @@
   let active = Maybe.None();
   let input;
   let node;
-  let filteredItems = [];
+  $: filteredItems = items;
 
   const setInputValue = value => {
     input.value = value;
@@ -62,7 +62,6 @@
     input.addEventListener('input', event => {
       const value = input.value;
       filteredItems = R.compose(
-        R.take(5),
         R.filter(
           R.compose(
             R.includes(R.toLower(value)),
@@ -91,7 +90,9 @@
 
 <div bind:this={node} on:keydown={handleKeydown}>
 
-  <slot />
+  <div on:click={() => (showDropdown = !showDropdown)}>
+    <slot />
+  </div>
   {#if showDropdown}
     <DropdownList
       items={filteredItems}

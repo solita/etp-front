@@ -21,7 +21,7 @@
 
   export let params;
 
-  const emptyLiite = _ => ({ nimi: '', url: ''});
+  const emptyLiite = _ => ({ nimi: '', url: '' });
 
   let overlay = true;
   let failure = false;
@@ -29,39 +29,50 @@
   let liiteLinkAdd = emptyLiite();
 
   const liiteLinkAddSchema = {
-    nimi: [validation.isRequired,
-           validation.maxLengthConstraint(300)],
+    nimi: [validation.isRequired, validation.maxLengthConstraint(300)],
     url: [validation.isRequired, validation.urlValidator]
-  }
+  };
 
   const toggleOverlay = value => () => (overlay = value);
   const orEmpty = Maybe.orSome('');
-  const cancel = _ => { liiteLinkAdd = emptyLiite(); }
+  const cancel = _ => {
+    liiteLinkAdd = emptyLiite();
+  };
 
   const load = R.compose(
-      Future.fork(
-          R.compose(
-              R.tap(toggleOverlay(false)),
-              R.tap(flashMessageStore.add('Energiatodistus', 'error')),
-              R.partial($_, ['energiatodistus.liitteet.messages.load-error'])),
-          R.compose(
-              R.tap(toggleOverlay(false)),
-              response => {
-                liitteet = response;
-              }
-          )),
-      R.tap(toggleOverlay(true)),
-      api.getLiitteetById(fetch)
-  );
-  const fork = functionName => Future.fork(
-    R.compose(
+    Future.fork(
+      R.compose(
         R.tap(toggleOverlay(false)),
         R.tap(flashMessageStore.add('Energiatodistus', 'error')),
-        R.partial($_, [`energiatodistus.liitteet.messages.${functionName}.error`])),
-    R.compose(
+        R.partial($_, ['energiatodistus.liitteet.messages.load-error'])
+      ),
+      R.compose(
+        R.tap(toggleOverlay(false)),
+        response => {
+          liitteet = response;
+        }
+      )
+    ),
+    R.tap(toggleOverlay(true)),
+    api.getLiitteetById(fetch)
+  );
+  const fork = functionName =>
+    Future.fork(
+      R.compose(
+        R.tap(toggleOverlay(false)),
+        R.tap(flashMessageStore.add('Energiatodistus', 'error')),
+        R.partial($_, [
+          `energiatodistus.liitteet.messages.${functionName}.error`
+        ])
+      ),
+      R.compose(
         R.tap(flashMessageStore.add('Energiatodistus', 'success')),
-        R.partial($_, [`energiatodistus.liitteet.messages.${functionName}.success`]),
-        R.partial(load, [params.version, params.id])));
+        R.partial($_, [
+          `energiatodistus.liitteet.messages.${functionName}.success`
+        ]),
+        R.partial(load, [params.version, params.id])
+      )
+    );
 
   const uploadFiles = R.compose(
     fork('add-files'),
@@ -80,25 +91,32 @@
       flashMessageStore.flush();
       addLink(liiteLinkAdd);
     } else {
-      flashMessageStore.add('Energiatodistus', 'error',
-          $_('energiatodistus.liitteet.messages.add-link.validation'));
+      flashMessageStore.add(
+        'Energiatodistus',
+        'error',
+        $_('energiatodistus.liitteet.messages.add-link.validation')
+      );
     }
-  }
+  };
 
   $: load(params.version, params.id);
 
-  const liiteUrl = liite => Maybe.orSome(
+  const liiteUrl = liite =>
+    Maybe.orSome(
       api.url.liitteet(params.version, params.id) + '/' + liite.id + '/content',
-      liite.url);
+      liite.url
+    );
 
-  const addDefaultProtocol =
-      R.ifElse(R.anyPass([R.includes('://'), R.isEmpty]),
-          R.identity, R.concat('http://'))
+  const addDefaultProtocol = R.ifElse(
+    R.anyPass([R.includes('://'), R.isEmpty]),
+    R.identity,
+    R.concat('http://')
+  );
 
   const deleteLiite = R.compose(
-      fork('delete-liite'),
-      R.tap(toggleOverlay(true)),
-      api.deleteLiite(fetch, params.version, params.id)
+    fork('delete-liite'),
+    R.tap(toggleOverlay(true)),
+    api.deleteLiite(fetch, params.version, params.id)
   );
 </script>
 
@@ -117,6 +135,10 @@
 
   td {
     @apply text-center;
+  }
+
+  td > div {
+    @apply flex justify-center;
   }
 
   tr:nth-child(even) {
@@ -142,16 +164,22 @@
             </tr>
           </thead>
           <tbody>
-          {#each liitteet as liite}
-            <tr>
-              <td>{formats.formatTimeInstant(liite.createtime)}</td>
-              <td><Link text={liite.nimi} href={liiteUrl(liite)} /></td>
-              <td>{liite['author-fullname']}</td>
-              <td on:click={_ => deleteLiite(liite.id)} class="cursor-pointer">
-                <span class="material-icons">delete</span>
-              </td>
-            </tr>
-          {/each}
+            {#each liitteet as liite}
+              <tr>
+                <td>{formats.formatTimeInstant(liite.createtime)}</td>
+                <td>
+                  <div>
+                    <Link text={liite.nimi} href={liiteUrl(liite)} />
+                  </div>
+                </td>
+                <td>{liite['author-fullname']}</td>
+                <td
+                  on:click={_ => deleteLiite(liite.id)}
+                  class="cursor-pointer">
+                  <span class="material-icons">delete</span>
+                </td>
+              </tr>
+            {/each}
           </tbody>
         </table>
       {/if}
@@ -164,33 +192,33 @@
   <div class="mb-4 flex lg:flex-row flex-col">
     <div class="lg:w-1/2 w-full mr-6 mb-6">
       <H2 text={$_('energiatodistus.liitteet.add-files.title')} />
-      <FileDropArea onchange={uploadFiles} multiple={true}/>
+      <FileDropArea onchange={uploadFiles} multiple={true} />
     </div>
     <div class="lg:w-1/2 w-full flex flex-col">
       <H2 text={$_('energiatodistus.liitteet.add-link.title')} />
       <form on:submit|preventDefault={submit}>
         <div class="w-full px-4 py-4">
           <Input
-              id={'link.nimi'}
-              name={'link.nimi'}
-              label={$_('energiatodistus.liitteet.add-link.nimi')}
-              bind:model={liiteLinkAdd}
-              lens={R.lensPath(['nimi'])}
-              parse={R.trim}
-              validators={liiteLinkAddSchema.nimi}
-              i18n={$_}/>
+            id={'link.nimi'}
+            name={'link.nimi'}
+            label={$_('energiatodistus.liitteet.add-link.nimi')}
+            bind:model={liiteLinkAdd}
+            lens={R.lensPath(['nimi'])}
+            parse={R.trim}
+            validators={liiteLinkAddSchema.nimi}
+            i18n={$_} />
         </div>
 
         <div class="w-full px-4 py-4">
           <Input
-              id={'link.url'}
-              name={'link.url'}
-              label={$_('energiatodistus.liitteet.add-link.url')}
-              bind:model={liiteLinkAdd}
-              lens={R.lensPath(['url'])}
-              parse={R.compose(addDefaultProtocol, R.trim)}
-              validators={liiteLinkAddSchema.url}
-              i18n={$_}/>
+            id={'link.url'}
+            name={'link.url'}
+            label={$_('energiatodistus.liitteet.add-link.url')}
+            bind:model={liiteLinkAdd}
+            lens={R.lensPath(['url'])}
+            parse={R.compose( addDefaultProtocol, R.trim )}
+            validators={liiteLinkAddSchema.url}
+            i18n={$_} />
         </div>
 
         <div class="flex -mx-4 pt-8">
@@ -198,9 +226,11 @@
             <Button type={'submit'} text={'Lisää linkki'} />
           </div>
           <div class="px-4">
-            <Button on:click = { cancel } text={'Tyhjennä'}
-                    type={'reset'}
-                    style={'secondary'} />
+            <Button
+              on:click={cancel}
+              text={'Tyhjennä'}
+              type={'reset'}
+              style={'secondary'} />
           </div>
         </div>
       </form>

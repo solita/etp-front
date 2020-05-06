@@ -137,10 +137,6 @@
     @apply text-center;
   }
 
-  td > div {
-    @apply flex justify-center;
-  }
-
   tr:nth-child(even) {
     @apply bg-background;
   }
@@ -167,10 +163,8 @@
             {#each liitteet as liite}
               <tr>
                 <td>{formats.formatTimeInstant(liite.createtime)}</td>
-                <td>
-                  <div>
-                    <Link text={liite.nimi} href={liiteUrl(liite)} />
-                  </div>
+                <td class="flex justify-center">
+                  <Link text={liite.nimi} href={liiteUrl(liite)} />
                 </td>
                 <td>{liite['author-fullname']}</td>
                 <td

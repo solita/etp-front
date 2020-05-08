@@ -13,6 +13,7 @@
   import Spinner from '@Component/Spinner/Spinner';
   import Link from '@Component/Link/Link';
   import Select from '@Component/Select/Select';
+  import Confirm from '@Component/Confirm/Confirm';
 
   let overlay = true;
   let failure = false;
@@ -23,13 +24,13 @@
 
   let query = {
     tila: Maybe.None()
-  }
+  };
 
   const formatTila = R.compose(
-      Maybe.orSome($_('validation.no-selection')),
-      Maybe.map(tila => $_(`energiatodistukset.tilat.` + tila)),
-      R.when(R.complement(Maybe.isMaybe), Maybe.of));
-
+    Maybe.orSome($_('validation.no-selection')),
+    Maybe.map(tila => $_(`energiatodistukset.tilat.` + tila)),
+    R.when(R.complement(Maybe.isMaybe), Maybe.of)
+  );
 
   const toETView = (versio, id) => {
     push('#/energiatodistus/' + versio + '/' + id);
@@ -114,13 +115,13 @@
     <div slot="content">
       <div class="lg:w-1/3 w-full mb-6">
         <Select
-            label={'Tila'}
-            disabled={false}
-            bind:model={query}
-            lens={R.lensProp('tila')}
-            format={formatTila}
-            parse={R.when(R.complement(Maybe.isMaybe), Maybe.of)}
-            items={[Maybe.None(), 0, 1]} />
+          label={'Tila'}
+          disabled={false}
+          bind:model={query}
+          lens={R.lensProp('tila')}
+          format={formatTila}
+          parse={R.when(R.complement(Maybe.isMaybe), Maybe.of)}
+          items={[Maybe.None(), 0, 1]} />
       </div>
 
       {#if R.isEmpty(energiatodistukset)}
@@ -160,11 +161,15 @@
                   </td>
                   <td>{orEmpty(energiatodistus['laatija-fullname'])}</td>
                   <td>
-                    <span
-                      class="material-icons"
-                      on:click|stopPropagation={_ => deleteEnergiatodistus(energiatodistus.versio, energiatodistus.id)}>
-                      delete
-                    </span>
+                    <Confirm
+                      let:confirm
+                      message={$_('confirm.you-want-to-delete')}>
+                      <span
+                        class="material-icons"
+                        on:click|stopPropagation={_ => confirm(deleteEnergiatodistus, energiatodistus.versio, energiatodistus.id)}>
+                        delete
+                      </span>
+                    </Confirm>
                   </td>
                 </tr>
               {/each}
@@ -194,7 +199,8 @@
         href="#/energiatodistus/2013/new" />
     </div>
   </div>
-  <Link icon={Maybe.Some('attachment')}
-             text={'Lataa energiatodistukset XLSX-tiedostona'}
-        href="/api/private/energiatodistukset/2018/export/energiatodistukset.xlsx" />
+  <Link
+    icon={Maybe.Some('attachment')}
+    text={'Lataa energiatodistukset XLSX-tiedostona'}
+    href="/api/private/energiatodistukset/2018/export/energiatodistukset.xlsx" />
 </div>

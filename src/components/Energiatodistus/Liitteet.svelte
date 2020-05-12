@@ -18,6 +18,7 @@
   import FileDropArea from '@Component/FileDropArea/FileDropArea';
   import Input from '@Component/Input/Input';
   import Button from '@Component/Button/Button';
+  import Confirm from '@Component/Confirm/Confirm';
 
   export let params;
 
@@ -177,10 +178,18 @@
                   <Link text={liite.nimi} href={liiteUrl(liite)} />
                 </td>
                 <td>{liite['author-fullname']}</td>
-                <td
-                  on:click={_ => deleteLiite(liite.id)}
-                  class="cursor-pointer">
-                  <span class="material-icons">delete</span>
+                <td>
+                  <Confirm
+                    let:confirm
+                    confirmButtonLabel={$_('confirm.button.delete')}
+                    confirmMessage={$_('confirm.you-want-to-delete')}>
+                    <span
+                      class="material-icons cursor-pointer"
+                      on:click|stopPropagation={_ => confirm(deleteLiite, liite.id)}>
+                      delete
+                    </span>
+                  </Confirm>
+
                 </td>
               </tr>
             {/each}

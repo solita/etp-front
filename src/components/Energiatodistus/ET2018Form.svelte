@@ -126,6 +126,10 @@
     @apply w-2/5;
   }
 
+  :global(.et-table--td__fifth) {
+    @apply w-1/5;
+  }
+
   :global(.et-table--tr:last-child) {
     @apply mb-5;
   }
@@ -161,6 +165,7 @@
       <Input
         {disabled}
         {schema}
+        center={false}
         bind:model={energiatodistus}
         path={['perustiedot', 'yritys', 'nimi']} />
     </div>
@@ -169,6 +174,7 @@
       <Input
         {disabled}
         {schema}
+        center={false}
         bind:model={energiatodistus}
         path={['perustiedot', 'tilaaja']} />
     </div>
@@ -212,14 +218,18 @@
   <ToimenpideEhdotukset {disabled} {schema} bind:energiatodistus />
 
   <HR />
-  <H2 text="E-luvun laskennan lähtotiedot" />
+  <H2 text="Lähtötiedot" />
 
-  <div class="w-1/5 py-4 mb-4">
-    <Input
-      {disabled}
-      {schema}
-      bind:model={energiatodistus}
-      path={['lahtotiedot', 'lammitetty-nettoala']} />
+  <div class="w-1/5 py-4 mb-4 flex flex-row items-end">
+    <div class="w-5/6">
+      <Input
+        {disabled}
+        {schema}
+        center={false}
+        bind:model={energiatodistus}
+        path={['lahtotiedot', 'lammitetty-nettoala']} />
+    </div>
+    <div class="w-1/6 pl-2">m²</div>
   </div>
 
   <Rakennusvaippa {disabled} {schema} bind:energiatodistus />

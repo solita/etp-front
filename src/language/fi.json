@@ -63,17 +63,27 @@
   "time": {
     "klo": "klo"
   },
-  "laatija": {
+  "kayttaja": {
     "last-login": "Kirjautunut viimeksi",
     "no-login": "Ei vielä kirjautunut.",
-    "lisaa-laatijat": "Lisää laatijat",
     "omattiedot": "Omat tiedot",
-    "henkilotunnus": "Henkilötunnus",
     "etunimi": "Etunimi",
     "sukunimi": "Sukunimi",
     "sahkoposti": "Sähköposti",
     "kayttajatunnus": "Käyttäjätunnus",
     "puhelinnumero": "Puhelinnumero",
+
+    "messages": {
+      "save-success": "Käyttäjän tiedot tallennettu onnistuneesti.",
+      "save-error": "Käyttäjän tietojen tallennuksessa tapahtui odottamaton virhe.",
+      "validation-error": "Käyttäjän tiedoissa virheitä. Tarkista punaisella merkityt ja lataa tiedosto uudestaan.",
+      "load-error": "Käyttäjän tietojen haku epäonnistui.",
+      "upload-error": "Tiedoston lataaminen epäonnistui."
+    }
+  },
+  "laatija": {
+    "lisaa-laatijat": "Lisää laatijat",
+    "henkilotunnus": "Henkilötunnus",
     "katuosoite": "Katuosoite",
     "postinumero": "Postinumero",
     "postitoimipaikka": "Postitoimipaikka",
@@ -138,14 +148,15 @@
     },
     "vuosikulutus": "kWh/vuosi",
     "vuosikulutus-per-nelio": "kWh/m²vuosi",
+    "litraa-per-neliovuosi": "dm³/m²vuosi",
     "yhteensa": "Yhteensä",
     "lahtotiedot": {
-      "ala": "Ala (m²)",
-      "U": "U (W/(m²K))",
+      "ala": "Ala",
+      "U": "U",
       "lammitetty-nettoala": "Lämmitetty nettoala",
       "rakennusvaippa": {
         "header": "Rakennusvaippa",
-        "U*A": "U*A (W/K)",
+        "U*A": "U*A",
         "osuuslampohaviosta": "Osuus lämpöhäviöstä",
         "ilmanvuotoluku": "Ilmanvuotoluku",
         "labels": {
@@ -339,12 +350,14 @@
       "yhteensa": "Yhteensä",
       "vuosikulutus": "kWh/vuosi",
       "vuosikulutus-per-nelio": "kWh/m²vuosi",
+      "kwhevuosi": "kWhE/vuosi",
+      "kwhem2vuosi": "kWhE/m²vuosi",
       "kaytettavat-energiamuodot": {
         "header": "E-Luvun erittely",
         "kaytettavat-energiamuodot": "Käytettävät energiamuodot",
         "vakioidun_kayton_ostoenergia": "Vakioidulla käytöllä laskettu ostoenergia kWh/vuosi",
         "energiamuodon_kerroin": "Energiamuodon kerroin",
-        "kertoimella_painotettu_energiankulutus": "Energiamuodon kertoimella painotettu energiankulutus kWhE/vuosi",
+        "kertoimella_painotettu_energiankulutus": "Energiamuodon kertoimella painotettu energiankulutus",
 
         "labels": {
           "fossiilinen-polttoaine": "Fossiilinen polttoaine",

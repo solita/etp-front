@@ -646,7 +646,10 @@
     }
   },
   "confirm": {
-    "you-want-to-delete": "Oletko varma, että haluat poistaa?"
+    "you-want-to-delete": "Oletko varma, että haluat poistaa?",
+    "button": {
+      "delete": "Poista"
+    }
   },
   "drop-or-click-file": "Lisää tiedosto raahaamalla tai selaa tiedostoja",
   "file_upload_error_multiple_files": "Liikaa tiedostoja. Lisää yksi tiedosto kerrallaan.",

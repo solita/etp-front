@@ -101,7 +101,10 @@
     </button>
   {/if}
   {#if id.isSome()}
-    <Confirm let:confirm message={$_('confirm.you-want-to-delete')}>
+    <Confirm
+      let:confirm
+      confirmButtonLabel={$_('confirm.button.delete')}
+      confirmMessage={$_('confirm.you-want-to-delete')}>
       <button on:click={() => confirm(deleteEnergiatodistus)}>
         <span class="description">Poista</span>
         <span class="text-2xl font-icon">delete_forever</span>

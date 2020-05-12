@@ -1,7 +1,10 @@
 <script>
   import Button from '@Component/Button/Button';
+  import { _ } from '@Language/i18n';
 
-  export let message;
+  export let confirmMessage;
+  export let confirmButtonLabel;
+
   let hide = true;
   let resolve = () => {};
   let reject = () => {};
@@ -21,7 +24,10 @@
 
 <style type="text/postcss">
   dialog {
-    @apply fixed top-0 bottom-0 left-0 right-0 bg-light w-2/3 py-32 border-dark border-1 flex flex-col justify-center cursor-default;
+    @apply fixed top-0 w-screen left-0 h-screen bg-hr cursor-default flex justify-center items-center;
+  }
+  .content {
+    @apply relative bg-light w-2/3 py-32 border-dark border-1 flex flex-col justify-center;
   }
 
   .close {
@@ -29,7 +35,7 @@
   }
 
   .message {
-    @apply text-primary text-center;
+    @apply text-primary text-center font-bold px-24;
   }
   .buttons {
     @apply flex justify-center items-center mt-8;
@@ -40,19 +46,22 @@
 
 {#if !hide}
   <dialog open={!hide} on:click|stopPropagation={() => {}}>
-
-    <span class="material-icons close" on:click|stopPropagation={reject}>
-      highlight_off
-    </span>
-    <p class="message">{message}</p>
-    <div class="buttons">
-      <div class="px-2">
-        <Button on:click={resolve} style="primary" text="Hyväksy" />
-      </div>
-      <div class="px-2">
-        <Button on:click={reject} style="secondary" text="Peru" />
+    <div class="content">
+      <span class="material-icons close" on:click|stopPropagation={reject}>
+        highlight_off
+      </span>
+      <p class="message">{confirmMessage}</p>
+      <div class="buttons">
+        <div class="px-2">
+          <Button
+            on:click={resolve}
+            style="primary"
+            text={confirmButtonLabel} />
+        </div>
+        <div class="px-2">
+          <Button on:click={reject} style="secondary" text={$_('peruuta')} />
+        </div>
       </div>
     </div>
-
   </dialog>
 {/if}

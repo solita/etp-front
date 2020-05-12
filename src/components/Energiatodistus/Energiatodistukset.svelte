@@ -163,7 +163,8 @@
                   <td>
                     <Confirm
                       let:confirm
-                      message={$_('confirm.you-want-to-delete')}>
+                      confirmButtonLabel={$_('confirm.button.delete')}
+                      confirmMessage={$_('confirm.you-want-to-delete')}>
                       <span
                         class="material-icons"
                         on:click|stopPropagation={_ => confirm(deleteEnergiatodistus, energiatodistus.versio, energiatodistus.id)}>

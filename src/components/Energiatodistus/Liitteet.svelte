@@ -155,7 +155,7 @@
               <th class="etp-table--th">
                 {$_('energiatodistus.liitteet.liite.author')}
               </th>
-              <th class="etp-table--th">Toiminnot</th>
+              <th class="etp-table--th">{$_('table.actions')}</th>
             </tr>
           </thead>
           <tbody class="etp-table--tbody">

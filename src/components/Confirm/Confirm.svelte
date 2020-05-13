@@ -45,7 +45,7 @@
 <slot confirm={confirmAction} />
 
 {#if !hide}
-  <dialog open={!hide} on:click|stopPropagation={() => {}}>
+  <dialog open={!hide} on:click|stopPropagation>
     <div class="content">
       <span class="material-icons close" on:click|stopPropagation={reject}>
         highlight_off

@@ -18,6 +18,7 @@
   import FileDropArea from '@Component/FileDropArea/FileDropArea';
   import Input from '@Component/Input/Input';
   import Button from '@Component/Button/Button';
+  import Confirm from '@Component/Confirm/Confirm';
 
   export let params;
 
@@ -27,6 +28,7 @@
   let failure = false;
   let liitteet;
   let liiteLinkAdd;
+  let files = [];
 
   const resetForm = () => {
     liitteet = [];
@@ -81,11 +83,12 @@
       )
     );
 
-  const uploadFiles = R.compose(
-    fork('add-files'),
-    R.tap(toggleOverlay(true)),
-    api.postLiitteetFiles(fetch, params.version, params.id)
-  );
+  $: files.length > 0 &&
+    R.compose(
+      fork('add-files'),
+      R.tap(toggleOverlay(true)),
+      api.postLiitteetFiles(fetch, params.version, params.id)
+    )(files);
 
   const addLink = R.compose(
     fork('add-link'),
@@ -129,25 +132,7 @@
 </script>
 
 <style>
-  table {
-    @apply w-full;
-  }
 
-  th {
-    @apply px-4 py-2 text-center;
-  }
-
-  tr {
-    @apply px-4 py-2;
-  }
-
-  td {
-    @apply text-center;
-  }
-
-  tr:nth-child(even) {
-    @apply bg-background;
-  }
 </style>
 
 <div class="w-full mt-3">
@@ -158,27 +143,42 @@
       {#if R.isEmpty(liitteet)}
         <p>{$_('energiatodistus.liitteet.empty')}</p>
       {:else}
-        <table>
-          <thead>
-            <tr>
-              <th>{$_('energiatodistus.liitteet.liite.createtime')}</th>
-              <th>{$_('energiatodistus.liitteet.liite.nimi')}</th>
-              <th>{$_('energiatodistus.liitteet.liite.author')}</th>
-              <th>Toiminnot</th>
+        <table class="etp-table">
+          <thead class="etp-table--thead">
+            <tr class="etp-table--tr">
+              <th class="etp-table--th">
+                {$_('energiatodistus.liitteet.liite.createtime')}
+              </th>
+              <th class="etp-table--th">
+                {$_('energiatodistus.liitteet.liite.nimi')}
+              </th>
+              <th class="etp-table--th">
+                {$_('energiatodistus.liitteet.liite.author')}
+              </th>
+              <th class="etp-table--th">{$_('table.actions')}</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="etp-table--tbody">
             {#each liitteet as liite}
-              <tr>
-                <td>{formats.formatTimeInstant(liite.createtime)}</td>
-                <td class="flex justify-center">
+              <tr class="etp-table--tr">
+                <td class="etp-table--td">
+                  {formats.formatTimeInstant(liite.createtime)}
+                </td>
+                <td class=" etp-table--td">
                   <Link text={liite.nimi} href={liiteUrl(liite)} />
                 </td>
-                <td>{liite['author-fullname']}</td>
-                <td
-                  on:click={_ => deleteLiite(liite.id)}
-                  class="cursor-pointer">
-                  <span class="material-icons">delete</span>
+                <td class="etp-table--td">{liite['author-fullname']}</td>
+                <td class="etp-table--td">
+                  <Confirm
+                    let:confirm
+                    confirmButtonLabel={$_('confirm.button.delete')}
+                    confirmMessage={$_('confirm.you-want-to-delete')}>
+                    <span
+                      class="material-icons cursor-pointer"
+                      on:click|stopPropagation={_ => confirm(deleteLiite, liite.id)}>
+                      delete
+                    </span>
+                  </Confirm>
                 </td>
               </tr>
             {/each}
@@ -194,7 +194,7 @@
   <div class="mb-4 flex lg:flex-row flex-col">
     <div class="lg:w-1/2 w-full mr-6 mb-6">
       <H2 text={$_('energiatodistus.liitteet.add-files.title')} />
-      <FileDropArea onchange={uploadFiles} multiple={true} />
+      <FileDropArea bind:files multiple={true} />
     </div>
     <div class="lg:w-1/2 w-full flex flex-col">
       <H2 text={$_('energiatodistus.liitteet.add-link.title')} />

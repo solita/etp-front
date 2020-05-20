@@ -19,6 +19,11 @@ const Float = (min, max) => ({
   validators: validation.MaybeInterval(min, max)
 });
 
+const DateValue = () => ({
+  parse: parsers.optionalParser(parsers.parseDate),
+  validators: []
+});
+
 const FloatPos = Float(0.0, Infinity);
 
 const Rakennusvaippa = (min, max) => ({
@@ -46,7 +51,7 @@ const Hyotysuhde = {
 };
 
 const MaaraTuotto = {
-  maara: Integer(0.0, 100),
+  maara: Integer(0, 100),
   tuotto: FloatPos
 };
 
@@ -81,22 +86,30 @@ const Huomio = {
   ]
 };
 
+const YritysPostinumero = String(8);
+
+const Yritys = {
+  nimi: String(150),
+  katuosoite: String(100),
+  postitoimipaikka: String(30),
+  postinumero: YritysPostinumero
+};
+
 export const schema = {
   perustiedot: {
-    nimi: String(200),
+    nimi: String(50),
     rakennustunnus: String(200),
-    kiinteistotunnus: String(200),
-    rakennusosa: String(200),
-    'katuosoite-fi': String(200),
-    'katuosoite-sv': String(200),
-    postinumero: String(200),
+    kiinteistotunnus: String(50),
+    rakennusosa: String(100),
+    'katuosoite-fi': String(100),
+    'katuosoite-sv': String(100),
+    postinumero: String(8),
     valmistumisvuosi: Integer(100, new Date().getFullYear()),
     tilaaja: String(200),
-    yritys: {
-      nimi: String(200)
-    },
-    'keskeiset-suositukset-fi': String(200),
-    'keskeiset-suositukset-sv': String(200)
+    yritys: Yritys,
+    havainnointikaynti: DateValue(),
+    'keskeiset-suositukset-fi': String(2500),
+    'keskeiset-suositukset-sv': String(2500)
   },
   lahtotiedot: {
     'lammitetty-nettoala': FloatPos,
@@ -107,7 +120,7 @@ export const schema = {
       alapohja: Rakennusvaippa(0.03, 4.0),
       ikkunat: Rakennusvaippa(0.04, 6.5),
       ulkoovet: Rakennusvaippa(0.2, 6.5),
-      'kylmasillat-UA': Float(0, 50)
+      'kylmasillat-UA': FloatPos
     },
     ikkunat: {
       pohjoinen: Ikkuna,
@@ -227,6 +240,6 @@ export const schema = {
     ymparys: Huomio,
     'alapohja-ylapohja': Huomio
   },
-  'lisamerkintoja-fi': {},
-  'lisamerkintoja-sv': {}
+  'lisamerkintoja-fi': String(6300),
+  'lisamerkintoja-sv': String(6300)
 };

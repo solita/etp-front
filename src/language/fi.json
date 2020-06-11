@@ -130,6 +130,7 @@
   },
   "energiatodistus": {
     "title": "Energiatodistus",
+    "korvaavuus": "Energiatodistuksen korvaavuus",
     "tila": {
       "draft": "Luonnos",
       "in-signing": "Allekirjoitus",

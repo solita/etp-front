@@ -51,6 +51,7 @@
                 <svelte:component
                   this={TableColumnValidation}
                   value={R.prop(field.id, row)}
+                  format={field.format}
                   validation={R.prop(field.id, validate)}
                   component={field.component} />
               {/if}

@@ -8,6 +8,7 @@
   export let validate = {};
   export let pageCount = 0;
   export let pageNum = 0;
+  export let onRowClick;
 </script>
 
 <style type="text/postcss">
@@ -39,13 +40,21 @@
     </thead>
     <tbody class="etp-table--tbody">
       {#each tablecontents as row, index}
-        <tr class="etp-table--tr">
+        <tr
+          class="etp-table--tr"
+          on:click={_ => R.when(R.complement(R.isNil), R.applyTo(row))(onRowClick)}
+          class:etp-table--tr__link={R.complement(R.isNil)(onRowClick)}>
           {#each fields as field}
             <td class="etp-table--td">
               {#if R.equals(field.type, 'action')}
                 <svelte:component
                   this={TableColumnAction}
                   actions={field.actions}
+                  {index} />
+              {:else if R.equals(field.type, 'action-with-template')}
+                <svelte:component
+                  this={TableColumnAction}
+                  actions={R.map(field.actionTemplate, R.prop(field.id, row))}
                   {index} />
               {:else}
                 <svelte:component

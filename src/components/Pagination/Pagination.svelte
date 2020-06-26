@@ -6,15 +6,19 @@
 
   export let pageCount = 1;
   export let pageNum = 1;
+  export let nextPageCallback = R.identity();
+
+  const nextPage = next => _ => {
+    nextPageCallback(
+      R.ifElse(
+        RamdaUtils.inRangeInclusive(1, pageCount),
+        R.always(next),
+        R.always(pageNum)
+      )(next)
+    );
+  };
 
   $: pagesNear = PaginationUtils.nearForCurrent(pageCount, pageNum);
-  const nextPage = next => _ => {
-    pageNum = R.ifElse(
-      RamdaUtils.inRangeInclusive(1, pageCount),
-      R.always(next),
-      R.always(pageNum)
-    )(next);
-  };
 </script>
 
 <style type="text/postcss">

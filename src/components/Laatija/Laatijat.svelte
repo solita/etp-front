@@ -3,7 +3,10 @@
   import { push, location, querystring } from 'svelte-spa-router';
   import * as R from 'ramda';
   import * as qs from 'qs';
+  import * as Maybe from '@Utility/maybe-utils';
 
+  import H1 from '@Component/H/H1';
+  import Select from '@Component/Select/Select';
   import Table from '@Component/Table/Table';
   import Input from '@Component/Input/Input';
   import Button from '@Component/Button/Button';
@@ -17,8 +20,9 @@
 
   import { flashMessageStore } from '@/stores';
 
-  let model = R.pick(['search'], qs.parse($querystring));
   let laatijat = [];
+  let pageCount = 1;
+  let itemsPerPage = 2;
 
   const fields = [
     { id: 'laatija', title: $_('laatija.laatija') },
@@ -149,45 +153,93 @@
 
   const onRowClick = ({ id }) => push(`#/kayttaja/${id}`);
 
-  $: results = findLaatijat(laatijat, model.search);
+  $: R.compose(
+    querystring => push(`${$location}?${querystring}`),
+    qs.stringify,
+    R.pick(['search', 'page'])
+  )(model);
+
+  $: model = R.compose(
+    R.when(
+      R.compose(
+        Number.isInteger,
+        parseInt,
+        R.prop('page')
+      ),
+      params => R.assoc('page', parseInt(R.prop('page', params)), params)
+    ),
+    R.merge({ search: '', page: 1, state: Maybe.None() }),
+    R.pick(['search', 'page'])
+  )(qs.parse($querystring));
+
+  $: results = R.compose(
+    R.tap(laatijat => {
+      pageCount = Math.ceil(R.divide(R.length(laatijat), itemsPerPage));
+    }),
+    findLaatijat(laatijat)
+  )(model.search);
   $: hasReusults = R.complement(R.isEmpty)(results);
 
-  let pageNum = 1;
-  let pageCount = 10;
-  let laatijatPerPage = 1;
+  const nextPageCallback = nextPage => {
+    model = R.assoc('page', nextPage, model);
+    push(`${$location}?${qs.stringify(R.pick(['search', 'page'], model))}`);
+  };
 
-  /*
-  $: R.when(
-    R.complement(R.equals(R.eqProps('search', model, qs.parse($querystring)))),
-    push(`${$location}?${qs.stringify(model)}`)
+  const formatTila = R.compose(
+    Maybe.orSome($_('validation.no-selection')),
+    Maybe.map(tila => $_(`laatijahaku.tilat.` + tila)),
+    R.when(R.complement(Maybe.isMaybe), Maybe.of)
   );
-  */
+
+  $: console.log(model);
 </script>
 
 <style>
 
 </style>
 
-<div>
-  <Input
-    id={'search'}
-    name={'search'}
-    bind:model
-    lens={R.lensProp('search')}
-    required={false}
-    disabled={false}
-    search={true}
-    i18n={$_} />
-</div>
+<div class="w-full mt-3">
+  <H1 text={$_('laatijahaku.title')} />
 
-{#if hasReusults}
-  <div>Tuloksia {R.length(results)}</div>
-  <div class="w-full overflow-x-auto mt-4">
-    <Table
-      {fields}
-      tablecontents={results}
-      {onRowClick}
-      {pageNum}
-      {pageCount} />
+  <div class="flex lg:flex-row flex-col -mx-4 my-4">
+    <div class="lg:w-2/3 w-full px-4 lg:pt-12">
+      <Input
+        id={'search'}
+        name={'search'}
+        bind:model
+        lens={R.lensProp('search')}
+        required={false}
+        disabled={false}
+        search={true}
+        i18n={$_} />
+    </div>
+
+    <div class="lg:w-1/3 w-full px-4 py-4">
+      <Select
+        label={'Tila'}
+        disabled={false}
+        bind:model
+        lens={R.lensProp('state')}
+        format={formatTila}
+        parse={Maybe.Some}
+        noneLabel={'laatijahaku.kaikki'}
+        items={[0, 1]} />
+    </div>
   </div>
-{/if}
+
+  <div class="mt-10">
+    <H1 text={`Tuloksia ${R.length(results)} KPL`} />
+  </div>
+  {#if hasReusults}
+    <div class="w-full overflow-x-auto mt-4">
+      <Table
+        {fields}
+        tablecontents={results}
+        {onRowClick}
+        pageNum={model.page}
+        {pageCount}
+        {nextPageCallback}
+        {itemsPerPage} />
+    </div>
+  {/if}
+</div>

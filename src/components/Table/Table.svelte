@@ -6,9 +6,15 @@
   export let fields = [];
   export let tablecontents = [];
   export let validate = {};
-  export let pageCount = 0;
-  export let pageNum = 0;
+  export let pageCount = 1;
+  export let pageNum = 1;
   export let onRowClick;
+  export let nextPageCallback;
+  export let itemsPerPage = 1;
+  $: pageContent = R.compose(
+    R.take(itemsPerPage),
+    R.drop(R.multiply(R.dec(pageNum), itemsPerPage))
+  )(tablecontents);
 </script>
 
 <style type="text/postcss">
@@ -39,7 +45,7 @@
       </tr>
     </thead>
     <tbody class="etp-table--tbody">
-      {#each tablecontents as row, index}
+      {#each pageContent as row, index}
         <tr
           class="etp-table--tr"
           on:click={_ => R.when(R.complement(R.isNil), R.applyTo(row))(onRowClick)}
@@ -73,7 +79,7 @@
 
   {#if R.gt(pageCount, 1)}
     <div class="pagination">
-      <Pagination {pageCount} {pageNum} />
+      <Pagination {pageCount} {pageNum} {nextPageCallback} />
     </div>
   {/if}
 </div>

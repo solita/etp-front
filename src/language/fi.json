@@ -129,6 +129,15 @@
       }
     }
   },
+  "laatijahaku": {
+    "title": "Laatijahaku",
+    "kaikki": "Kaikki",
+    "tilat": {
+      "0": "Pätevyys voimassa",
+      "1": "Pätevyys vanhentunut",
+      "2": "Laatimiskielto"
+    }
+  },
   "energiatodistus": {
     "title": "Energiatodistus",
     "kaikki": "Kaikki",

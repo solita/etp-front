@@ -20,8 +20,7 @@
 
   import { flashMessageStore } from '@/stores';
 
-  let laatijat = [];
-  let pageCount = 1;
+  let laatijat = Maybe.None();
   let itemsPerPage = 2;
 
   const fields = [
@@ -96,9 +95,8 @@
           R.always($_('errors.load-error'))
         ),
         R.compose(([result, yritykset, patevyydet, toimintaalueet]) => {
-          // Maybe?
-          laatijat = formatLaatija(patevyydet, yritykset, toimintaalueet)(
-            result
+          laatijat = Maybe.Some(
+            formatLaatija(patevyydet, yritykset, toimintaalueet)(result)
           );
         })
       ),
@@ -112,77 +110,80 @@
     getLaatijat();
   });
 
-  const findLaatija = R.curry(search =>
-    R.cond([
-      [
-        R.compose(
-          R.contains(search),
-          R.toLower,
-          R.propOr('', 'laatija')
-        ),
-        R.always(true)
-      ],
-      [
-        R.compose(
-          R.contains(search),
-          R.toLower,
-          R.propOr('', 'puhelin')
-        ),
-        R.always(true)
-      ],
-      [
-        R.compose(
-          R.complement(R.isEmpty),
-          R.filter(
-            R.compose(
-              R.contains(search),
-              R.toLower
-            )
-          ),
-          R.map(R.prop('nimi')),
-          R.propOr([], 'yritys')
-        ),
-        R.always(true)
-      ],
-      [R.T, R.always(false)]
-    ])
-  );
-  const findLaatijat = R.curry((laatijat, search) =>
-    R.filter(findLaatija(R.toLower(search)), laatijat)
-  );
-
   const onRowClick = ({ id }) => push(`#/kayttaja/${id}`);
 
   $: R.compose(
     querystring => push(`${$location}?${querystring}`),
     qs.stringify,
-    R.pick(['search', 'page'])
+    R.evolve({
+      search: Maybe.orSome(''),
+      page: Maybe.orSome(1),
+      state: Maybe.orSome('')
+    })
   )(model);
 
   $: model = R.compose(
-    R.when(
-      R.compose(
-        Number.isInteger,
-        parseInt,
-        R.prop('page')
+    R.merge({ search: Maybe.None(), page: Maybe.Some(1), state: Maybe.None() }),
+    R.evolve({
+      search: Maybe.Some,
+      page: R.compose(
+        R.ifElse(Number.isInteger, Maybe.Some, R.always(Maybe.Some(1))),
+        parseInt
       ),
-      params => R.assoc('page', parseInt(R.prop('page', params)), params)
-    ),
-    R.merge({ search: '', page: 1, state: Maybe.None() }),
-    R.pick(['search', 'page'])
+      state: R.ifElse(R.isEmpty, Maybe.None, Maybe.Some)
+    }),
+    R.pick(['search', 'page', 'state'])
   )(qs.parse($querystring));
 
+  const searchValue = R.compose(
+    Maybe.orSome(''),
+    R.prop('search')
+  );
+
+  const transformation = R.curry(model => ({
+    laatija: R.compose(
+      R.contains(searchValue(model)),
+      R.toLower,
+      R.trim
+    ),
+    puhelin: R.compose(
+      R.contains(searchValue(model)),
+      R.toLower,
+      R.trim
+    ) /*
+    yritys: R.compose(
+      R.complement(R.isEmpty),
+      R.filter(R.compose(R.contains(searchValue(model), R.toLower))),
+      R.map(R.prop('nimi'))
+    )
+    */
+  }));
+
+  const laatijaMatch = R.curry(model =>
+    R.compose(
+      R.complement(R.isEmpty),
+      R.filter(R.equals(true)),
+      R.values,
+      R.evolve(transformation(model))
+    )
+  );
+
   $: results = R.compose(
-    R.tap(laatijat => {
-      pageCount = Math.ceil(R.divide(R.length(laatijat), itemsPerPage));
-    }),
-    findLaatijat(laatijat)
-  )(model.search);
+    Maybe.orSome([]),
+    R.map(R.filter(laatijaMatch(model)))
+  )(laatijat);
   $: hasReusults = R.complement(R.isEmpty)(results);
+  $: pageCount = Math.ceil(R.divide(R.length(results), itemsPerPage));
 
   const nextPageCallback = nextPage => {
-    model = R.assoc('page', nextPage, model);
-    push(`${$location}?${qs.stringify(R.pick(['search', 'page'], model))}`);
+    model = R.assoc('page', Maybe.Some(nextPage), model);
+    push(
+      `${$location}?${R.compose(
+        qs.stringify,
+        R.map(Maybe.orSome('')),
+        R.pick(['search', 'page', 'state'])
+      )(model)}`
+    );
   };
 
   const formatTila = R.compose(
@@ -190,8 +191,6 @@
     Maybe.map(tila => $_(`laatijahaku.tilat.` + tila)),
     R.when(R.complement(Maybe.isMaybe), Maybe.of)
   );
-
-  $: console.log(model);
 </script>
 
 <style>
@@ -208,6 +207,8 @@
         name={'search'}
         bind:model
         lens={R.lensProp('search')}
+        parse={Maybe.Some}
+        format={Maybe.orSome('')}
         required={false}
         disabled={false}
         search={true}
@@ -236,7 +237,7 @@
         {fields}
         tablecontents={results}
         {onRowClick}
-        pageNum={model.page}
+        pageNum={R.compose( Maybe.orSome(1), R.prop('page') )(model)}
         {pageCount}
         {nextPageCallback}
         {itemsPerPage} />

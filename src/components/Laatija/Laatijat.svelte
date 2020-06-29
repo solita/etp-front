@@ -136,10 +136,14 @@
   );
 
   const hasMatchToSearchValue = R.curry(model =>
-    R.compose(
-      R.contains(searchValue(model)),
-      R.toLower,
-      R.trim
+    R.ifElse(
+      R.complement(R.isNil),
+      R.compose(
+        R.contains(searchValue(model)),
+        R.toLower,
+        R.trim
+      ),
+      R.always(false)
     )
   );
 
@@ -151,7 +155,8 @@
       R.filter(hasMatchToSearchValue(model)),
       R.map(R.prop('nimi'))
     ),
-    postinumero: hasMatchToSearchValue(model)
+    postinumero: hasMatchToSearchValue(model),
+    toimintaalue: hasMatchToSearchValue(model)
   }));
 
   const laatijaSearchMatch = R.curry(model =>
@@ -160,7 +165,7 @@
       R.filter(R.equals(true)),
       R.values,
       R.evolve(transformation(model)),
-      R.pick(['laatija', 'puhelin', 'yritys', 'postinumero'])
+      R.pick(['laatija', 'puhelin', 'yritys', 'postinumero', 'toimintaalue'])
     )
   );
 

@@ -55,11 +55,13 @@
     "laatijat": "Laatijat",
     "y-tunnus": "Y-Tunnus",
     "nimi": "Nimi",
+    "vastaanottajan-tarkenne": "Vastaanottajan tarkenne tai C/O",
     "laskutusosoite": "Laskutusosoite",
     "jakeluosoite": "Katuosoite",
     "postinumero": "Postinumero",
     "postitoimipaikka": "Postitoimipaikka",
     "maa": "Maa",
+    "laskutuskieli": "Laskun kieli",
     "verkkolaskuosoite": "verkkolaskuosoite",
     "ovt-tunnus": "OVT-tunnus",
     "messages": {
@@ -95,10 +97,12 @@
     "laatija": "Laatija",
     "lisaa-laatijat": "Lisää laatijat",
     "henkilotunnus": "Henkilötunnus",
+    "vastaanottajan-tarkenne": "Vastaanottajan tarkenne tai C/O",
     "katuosoite": "Katuosoite",
     "postinumero": "Postinumero",
     "postitoimipaikka": "Postitoimipaikka",
     "maa": "Maa",
+    "laskutuskieli": "Laskun kieli",
     "www-osoite": "Toiminnan www-osoite",
     "laatijatiedot": "Laatijatiedot",
     "patevyydenvoimassaolo": "Pätevyyden voimassaoloaika",
@@ -153,7 +157,8 @@
       "nettoala": "Nettoala",
       "nimi": "Rakennuksen nimi",
       "osoite": "Osoite",
-      "laatija": "Laatija"
+      "laatija": "Laatija",
+      "invalid-korvaus": "Käyttötarkoitusluokka ja postinumero eroavat, joten et voi korvata energiatodistusta, Tarkista korvattava energiatodistus."
     },
     "tila": {
       "draft": "Luonnos",

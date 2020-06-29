@@ -71,7 +71,13 @@
     R.compose(
       R.map(laatija => {
         return R.compose(
-          R.pick(R.append('id', R.map(R.prop('id'), fields))),
+          R.pick(
+            R.compose(
+              R.append('id'),
+              R.append('voimassa'),
+              R.map(R.prop('id'))
+            )(fields)
+          ),
           R.assoc(
             'patevyystaso',
             formatLocale(patevyydet, laatija.patevyystaso)
@@ -106,11 +112,102 @@
       R.juxt([laatijaApi.getLaatijat, laatijaApi.getAllYritykset])
     )(fetch);
 
+  const onRowClick = ({ id }) => push(`#/kayttaja/${id}`);
+  const searchValue = R.compose(
+    Maybe.orSome(''),
+    R.prop('search')
+  );
+
+  const nextPageCallback = nextPage => {
+    model = R.assoc('page', Maybe.Some(nextPage), model);
+    push(
+      `${$location}?${R.compose(
+        qs.stringify,
+        R.map(Maybe.orSome('')),
+        R.pick(['search', 'page', 'state'])
+      )(model)}`
+    );
+  };
+
+  const formatTila = R.compose(
+    Maybe.orSome($_('validation.no-selection')),
+    Maybe.map(state => $_(`laatijahaku.tilat.` + state)),
+    R.when(R.complement(Maybe.isMaybe), Maybe.of)
+  );
+
+  const hasMatchToSearchValue = R.curry(model =>
+    R.compose(
+      R.contains(searchValue(model)),
+      R.toLower,
+      R.trim
+    )
+  );
+
+  const transformation = R.curry(model => ({
+    laatija: hasMatchToSearchValue(model),
+    puhelin: hasMatchToSearchValue(model),
+    yritys: R.compose(
+      R.complement(R.isEmpty),
+      R.filter(hasMatchToSearchValue(model)),
+      R.map(R.prop('nimi'))
+    ),
+    postinumero: hasMatchToSearchValue(model)
+  }));
+
+  const laatijaSearchMatch = R.curry(model =>
+    R.compose(
+      R.complement(R.isEmpty),
+      R.filter(R.equals(true)),
+      R.values,
+      R.evolve(transformation(model)),
+      R.pick(['laatija', 'puhelin', 'yritys', 'postinumero'])
+    )
+  );
+
+  const laatijaTilaMatch = R.curry((model, laatija) =>
+    R.cond([
+      [
+        R.equals(0),
+        R.always(
+          R.compose(
+            R.equals(true),
+            R.prop('voimassa')
+          )(laatija)
+        )
+      ],
+      [
+        R.equals(1),
+        R.always(
+          R.compose(
+            R.equals(false),
+            R.prop('voimassa')
+          )(laatija)
+        )
+      ],
+      [R.T, R.always(true)]
+    ])(
+      R.compose(
+        Maybe.orSome(-1),
+        R.map(parseInt),
+        R.prop('state')
+      )(model)
+    )
+  );
+
+  const laatijaMatch = R.curry(model =>
+    R.allPass([laatijaTilaMatch(model), laatijaSearchMatch(model)])
+  );
+
   onMount(_ => {
     getLaatijat();
   });
 
-  const onRowClick = ({ id }) => push(`#/kayttaja/${id}`);
+  $: results = R.compose(
+    Maybe.orSome([]),
+    R.map(R.filter(laatijaMatch(model)))
+  )(laatijat);
+  $: hasReusults = R.complement(R.isEmpty)(results);
+  $: pageCount = Math.ceil(R.divide(R.length(results), itemsPerPage));
 
   $: R.compose(
     querystring => push(`${$location}?${querystring}`),
@@ -134,63 +231,6 @@
     }),
     R.pick(['search', 'page', 'state'])
   )(qs.parse($querystring));
-
-  const searchValue = R.compose(
-    Maybe.orSome(''),
-    R.prop('search')
-  );
-
-  const transformation = R.curry(model => ({
-    laatija: R.compose(
-      R.contains(searchValue(model)),
-      R.toLower,
-      R.trim
-    ),
-    puhelin: R.compose(
-      R.contains(searchValue(model)),
-      R.toLower,
-      R.trim
-    ) /*
-    yritys: R.compose(
-      R.complement(R.isEmpty),
-      R.filter(R.compose(R.contains(searchValue(model), R.toLower))),
-      R.map(R.prop('nimi'))
-    )
-    */
-  }));
-
-  const laatijaMatch = R.curry(model =>
-    R.compose(
-      R.complement(R.isEmpty),
-      R.filter(R.equals(true)),
-      R.values,
-      R.evolve(transformation(model))
-    )
-  );
-
-  $: results = R.compose(
-    Maybe.orSome([]),
-    R.map(R.filter(laatijaMatch(model)))
-  )(laatijat);
-  $: hasReusults = R.complement(R.isEmpty)(results);
-  $: pageCount = Math.ceil(R.divide(R.length(results), itemsPerPage));
-
-  const nextPageCallback = nextPage => {
-    model = R.assoc('page', Maybe.Some(nextPage), model);
-    push(
-      `${$location}?${R.compose(
-        qs.stringify,
-        R.map(Maybe.orSome('')),
-        R.pick(['search', 'page', 'state'])
-      )(model)}`
-    );
-  };
-
-  const formatTila = R.compose(
-    Maybe.orSome($_('validation.no-selection')),
-    Maybe.map(tila => $_(`laatijahaku.tilat.` + tila)),
-    R.when(R.complement(Maybe.isMaybe), Maybe.of)
-  );
 </script>
 
 <style>

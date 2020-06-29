@@ -20,7 +20,7 @@
 
 <style type="text/postcss">
   .tablecontainer {
-    @apply flex items-center  overflow-x-scroll;
+    @apply flex items-center overflow-x-auto;
   }
 
   .pagination {

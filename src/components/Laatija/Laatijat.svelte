@@ -69,8 +69,8 @@
 
   const formatLaatija = R.curry((patevyydet, yritykset, toimintaalueet) =>
     R.compose(
-      R.map(laatija => {
-        return R.compose(
+      R.map(laatija =>
+        R.compose(
           R.pick(
             R.compose(
               R.append('id'),
@@ -88,8 +88,8 @@
           ),
           R.assoc('yritys', formatYritys(yritykset, laatija.yritys)),
           R.assoc('laatija', `${laatija.etunimi} ${laatija.sukunimi}`)
-        )(laatija);
-      })
+        )(laatija)
+      )
     )
   );
 

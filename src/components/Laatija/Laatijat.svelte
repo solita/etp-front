@@ -32,7 +32,7 @@
     },
     {
       id: 'toteamispaivamaara',
-      title: $_('laatija.patevyydenvoimassaolo'),
+      title: $_('laatijahaku.voimassaolo'),
       format: LaatijaUtils.formatVoimassaoloaika
     },
     { id: 'toimintaalue', title: $_('laatija.paatoimintaalue') },
@@ -49,11 +49,11 @@
     }
   ];
 
-  const formatLocale = R.curry((patevyydet, patevyystaso) =>
+  const formatLocale = R.curry((localizations, id) =>
     R.compose(
       locales.label($locale),
-      R.find(R.propEq('id', patevyystaso))
-    )(patevyydet)
+      R.find(R.propEq('id', id))
+    )(localizations)
   );
 
   const findYritysById = R.curry((yritykset, id) =>
@@ -113,10 +113,6 @@
     )(fetch);
 
   const onRowClick = ({ id }) => push(`#/kayttaja/${id}`);
-  const searchValue = R.compose(
-    Maybe.orSome(''),
-    R.prop('search')
-  );
 
   const nextPageCallback = nextPage => {
     model = R.assoc('page', Maybe.Some(nextPage), model);
@@ -135,7 +131,12 @@
     R.when(R.complement(Maybe.isMaybe), Maybe.of)
   );
 
-  const hasMatchToSearchValue = R.curry(model =>
+  const searchValue = R.compose(
+    Maybe.orSome(''),
+    R.prop('search')
+  );
+
+  const isMatchToSearchValue = R.curry(model =>
     R.ifElse(
       R.complement(R.isNil),
       R.compose(
@@ -147,16 +148,16 @@
     )
   );
 
-  const transformation = R.curry(model => ({
-    laatija: hasMatchToSearchValue(model),
-    puhelin: hasMatchToSearchValue(model),
+  const matchTransformation = R.curry(model => ({
+    laatija: isMatchToSearchValue(model),
+    puhelin: isMatchToSearchValue(model),
     yritys: R.compose(
       R.complement(R.isEmpty),
-      R.filter(hasMatchToSearchValue(model)),
+      R.filter(isMatchToSearchValue(model)),
       R.map(R.prop('nimi'))
     ),
-    postinumero: hasMatchToSearchValue(model),
-    toimintaalue: hasMatchToSearchValue(model)
+    postinumero: isMatchToSearchValue(model),
+    toimintaalue: isMatchToSearchValue(model)
   }));
 
   const laatijaSearchMatch = R.curry(model =>
@@ -164,7 +165,7 @@
       R.complement(R.isEmpty),
       R.filter(R.equals(true)),
       R.values,
-      R.evolve(transformation(model)),
+      R.evolve(matchTransformation(model)),
       R.pick(['laatija', 'puhelin', 'yritys', 'postinumero', 'toimintaalue'])
     )
   );
@@ -211,7 +212,7 @@
     Maybe.orSome([]),
     R.map(R.filter(laatijaMatch(model)))
   )(laatijat);
-  $: hasReusults = R.complement(R.isEmpty)(results);
+  $: isReusults = R.complement(R.isEmpty)(results);
   $: pageCount = Math.ceil(R.divide(R.length(results), itemsPerPage));
 
   $: R.compose(
@@ -262,7 +263,7 @@
 
     <div class="lg:w-1/3 w-full px-4 py-4">
       <Select
-        label={'Tila'}
+        label={$_('laatijahaku.tila')}
         disabled={false}
         bind:model
         lens={R.lensProp('state')}
@@ -279,7 +280,7 @@
         values: { count: R.length(results) }
       })} />
   </div>
-  {#if hasReusults}
+  {#if isReusults}
     <div class="w-full overflow-x-auto mt-4">
       <Table
         {fields}

@@ -133,6 +133,8 @@
     "title": "Laatijahaku",
     "results": "Tuloksia {count} KPL",
     "kaikki": "Kaikki",
+    "voimassaolo": "Voimassaolo",
+    "tila": "Tila",
     "tilat": {
       "0": "Pätevyys voimassa",
       "1": "Pätevyys vanhentunut",

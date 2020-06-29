@@ -25,7 +25,7 @@
 
   const fields = [
     { id: 'laatija', title: $_('laatija.laatija') },
-    { id: 'puhelin', title: $_('kayttaja.puhelinnumero') },
+    { id: 'henkilotunnus', title: $_('laatija.henkilotunnus') },
     {
       id: 'patevyystaso',
       title: $_('laatija.patevyystaso')
@@ -133,6 +133,12 @@
 
   const searchValue = R.compose(
     Maybe.orSome(''),
+    R.map(
+      R.compose(
+        R.toLower,
+        R.trim
+      )
+    ),
     R.prop('search')
   );
 
@@ -150,7 +156,7 @@
 
   const matchTransformation = R.curry(model => ({
     laatija: isMatchToSearchValue(model),
-    puhelin: isMatchToSearchValue(model),
+    henkilotunnus: isMatchToSearchValue(model),
     yritys: R.compose(
       R.complement(R.isEmpty),
       R.filter(isMatchToSearchValue(model)),
@@ -166,7 +172,13 @@
       R.filter(R.equals(true)),
       R.values,
       R.evolve(matchTransformation(model)),
-      R.pick(['laatija', 'puhelin', 'yritys', 'postinumero', 'toimintaalue'])
+      R.pick([
+        'laatija',
+        'henkilotunnus',
+        'yritys',
+        'postinumero',
+        'toimintaalue'
+      ])
     )
   );
 

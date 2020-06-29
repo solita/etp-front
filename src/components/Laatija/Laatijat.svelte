@@ -21,7 +21,7 @@
   import { flashMessageStore } from '@/stores';
 
   let laatijat = Maybe.None();
-  let itemsPerPage = 2;
+  let itemsPerPage = 20;
 
   const fields = [
     { id: 'laatija', title: $_('laatija.laatija') },
@@ -274,7 +274,10 @@
   </div>
 
   <div class="mt-10">
-    <H1 text={`Tuloksia ${R.length(results)} KPL`} />
+    <H1
+      text={$_('laatijahaku.results', {
+        values: { count: R.length(results) }
+      })} />
   </div>
   {#if hasReusults}
     <div class="w-full overflow-x-auto mt-4">

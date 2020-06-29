@@ -83,6 +83,11 @@
 </div>
 {#if R.gt(pageCount, 1)}
   <div class="pagination">
-    <Pagination {pageCount} {pageNum} {nextPageCallback} />
+    <Pagination
+      {pageCount}
+      {pageNum}
+      {nextPageCallback}
+      {itemsPerPage}
+      itemsCount={R.length(tablecontents)} />
   </div>
 {/if}

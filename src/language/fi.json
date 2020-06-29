@@ -131,6 +131,7 @@
   },
   "laatijahaku": {
     "title": "Laatijahaku",
+    "results": "Tuloksia {count} KPL",
     "kaikki": "Kaikki",
     "tilat": {
       "0": "Pätevyys voimassa",
@@ -753,5 +754,8 @@
   "country-not-found": "Virheellinen maa",
   "table": {
     "actions": "Toiminnot"
+  },
+  "pagination": {
+    "results": "Tuloksia {from}...{to} / {total}"
   }
 }

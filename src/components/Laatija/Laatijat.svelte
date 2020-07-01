@@ -93,24 +93,20 @@
     )
   );
 
-  const getLaatijat = () =>
-    R.compose(
-      Future.fork(
-        R.compose(
-          flashMessageStore.add('Laatija', 'error'),
-          R.always($_('errors.load-error'))
-        ),
-        R.compose(([result, yritykset, patevyydet, toimintaalueet]) => {
-          laatijat = Maybe.Some(
-            formatLaatija(patevyydet, yritykset, toimintaalueet)(result)
-          );
-        })
-      ),
-      Future.parallel(5),
-      R.append(geoApi.toimintaalueet),
-      R.append(laatijaApi.patevyydet),
-      R.juxt([laatijaApi.getLaatijat, laatijaApi.getAllYritykset])
-    )(fetch);
+  const getLaatijat = R.compose(
+    Future.fork(
+      _ => flashMessageStore.add('Laatija', 'error', $_('errors.load-error')),
+      R.compose(([result, yritykset, patevyydet, toimintaalueet]) => {
+        laatijat = Maybe.Some(
+          formatLaatija(patevyydet, yritykset, toimintaalueet)(result)
+        );
+      })
+    ),
+    Future.parallel(5),
+    R.append(geoApi.toimintaalueet),
+    R.append(laatijaApi.patevyydet),
+    R.juxt([laatijaApi.getLaatijat, laatijaApi.getAllYritykset])
+  );
 
   const onRowClick = ({ id }) => push(`#/kayttaja/${id}`);
 
@@ -142,16 +138,18 @@
     R.prop('search')
   );
 
-  const isMatchToSearchValue = R.curry(model =>
-    R.ifElse(
-      R.complement(R.isNil),
-      R.compose(
-        R.contains(searchValue(model)),
-        R.toLower,
-        R.trim
+  const isMatchToSearchValue = R.curry((model, value) =>
+    R.compose(
+      Maybe.orSome(false),
+      R.map(
+        R.compose(
+          R.contains(searchValue(model)),
+          R.toLower,
+          R.trim
+        )
       ),
-      R.always(false)
-    )
+      Maybe.fromNull
+    )(value)
   );
 
   const matchTransformation = R.curry(model => ({
@@ -166,7 +164,7 @@
     toimintaalue: isMatchToSearchValue(model)
   }));
 
-  const laatijaSearchMatch = R.curry(model =>
+  const laatijaSearchMatch = R.curry((model, laatija) =>
     R.compose(
       R.complement(R.isEmpty),
       R.filter(R.equals(true)),
@@ -179,29 +177,13 @@
         'postinumero',
         'toimintaalue'
       ])
-    )
+    )(laatija)
   );
 
   const laatijaTilaMatch = R.curry((model, laatija) =>
     R.cond([
-      [
-        R.equals(0),
-        R.always(
-          R.compose(
-            R.equals(true),
-            R.prop('voimassa')
-          )(laatija)
-        )
-      ],
-      [
-        R.equals(1),
-        R.always(
-          R.compose(
-            R.equals(false),
-            R.prop('voimassa')
-          )(laatija)
-        )
-      ],
+      [R.equals(0), R.always(R.propEq('voimassa', true, laatija))],
+      [R.equals(1), R.always(R.propEq('voimassa', false, laatija))],
       [R.T, R.always(true)]
     ])(
       R.compose(
@@ -212,12 +194,12 @@
     )
   );
 
-  const laatijaMatch = R.curry(model =>
-    R.allPass([laatijaTilaMatch(model), laatijaSearchMatch(model)])
+  const laatijaMatch = R.curry((model, laatija) =>
+    R.allPass([laatijaTilaMatch(model), laatijaSearchMatch(model)])(laatija)
   );
 
   onMount(_ => {
-    getLaatijat();
+    getLaatijat(fetch);
   });
 
   $: results = R.compose(

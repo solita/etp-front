@@ -47,11 +47,9 @@ export const getYritykset = R.curry((fetch, id) =>
   )(id)
 );
 
-export const getLaatijat = R.curry(fetch =>
-  R.compose(
-    Fetch.responseAsJson,
-    Future.encaseP(Fetch.getFetch(fetch))
-  )(url.laatijat)
+export const getLaatijat = R.compose(
+  Fetch.responseAsJson,
+  Future.encaseP(Fetch.getFetch(R.__, url.laatijat))
 );
 
 const toggleLaatijaYritys = R.curry((method, fetch, laatijaId, yritysId) =>

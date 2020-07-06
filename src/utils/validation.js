@@ -134,6 +134,13 @@ export const isPaivamaara = R.compose(
   )
 );
 
+export const isRakennustunnus = R.test(/^1\d{8}[a-zA-Z0-9]{1}$/);
+
+export const rakennustunnusValidator = {
+  predicate: isRakennustunnus,
+  label: R.applyTo('validation.invalid-rakennustunnus')
+};
+
 export const validate = (validators, value) =>
   Maybe.fromUndefined(
     R.find(R.compose(R.not, R.applyTo(value), R.prop('predicate')), validators)

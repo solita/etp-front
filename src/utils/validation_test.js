@@ -156,10 +156,9 @@ describe('Validation:', () => {
 
   describe('Rakennustunnus validation', () => {
     it('valid rakennustunnus', () => {
-      assert.equal(validation.isRakennustunnus('1000000009'), true);
-      assert.equal(validation.isRakennustunnus('100000000A'), true);
-      assert.equal(validation.isRakennustunnus('100000000a'), true);
-      assert.equal(validation.isRakennustunnus('100012345A'), true);
+      assert.equal(validation.isRakennustunnus('1035150826'), true);
+      assert.equal(validation.isRakennustunnus('103515074X'), true);
+      assert.equal(validation.isRakennustunnus('103515074x'), true);
     });
 
     it('invalid rakennustunnus', () => {

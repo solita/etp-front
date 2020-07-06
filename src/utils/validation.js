@@ -134,7 +134,14 @@ export const isPaivamaara = R.compose(
   )
 );
 
-export const isRakennustunnus = R.test(/^1\d{8}[a-zA-Z0-9]{1}$/);
+export const isRakennustunnus = R.allPass([
+  R.compose(R.equals(10), R.length),
+  R.compose(R.test(/^1\d{8}[A-Z0-9]{1}$/), R.toUpper),
+  R.converge(R.equals, [
+    R.compose(henkilotunnusChecksum, R.slice(0, 9)),
+    R.compose(R.takeLast(1), R.toLower)
+  ])
+]);
 
 export const rakennustunnusValidator = {
   predicate: isRakennustunnus,

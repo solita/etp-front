@@ -162,7 +162,7 @@ describe('Validation:', () => {
     });
 
     it('invalid rakennustunnus', () => {
-      assert.equal(validation.isRakennustunnus('2000000009'), false);
+      assert.equal(validation.isRakennustunnus('100012345A'), false);
       assert.equal(validation.isRakennustunnus(null), false);
     });
   });

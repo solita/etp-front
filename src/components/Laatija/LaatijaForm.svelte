@@ -1,6 +1,8 @@
 <script>
   import * as R from 'ramda';
   import * as dfns from 'date-fns';
+  import * as qs from 'qs';
+  import { push, location, querystring } from 'svelte-spa-router';
 
   import { locale, _ } from '@Language/i18n';
   import * as LocaleUtils from '@Language/locale-utils';
@@ -33,6 +35,21 @@
   export let laatija;
   export let luokittelut;
   export let submit;
+
+  const isPaakayttaja = R.compose(
+    KayttajaUtils.kayttajaHasAccessToResource([KayttajaUtils.paakayttajaRole])
+  );
+  const isOwnSettings = R.eqProps('id', laatija);
+
+  $: disabled = R.compose(
+    Maybe.getOrElse(true),
+    R.map(
+      R.compose(
+        R.not,
+        R.anyPass([isPaakayttaja, isOwnSettings])
+      )
+    )
+  )($currentUserStore);
 
   const originalLaatija = R.clone(laatija);
 
@@ -132,6 +149,7 @@
           lens={R.lensProp('etunimi')}
           parse={formParsers.etunimi}
           validators={formSchema.etunimi}
+          {disabled}
           i18n={$_} />
       </div>
       <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
@@ -144,6 +162,7 @@
           lens={R.lensProp('sukunimi')}
           parse={formParsers.sukunimi}
           validators={formSchema.sukunimi}
+          {disabled}
           i18n={$_} />
       </div>
       <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
@@ -184,6 +203,7 @@
           lens={R.lensProp('puhelin')}
           parse={formParsers.puhelin}
           validators={formSchema.puhelin}
+          {disabled}
           i18n={$_} />
       </div>
     </div>
@@ -199,6 +219,7 @@
           format={Maybe.orSome('')}
           parse={formParsers['vastaanottajan-tarkenne']}
           validators={formSchema['vastaanottajan-tarkenne']}
+          {disabled}
           i18n={$_} />
       </div>
     </div>
@@ -213,6 +234,7 @@
           lens={R.lensProp('jakeluosoite')}
           parse={formParsers.jakeluosoite}
           validators={formSchema.jakeluosoite}
+          {disabled}
           i18n={$_} />
       </div>
     </div>
@@ -227,6 +249,7 @@
           lens={R.lensProp('postinumero')}
           parse={formParsers.postinumero}
           validators={formSchema.postinumero}
+          {disabled}
           i18n={$_} />
       </div>
       <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
@@ -239,6 +262,7 @@
           lens={R.lensProp('postitoimipaikka')}
           parse={formParsers.postitoimipaikka}
           validators={formSchema.postitoimipaikka}
+          {disabled}
           i18n={$_} />
       </div>
       <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
@@ -254,6 +278,7 @@
             parse={parseCountry}
             search={true}
             handleSubmit={false}
+            {disabled}
             i18n={$_} />
         </Autocomplete>
       </div>
@@ -268,6 +293,7 @@
           bind:model={laatija}
           lens={R.lensProp('laskutuskieli')}
           allowNone={false}
+          {disabled}
           items={laskutuskieletIds} />
       </div>
     </div>
@@ -282,7 +308,7 @@
           lens={R.lensProp('laatimiskielto')}
           label={$_('laatija.todistustenlaatimiskielto')}
           disabled={R.compose( Maybe.getOrElse(true), R.map(R.compose( R.not, KayttajaUtils.kayttajaHasAccessToResource(
-                  [2]
+                  [KayttajaUtils.paakayttajaRole]
                 ) )) )($currentUserStore)} />
       </div>
     </div>
@@ -310,7 +336,7 @@
           bind:model={laatija}
           lens={R.lensProp('patevyystaso')}
           disabled={R.compose( Maybe.getOrElse(true), R.map(R.compose( R.not, KayttajaUtils.kayttajaHasAccessToResource(
-                  [2]
+                  [KayttajaUtils.paakayttajaRole]
                 ) )) )($currentUserStore)}
           items={patevyydetIds} />
       </div>
@@ -323,6 +349,7 @@
           parse={parseToimintaAlue}
           bind:model={laatija}
           lens={R.lensProp('toimintaalue')}
+          {disabled}
           items={toimintaAlueetIds} />
       </div>
     </div>
@@ -333,6 +360,7 @@
           toimintaalueet={toimintaAlueetIds}
           bind:model={laatija}
           lens={R.lensProp('muuttoimintaalueet')}
+          {disabled}
           format={formatToimintaAlue} />
       </div>
     </div>
@@ -348,6 +376,7 @@
           format={Maybe.orSome('')}
           parse={formParsers.wwwosoite}
           validators={formSchema.wwwosoite}
+          {disabled}
           i18n={$_} />
       </div>
     </div>
@@ -360,25 +389,28 @@
         <Checkbox
           bind:model={laatija}
           lens={R.lensProp('julkinenpuhelin')}
+          {disabled}
           label={$_('kayttaja.puhelinnumero')} />
       </div>
       <div class="lg:w-1/3 lg:py-0 w-full px-4 my-2">
         <Checkbox
           bind:model={laatija}
           lens={R.lensProp('julkinenemail')}
+          {disabled}
           label={$_('kayttaja.sahkoposti')} />
       </div>
       <div class="lg:w-1/3 lg:py-0 w-full px-4 my-2">
         <Checkbox
           bind:model={laatija}
           lens={R.lensProp('julkinenosoite')}
+          {disabled}
           label={$_('laatija.katuosoite')} />
       </div>
     </div>
   </div>
   <div class="flex -mx-4 mt-20">
     <div class="px-4">
-      <Button type={'submit'} text={$_('tallenna')} />
+      <Button type={'submit'} text={$_('tallenna')} {disabled} />
     </div>
     <div class="px-4">
       <Button

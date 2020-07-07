@@ -24,6 +24,7 @@
   import Textarea from './Textarea';
 
   import EnergiatodistuksenKorvaus from './energiatodistuksen-korvaus';
+  import EnergiatodistuksenKorvaava from './energiatodistuksen-korvaava';
   import RakennuksenPerustiedot from './RakennuksenPerustiedot';
   import ToimenpideEhdotukset from './ToimenpideEhdotukset';
 
@@ -76,6 +77,13 @@
       lens={R.lensProp('korvattu-energiatodistus-id')}
       initialKorvattavaId={energiatodistus['korvattu-energiatodistus-id']} />
 
+    <HR />
+  {/if}
+
+  {#if Maybe.isSome(R.prop('korvaava-energiatodistus-id', energiatodistus))}
+    <H2 text={$_('energiatodistus.korvaava.header')} />
+    <EnergiatodistuksenKorvaava
+      korvaavaEnergiatodistusId={energiatodistus['korvaava-energiatodistus-id']} />
     <HR />
   {/if}
 

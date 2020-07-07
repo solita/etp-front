@@ -1,8 +1,6 @@
 <script>
   import * as R from 'ramda';
   import * as dfns from 'date-fns';
-  import * as qs from 'qs';
-  import { push, location, querystring } from 'svelte-spa-router';
 
   import { locale, _ } from '@Language/i18n';
   import * as LocaleUtils from '@Language/locale-utils';

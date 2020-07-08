@@ -66,26 +66,29 @@
     R.filter(R.equals(2)),
     R.view(R.lensPath(['perustiedot', 'laatimisvaihe']))
   )(energiatodistus);
+
+  $: hasEnergiatodistusKorvaava = R.compose(
+    R.ifElse(R.isNil, R.always(false), Maybe.isSome),
+    R.prop('korvaava-energiatodistus-id')
+  )(energiatodistus);
 </script>
 
 <div class="w-full mt-3">
   <H1 text={title} />
-  {#if !disabled}
+
+  {#if hasEnergiatodistusKorvaava}
+    <H2 text={$_('energiatodistus.korvaava.header')} />
+    <EnergiatodistuksenKorvaava
+      korvaavaEnergiatodistusId={energiatodistus['korvaava-energiatodistus-id']} />
+  {:else}
     <H2 text={$_('energiatodistus.korvaavuus.header')} />
     <EnergiatodistuksenKorvaus
       bind:model={energiatodistus}
       lens={R.lensProp('korvattu-energiatodistus-id')}
-      initialKorvattavaId={energiatodistus['korvattu-energiatodistus-id']} />
-
-    <HR />
+      initialKorvattavaId={energiatodistus['korvattu-energiatodistus-id']}
+      {disabled} />
   {/if}
-
-  {#if R.complement(R.isNil)(energiatodistus['korvaava-energiatodistus-id'])}
-    <H2 text={$_('energiatodistus.korvaava.header')} />
-    <EnergiatodistuksenKorvaava
-      korvaavaEnergiatodistusId={energiatodistus['korvaava-energiatodistus-id']} />
-    <HR />
-  {/if}
+  <HR />
 
   <H2 text={$_('energiatodistus.perustiedot.header')} />
 

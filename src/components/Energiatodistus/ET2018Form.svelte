@@ -80,7 +80,7 @@
     <HR />
   {/if}
 
-  {#if Maybe.isSome(R.prop('korvaava-energiatodistus-id', energiatodistus))}
+  {#if R.complement(R.isNil)(energiatodistus['korvaava-energiatodistus-id'])}
     <H2 text={$_('energiatodistus.korvaava.header')} />
     <EnergiatodistuksenKorvaava
       korvaavaEnergiatodistusId={energiatodistus['korvaava-energiatodistus-id']} />

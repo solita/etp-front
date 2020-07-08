@@ -44,10 +44,6 @@
           EtApi.getEnergiatodistusById(fetch, 'all'),
           R.tap(_ => {
             overlay = true;
-            korvaavaEnergiatodistus = R.compose(
-              R.map(R.assoc('laatija-fullname', Maybe.None())),
-              Maybe.Some
-            )(empty.energiatodistus2018());
           })
         )
       ),

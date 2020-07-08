@@ -64,7 +64,6 @@ const emptyVapaa = _ => ({
 });
 
 export const energiatodistus2018 = _ => ({
-  'korvattu-energiatodistus-id': Maybe.None(),
   perustiedot: {
     nimi: Maybe.None(),
     rakennustunnus: Maybe.None(),
@@ -218,7 +217,8 @@ export const energiatodistus2018 = _ => ({
     'lisatietoja-sv': Maybe.None()
   },
   'lisamerkintoja-fi': Maybe.None(),
-  'lisamerkintoja-sv': Maybe.None()
+  'lisamerkintoja-sv': Maybe.None(),
+  'korvattu-energiatodistus-id': Maybe.None()
 });
 
 const emptyMuuEnergiamuoto = _ => ({

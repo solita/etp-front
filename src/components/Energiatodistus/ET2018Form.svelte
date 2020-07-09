@@ -77,9 +77,7 @@
     R.prop('korvattu-energiatodistus-id')
   )(energiatodistus);
 
-  $: showEnergiatodistusKorvaavuus = R.not(
-    R.and(R.not(isEnergiatodistusKorvaava), disabled)
-  );
+  $: showEnergiatodistusKorvaavuus = !(!isEnergiatodistusKorvaava && disabled);
 </script>
 
 <div class="w-full mt-3">

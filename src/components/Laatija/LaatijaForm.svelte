@@ -39,15 +39,10 @@
   );
   const isOwnSettings = R.eqProps('id', laatija);
 
-  $: disabled = R.compose(
-    Maybe.getOrElse(true),
-    R.map(
-      R.compose(
-        R.not,
-        R.anyPass([isPaakayttaja, isOwnSettings])
-      )
-    )
-  )($currentUserStore);
+  $: disabled = !Maybe.exists(
+    R.anyPass([isPaakayttaja, isOwnSettings]),
+    $currentUserStore
+  );
 
   const originalLaatija = R.clone(laatija);
 

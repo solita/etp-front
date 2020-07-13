@@ -149,7 +149,7 @@ export const rakennustunnusValidator = {
 };
 
 export const isOVTTunnus = R.allPass([
-  R.test(/^0037\d{8,12}$/),
+  R.test(/^0037\d{8,13}$/),
   R.compose(
     isValidYtunnus,
     R.join(''),

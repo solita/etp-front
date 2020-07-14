@@ -139,6 +139,7 @@
   "laatijahaku": {
     "title": "Laatijahaku",
     "kunta": "Kunta",
+    "energiatodistukset": "ET:t",
     "results": "Tuloksia {count} KPL",
     "kaikki": "Kaikki",
     "voimassaolo": "Voimassaolo",

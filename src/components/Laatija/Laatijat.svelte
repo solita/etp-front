@@ -5,6 +5,8 @@
   import * as qs from 'qs';
   import * as Maybe from '@Utility/maybe-utils';
 
+  import SimpleInput from '@Component/Input/SimpleInput';
+  import PillInputWrapper from '@Component/Input/PillInputWrapper';
   import H1 from '@Component/H/H1';
   import Select from '@Component/Select/Select';
   import Table from '@Component/Table/Table';
@@ -46,6 +48,16 @@
         type: 'link',
         href: `#/yritys/${id}`,
         text: `${nimi}`
+      })
+    },
+    {
+      id: 'energiatodistus',
+      type: 'action-with-template',
+      title: $_('laatijahaku.energiatodistukset'),
+      actionTemplate: ({ laatija }) => ({
+        type: 'link',
+        href: `#/energiatodistus/all`,
+        icon: 'view_list'
       })
     }
   ];
@@ -92,7 +104,8 @@
             formatLocale(toimintaalueet, laatija.toimintaalue)
           ),
           R.assoc('yritys', formatYritys(yritykset, laatija.yritys)),
-          R.assoc('laatija', `${laatija.etunimi} ${laatija.sukunimi}`)
+          R.assoc('laatija', `${laatija.etunimi} ${laatija.sukunimi}`),
+          R.assoc('energiatodistus', [{ laatija: laatija.id }])
         )(laatija)
       )
     )
@@ -254,18 +267,13 @@
   <H1 text={$_('laatijahaku.title')} />
 
   <div class="flex lg:flex-row flex-col -mx-4 my-4">
-    <div class="lg:w-2/3 w-full px-4 lg:pt-12">
-      <Input
-        id={'search'}
-        name={'search'}
-        bind:model
-        lens={R.lensProp('search')}
-        parse={Maybe.Some}
-        format={Maybe.orSome('')}
-        required={false}
-        disabled={false}
+    <div class="lg:w-2/3 w-full px-4 lg:pt-10">
+      <SimpleInput
+        label={' '}
+        wrapper={PillInputWrapper}
         search={true}
-        i18n={$_} />
+        on:input={evt => (model = R.assoc('search', Maybe.Some(evt.target.value), model))}
+        viewValue={R.compose( Maybe.orSome(''), R.prop('search') )(model)} />
     </div>
 
     <div class="lg:w-1/3 w-full px-4 py-4">

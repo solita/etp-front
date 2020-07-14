@@ -25,7 +25,7 @@
 
   const fields = [
     { id: 'laatija', title: $_('laatija.laatija') },
-    { id: 'henkilotunnus', title: $_('laatija.henkilotunnus') },
+    { id: 'puhelin', title: $_('kayttaja.puhelinnumero') },
     {
       id: 'patevyystaso',
       title: $_('laatija.patevyystaso')
@@ -37,6 +37,7 @@
     },
     { id: 'toimintaalue', title: $_('laatija.paatoimintaalue') },
     { id: 'postinumero', title: $_('laatija.postinumero') },
+    { id: 'postitoimipaikka', title: $_('laatijahaku.kunta') },
     {
       id: 'yritys',
       type: 'action-with-template',
@@ -75,6 +76,10 @@
             R.compose(
               R.append('id'),
               R.append('voimassa'),
+              R.append('laatimiskielto'),
+              R.append('ensitallennus'),
+              R.append('email'),
+              R.append('henkilotunnus'),
               R.map(R.prop('id'))
             )(fields)
           ),
@@ -155,13 +160,16 @@
   const matchTransformation = R.curry(model => ({
     laatija: isMatchToSearchValue(model),
     henkilotunnus: isMatchToSearchValue(model),
+    email: isMatchToSearchValue(model),
     yritys: R.compose(
       R.complement(R.isEmpty),
       R.filter(isMatchToSearchValue(model)),
       R.map(R.prop('nimi'))
     ),
     postinumero: isMatchToSearchValue(model),
-    toimintaalue: isMatchToSearchValue(model)
+    postitoimipaikka: isMatchToSearchValue(model),
+    toimintaalue: isMatchToSearchValue(model),
+    puhelin: isMatchToSearchValue(model)
   }));
 
   const laatijaSearchMatch = R.curry((model, laatija) =>
@@ -173,9 +181,12 @@
       R.pick([
         'laatija',
         'henkilotunnus',
+        'email',
         'yritys',
         'postinumero',
-        'toimintaalue'
+        'postitoimipaikka',
+        'toimintaalue',
+        'puhelin'
       ])
     )(laatija)
   );
@@ -183,7 +194,9 @@
   const laatijaTilaMatch = R.curry((model, laatija) =>
     R.cond([
       [R.equals(0), R.always(R.propEq('voimassa', true, laatija))],
-      [R.equals(1), R.always(R.propEq('voimassa', false, laatija))],
+      [R.equals(1), R.always(R.propEq('ensitallennus', false, laatija))],
+      [R.equals(2), R.always(R.propEq('laatimiskielto', true, laatija))],
+      [R.equals(3), R.always(R.propEq('voimassa', false, laatija))],
       [R.T, R.always(true)]
     ])(
       R.compose(
@@ -264,7 +277,7 @@
         format={formatTila}
         parse={Maybe.Some}
         noneLabel={'laatijahaku.kaikki'}
-        items={[0, 1]} />
+        items={[0, 1, 2, 3]} />
     </div>
   </div>
 

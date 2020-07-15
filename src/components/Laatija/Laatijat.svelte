@@ -101,12 +101,14 @@
         R.compose(
           R.pick(
             R.compose(
-              R.append('id'),
-              R.append('voimassa'),
-              R.append('laatimiskielto'),
-              R.append('ensitallennus'),
-              R.append('email'),
-              R.append('henkilotunnus'),
+              R.concat(R.__, [
+                'henkilotunnus',
+                'email',
+                'ensitallennus',
+                'laatimiskielto',
+                'voimassa',
+                'id'
+              ]),
               R.map(R.prop('id'))
             )(fields)
           ),

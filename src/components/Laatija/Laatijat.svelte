@@ -17,6 +17,8 @@
   import { locale, _ } from '@Language/i18n';
   import * as locales from '@Language/locale-utils';
   import * as LaatijaUtils from './laatija-utils';
+  import * as KayttajaUtils from '@Component/Kayttaja/kayttaja-utils';
+  import { currentUserStore } from '@/stores';
 
   import * as Future from '@Utility/future-utils';
 
@@ -25,7 +27,19 @@
   let laatijat = Maybe.None();
   let itemsPerPage = 20;
 
-  const fields = [
+  const hasCurrentUserAccessToField = R.ifElse(
+    R.has('roles'),
+    R.compose(
+      KayttajaUtils.kayttajaHasAccessToResource(
+        R.__,
+        Maybe.get($currentUserStore)
+      ),
+      R.prop('roles')
+    ),
+    R.always(true)
+  );
+
+  const fields = R.filter(hasCurrentUserAccessToField, [
     { id: 'laatija', title: $_('laatija.laatija') },
     { id: 'puhelin', title: $_('kayttaja.puhelinnumero') },
     {
@@ -58,9 +72,10 @@
         type: 'link',
         href: `#/energiatodistus/all`,
         icon: 'view_list'
-      })
+      }),
+      roles: [KayttajaUtils.paakayttajaRole]
     }
-  ];
+  ]);
 
   const formatLocale = R.curry((localizations, id) =>
     R.compose(

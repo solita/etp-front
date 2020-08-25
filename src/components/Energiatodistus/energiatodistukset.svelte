@@ -3,9 +3,15 @@
   import * as Future from '@Utility/future-utils';
   import * as Maybe from '@Utility/maybe-utils';
   import * as api from './energiatodistus-api';
+  import * as et from './energiatodistus-utils';
+  import * as dfns from 'date-fns';
+  import * as KayttajaUtils from '@Component/Kayttaja/kayttaja-utils';
+
+  import { querystring } from 'svelte-spa-router';
+  import qs from 'qs';
 
   import { _ } from '@Language/i18n';
-  import { flashMessageStore, breadcrumbStore } from '@/stores';
+  import { flashMessageStore, currentUserStore } from '@/stores';
   import { push } from '@Component/Router/router';
 
   import H1 from '@Component/H/H1';
@@ -14,17 +20,18 @@
   import Link from '@Component/Link/Link';
   import Select from '@Component/Select/Select';
   import Confirm from '@Component/Confirm/Confirm';
+  import EnergiatodistusHaku from '@Component/energiatodistus-haku/energiatodistus-haku';
+
+  import * as EtHakuSchema from '@Component/energiatodistus-haku/schema';
 
   let overlay = true;
   let failure = false;
   let energiatodistukset = [];
 
+  let cancel = () => {};
+
   const toggleOverlay = value => () => (overlay = value);
   const orEmpty = Maybe.orSome('');
-
-  let query = {
-    tila: Maybe.None()
-  };
 
   const formatTila = R.compose(
     Maybe.orSome($_('validation.no-selection')),
@@ -68,23 +75,55 @@
     );
   };
 
-  $: R.compose(
-    Future.fork(
-      R.compose(
-        R.tap(toggleOverlay(false)),
-        R.tap(flashMessageStore.add('Energiatodistus', 'error')),
-        R.always($_('energiatodistus.messages.load-error'))
+  const runQuery = query =>
+    (cancel = R.compose(
+      Future.fork(
+        R.compose(
+          R.tap(toggleOverlay(false)),
+          R.tap(flashMessageStore.add('Energiatodistus', 'error')),
+          R.always($_('energiatodistus.messages.load-error'))
+        ),
+        R.compose(
+          response => {
+            energiatodistukset = response[0];
+          },
+          R.tap(toggleOverlay(false))
+        )
       ),
-      R.compose(
-        response => {
-          energiatodistukset = response[0];
-        },
-        R.tap(toggleOverlay(false))
+      Future.parallel(5),
+      R.tap(toggleOverlay(true)),
+      R.tap(cancel)
+    )([
+      api.getEnergiatodistukset(
+        R.compose(
+          R.pickBy(Maybe.isSome),
+          R.evolve({
+            where: R.compose(
+              R.map(encodeURI),
+              R.map(JSON.stringify),
+              Maybe.fromEmpty
+            )
+          })
+        )(query)
+      ),
+      api.laatimisvaiheet
+    ]));
+
+  $: parsedQuery = R.compose(
+    R.mergeRight({
+      tila: Maybe.None(),
+      where: ''
+    }),
+    R.evolve({
+      tila: Maybe.fromNull,
+      where: R.compose(
+        Maybe.orSome(''),
+        R.map(JSON.parse),
+        Maybe.fromNull
       )
-    ),
-    Future.parallel(5),
-    R.tap(toggleOverlay(true))
-  )([api.getEnergiatodistukset(query), api.laatimisvaiheet]);
+    }),
+    qs.parse
+  )($querystring);
 </script>
 
 <style>
@@ -93,17 +132,24 @@
 
 <div class="w-full mt-3">
   <H1 text={$_('energiatodistukset.title')} />
+  <div class="mb-10">
+    <EnergiatodistusHaku
+      {parsedQuery}
+      {runQuery}
+      schema={EtHakuSchema.laatijaSchema} />
+  </div>
   <Overlay {overlay}>
     <div slot="content">
       <div class="lg:w-1/3 w-full mb-6">
         <Select
           label={'Tila'}
           disabled={false}
-          bind:model={query}
+          bind:model={parsedQuery}
           lens={R.lensProp('tila')}
           format={formatTila}
-          parse={R.when(R.complement(Maybe.isMaybe), Maybe.of)}
-          items={[Maybe.None(), 0, 1]} />
+          parse={Maybe.Some}
+          noneLabel={'energiatodistus.kaikki'}
+          items={[0, 1]} />
       </div>
 
       {#if R.isEmpty(energiatodistukset)}
@@ -116,15 +162,33 @@
           <table class="etp-table">
             <thead class="etp-table--thead">
               <tr class="etp-table--tr etp-table--tr__light">
-                <th class="etp-table--th">Tila</th>
-                <th class="etp-table--th">Tunnus</th>
-                <th class="etp-table--th">ETL</th>
-                <th class="etp-table--th">Versio</th>
-                <th class="etp-table--th">Voimassa</th>
-                <th class="etp-table--th">Rakennuksen nimi</th>
-                <th class="etp-table--th">Osoite</th>
-                <th class="etp-table--th">Laatija</th>
-                <th class="etp-table--th">Toiminnot</th>
+                <th class="etp-table--th">
+                  {$_('energiatodistus.haku.sarakkeet.tila')}
+                </th>
+                <th class="etp-table--th">
+                  {$_('energiatodistus.haku.sarakkeet.tunnus')}
+                </th>
+                <th class="etp-table--th">
+                  {$_('energiatodistus.haku.sarakkeet.ETL')}
+                </th>
+                <th class="etp-table--th">
+                  {$_('energiatodistus.haku.sarakkeet.versio')}
+                </th>
+                <th class="etp-table--th">
+                  {$_('energiatodistus.haku.sarakkeet.voimassa')}
+                </th>
+                <th class="etp-table--th">
+                  {$_('energiatodistus.haku.sarakkeet.rakennuksen-nimi')}
+                </th>
+                <th class="etp-table--th">
+                  {$_('energiatodistus.haku.sarakkeet.osoite')}
+                </th>
+                <th class="etp-table--th">
+                  {$_('energiatodistus.haku.sarakkeet.laatija')}
+                </th>
+                <th class="etp-table--th">
+                  {$_('energiatodistus.haku.sarakkeet.toiminnot')}
+                </th>
               </tr>
             </thead>
             <tbody class="etp-table--tbody">
@@ -132,11 +196,17 @@
                 <tr
                   class="etp-table--tr etp-table--tr__link"
                   on:click={toETView(energiatodistus.versio, energiatodistus.id)}>
-                  <td class="etp-table--td">Luonnos</td>
+                  <td class="etp-table--td">
+                    {$_('energiatodistus.tila.' + et.tilaKey(energiatodistus['tila-id']))}
+                  </td>
                   <td class="etp-table--td">{energiatodistus.id}</td>
                   <td class="etp-table--td">C</td>
                   <td class="etp-table--td">{energiatodistus.versio}</td>
-                  <td class="etp-table--td">13.3.2030</td>
+                  <td class="etp-table--td">
+                    {R.compose( Maybe.fold('-', d =>
+                        dfns.format(d, 'd.M.yyyy')
+                      ), et.viimeinenVoimassaolo )(energiatodistus)}
+                  </td>
                   <td class="etp-table--td">
                     {orEmpty(energiatodistus.perustiedot.nimi)}
                   </td>
@@ -169,28 +239,32 @@
       <Spinner />
     </div>
   </Overlay>
-  <p class="mb-4">Uuden energiatodistuksen voit lisätä täältä:</p>
-  <div class="mb-4 flex lg:flex-row flex-col">
-    <div class="flex flex-row mb-4 mr-4">
-      <span class="material-icons">add</span>
-      &nbsp;
-      <Link
-        text={'Luo uusi 2018 energiatodistus'}
-        href="#/energiatodistus/2018/new" />
+  {#if Maybe.fold(false, KayttajaUtils.kayttajaHasAccessToResource([
+      KayttajaUtils.laatijaRole
+    ]), $currentUserStore)}
+    <p class="mb-4">{$_('energiatodistus.et-lisays')}</p>
+    <div class="mb-4 flex lg:flex-row flex-col">
+      <div class="flex flex-row mb-4 mr-4">
+        <span class="material-icons">add</span>
+        &nbsp;
+        <Link
+          text={$_('energiatodistus.luo2018')}
+          href="#/energiatodistus/2018/new" />
+      </div>
+      <div class="flex flex-row mb-4 mr-4">
+        <span class="material-icons">add</span>
+        &nbsp;
+        <Link
+          text={$_('energiatodistus.luo2013')}
+          href="#/energiatodistus/2013/new" />
+      </div>
     </div>
-    <div class="flex flex-row mb-4 mr-4">
-      <span class="material-icons">add</span>
-      &nbsp;
-      <Link
-        text={'Luo uusi 2013 energiatodistus'}
-        href="#/energiatodistus/2013/new" />
-    </div>
-  </div>
+  {/if}
   <div class="flex flew-row mb-4 mr-4">
     <span class="material-icons">attachment</span>
     &nbsp;
     <Link
-      text={'Lataa energiatodistukset XLSX-tiedostona'}
-      href="/api/private/energiatodistukset/2018/export/energiatodistukset.xlsx" />
+      text={$_('energiatodistus.lataa-xlsx')}
+      href="/api/private/energiatodistukset/xlsx/energiatodistukset.xlsx" />
   </div>
 </div>

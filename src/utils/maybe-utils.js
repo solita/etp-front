@@ -9,7 +9,8 @@ export const {
   fromNull,
   fromUndefined,
   fromEmpty,
-  fromEither
+  fromEither,
+  fromFalsy
 } = Maybe;
 
 export const fold = R.curry((defaultValue, fn, m) => m.fold(defaultValue)(fn));
@@ -17,6 +18,8 @@ export const fold = R.curry((defaultValue, fn, m) => m.fold(defaultValue)(fn));
 export const cata = R.curry((noneFn, someFn, m) => m.cata(noneFn, someFn));
 
 export const map = R.curry((fn, maybe) => maybe.map(fn));
+
+export const chain = R.curry((fn, maybe) => maybe.chain(fn));
 
 export const getOrElse = R.curry((defaultValue, m) =>
   m.fold(defaultValue)(R.identity)
@@ -31,6 +34,10 @@ export const get = m => m.some();
 export const head = R.compose(fromUndefined, R.head);
 
 export const toEither = R.curry((defaultValue, m) => m.toEither(defaultValue));
+
+export const toArray = m => m.toArray();
+
+export const exists = R.curry((pred, m) => m.exists(pred));
 
 export const isSome = m => m.isSome();
 

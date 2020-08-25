@@ -1,244 +1,12 @@
 import * as R from 'ramda';
+import * as dfns from 'date-fns';
 
 import * as validation from '@Utility/validation';
 import * as deep from '@Utility/deep-objects';
 import * as Maybe from '@Utility/maybe-utils';
 import * as Either from '@Utility/either-utils';
-
-const emptyRakennusVaippa = _ => ({
-  ala: Maybe.None(),
-  U: Maybe.None()
-});
-
-const emptyIkkuna = _ => ({
-  ala: Maybe.None(),
-  U: Maybe.None(),
-  'g-ks': Maybe.None()
-});
-
-const emptyIV = _ => ({
-  poisto: Maybe.None(),
-  tulo: Maybe.None(),
-  sfp: Maybe.None()
-});
-
-const emptyLammitys = _ => ({
-  'tuoton-hyotysuhde': Maybe.None(),
-  'jaon-hyotysuhde': Maybe.None(),
-  lampokerroin: Maybe.None(),
-  apulaitteet: Maybe.None()
-});
-
-const emptyLammitysMaaraTuotto = _ => ({
-  maara: Maybe.None(),
-  tuotto: Maybe.None()
-});
-
-const emptyToimenpide = _ => ({
-  'nimi-fi': Maybe.None(),
-  'nimi-sv': Maybe.None(),
-  lampo: Maybe.None(),
-  sahko: Maybe.None(),
-  jaahdytys: Maybe.None(),
-  'eluvun-muutos': Maybe.None()
-});
-
-const emptyHuomio = _ => ({
-  'teksti-fi': Maybe.None(),
-  'teksti-sv': Maybe.None(),
-  toimenpide: [emptyToimenpide(), emptyToimenpide(), emptyToimenpide()]
-});
-
-const emptySahkoLampo = _ => ({
-  sahko: Maybe.None(),
-  lampo: Maybe.None()
-});
-
-const emptySisKuorma = _ => ({
-  kayttoaste: Maybe.None(),
-  lampokuorma: Maybe.None()
-});
-
-const emptyVapaa = _ => ({
-  nimi: Maybe.None(),
-  yksikko: Maybe.None(),
-  muunnoskerroin: Maybe.None(),
-  'maara-vuodessa': Maybe.None()
-});
-
-export const emptyEnergiatodistus2018 = _ => ({
-  perustiedot: {
-    nimi: Maybe.None(),
-    rakennustunnus: Maybe.None(),
-    kiinteistotunnus: Maybe.None(),
-    havainnointikaynti: Maybe.None(),
-    kieli: Maybe.None(),
-    rakennusosa: Maybe.None(),
-    'katuosoite-fi': Maybe.None(),
-    'katuosoite-sv': Maybe.None(),
-    postinumero: Maybe.None(),
-    valmistumisvuosi: Maybe.None(),
-    'onko-julkinen-rakennus': false,
-    tilaaja: Maybe.None(),
-    yritys: {
-      nimi: Maybe.None(),
-      katuosoite: Maybe.None(),
-      postinumero: Maybe.None(),
-      postitoimipaikka: Maybe.None()
-    },
-    kayttotarkoitus: Maybe.None(),
-    laatimisvaihe: Maybe.None(),
-    havainnointikaynti: Maybe.None(),
-    'keskeiset-suositukset-fi': Maybe.None(),
-    'keskeiset-suositukset-sv': Maybe.None()
-  },
-  lahtotiedot: {
-    'lammitetty-nettoala': Maybe.None(),
-    rakennusvaippa: {
-      ilmanvuotoluku: Maybe.None(),
-      'kylmasillat-UA': Maybe.None(),
-      ulkoseinat: emptyRakennusVaippa(),
-      ylapohja: emptyRakennusVaippa(),
-      alapohja: emptyRakennusVaippa(),
-      ikkunat: emptyRakennusVaippa(),
-      ulkoovet: emptyRakennusVaippa()
-    },
-    ikkunat: {
-      pohjoinen: emptyIkkuna(),
-      koillinen: emptyIkkuna(),
-      ita: emptyIkkuna(),
-      kaakko: emptyIkkuna(),
-      etela: emptyIkkuna(),
-      lounas: emptyIkkuna(),
-      lansi: emptyIkkuna(),
-      luode: emptyIkkuna(),
-      valokupu: emptyIkkuna(),
-      katto: emptyIkkuna()
-    },
-    ilmanvaihto: {
-      erillispoistot: emptyIV(),
-      ivjarjestelma: emptyIV(),
-      paaiv: R.mergeRight(
-        {
-          lampotilasuhde: Maybe.None(),
-          jaatymisenesto: Maybe.None()
-        },
-        emptyIV()
-      ),
-      'kuvaus-fi': Maybe.None(),
-      'kuvaus-sv': Maybe.None(),
-      'lto-vuosihyotysuhde': Maybe.None()
-    },
-    lammitys: {
-      'kuvaus-fi': Maybe.None(),
-      'kuvaus-sv': Maybe.None(),
-      'tilat-ja-iv': emptyLammitys(),
-      'lammin-kayttovesi': emptyLammitys(),
-      takka: emptyLammitysMaaraTuotto(),
-      ilmanlampopumppu: emptyLammitysMaaraTuotto()
-    },
-    jaahdytysjarjestelma: {
-      'jaahdytyskauden-painotettu-kylmakerroin': Maybe.None()
-    },
-    'lkvn-kaytto': {
-      'kulutus-per-nelio': Maybe.None(),
-      vuosikulutus: Maybe.None()
-    },
-    'sis-kuorma': {
-      henkilot: emptySisKuorma(),
-      kuluttajalaitteet: emptySisKuorma(),
-      valaistus: emptySisKuorma()
-    }
-  },
-  tulokset: {
-    'kaytettavat-energiamuodot': {
-      'fossiilinen-polttoaine': Maybe.None(),
-      sahko: Maybe.None(),
-      kaukojaahdytys: Maybe.None(),
-      kaukolampo: Maybe.None(),
-      'uusiutuva-polttoaine': Maybe.None()
-    },
-    'uusiutuvat-omavaraisenergiat': {
-      aurinkosahko: Maybe.None(),
-      tuulisahko: Maybe.None(),
-      aurinkolampo: Maybe.None(),
-      muulampo: Maybe.None(),
-      muusahko: Maybe.None(),
-      lampopumppu: Maybe.None()
-    },
-    'tekniset-jarjestelmat': {
-      'tilojen-lammitys': emptySahkoLampo(),
-      'tuloilman-lammitys': emptySahkoLampo(),
-      'kayttoveden-valmistus': emptySahkoLampo(),
-      'iv-sahko': Maybe.None(),
-      jaahdytys: R.assoc('kaukojaahdytys', Maybe.None(), emptySahkoLampo()),
-      'kuluttajalaitteet-ja-valaistus-sahko': Maybe.None()
-    },
-    nettotarve: {
-      'tilojen-lammitys-vuosikulutus': Maybe.None(),
-      'ilmanvaihdon-lammitys-vuosikulutus': Maybe.None(),
-      'kayttoveden-valmistus-vuosikulutus': Maybe.None(),
-      'jaahdytys-vuosikulutus': Maybe.None()
-    },
-    lampokuormat: {
-      aurinko: Maybe.None(),
-      ihmiset: Maybe.None(),
-      kuluttajalaitteet: Maybe.None(),
-      valaistus: Maybe.None(),
-      kvesi: Maybe.None()
-    },
-    laskentatyokalu: Maybe.None()
-  },
-  'toteutunut-ostoenergiankulutus': {
-    'ostettu-energia': {
-      'kaukolampo-vuosikulutus': Maybe.None(),
-      'kokonaissahko-vuosikulutus': Maybe.None(),
-      'kiinteistosahko-vuosikulutus': Maybe.None(),
-      'kayttajasahko-vuosikulutus': Maybe.None(),
-      'kaukojaahdytys-vuosikulutus': Maybe.None()
-    },
-    'ostetut-polttoaineet': {
-      'kevyt-polttooljy': Maybe.None(),
-      'pilkkeet-havu-sekapuu': Maybe.None(),
-      'pilkkeet-koivu': Maybe.None(),
-      puupelletit: Maybe.None(),
-      vapaa: [emptyVapaa(), emptyVapaa(), emptyVapaa(), emptyVapaa()]
-    },
-    'sahko-vuosikulutus-yhteensa': Maybe.None(),
-    'kaukolampo-vuosikulutus-yhteensa': Maybe.None(),
-    'polttoaineet-vuosikulutus-yhteensa': Maybe.None(),
-    'kaukojaahdytys-vuosikulutus-yhteensa': Maybe.None()
-  },
-  huomiot: {
-    lammitys: emptyHuomio(),
-    'alapohja-ylapohja': emptyHuomio(),
-    'iv-ilmastointi': emptyHuomio(),
-    ymparys: emptyHuomio(),
-    'valaistus-muut': emptyHuomio(),
-    'suositukset-fi': Maybe.None(),
-    'suositukset-sv': Maybe.None(),
-    'lisatietoja-fi': Maybe.None(),
-    'lisatietoja-sv': Maybe.None()
-  },
-  'lisamerkintoja-fi': Maybe.None(),
-  'lisamerkintoja-sv': Maybe.None()
-});
-
-export const emptyEnergiatodistus2013 = _ => ({
-  perustiedot: {
-    yritys: {
-      nimi: Maybe.None()
-    }
-  }
-});
-
-export const parsers = {
-  optionalText: R.compose(Maybe.fromEmpty, R.trim)
-};
-
-export const formatters = {
-  optionalText: Maybe.orSome('')
-};
+import * as objects from '@Utility/objects';
+import * as fxmath from '@Utility/fxmath';
 
 export const isValidForm = R.compose(
   R.all(Either.isRight),
@@ -248,43 +16,43 @@ export const isValidForm = R.compose(
 );
 
 export const breadcrumb1stLevel = i18n => ({
-  label: i18n('energiatodistus.breadcrumb.energiatodistus'),
+  label: i18n('navigation.energiatodistukset'),
   url: '/#/energiatodistus/all'
 });
 
 export const selectFormat = (label, items) =>
-  R.compose(
-    Either.cata(R.identity, R.identity),
-    R.map(label),
-    R.chain(Maybe.toEither('Unknown value')),
-    R.map(R.__, items),
-    Maybe.findById
-  );
+  R.compose(Maybe.orSome(''), R.map(label), Maybe.findById(R.__, items));
 
 export const findKayttotarkoitusluokkaId = (
   alakayttotarkoitusluokkaId,
   alakayttotarkoitusluokat
 ) =>
-  alakayttotarkoitusluokkaId.chain(
-    R.compose(
-      R.map(R.prop('kayttotarkoitusluokka-id')),
-      Either.orSome(Maybe.None()),
-      R.map(R.__, alakayttotarkoitusluokat),
-      Maybe.findById
-    )
-  );
+  R.compose(
+    Maybe.map(R.prop('kayttotarkoitusluokka-id')),
+    Maybe.chain(Maybe.findById(R.__, alakayttotarkoitusluokat))
+  )(alakayttotarkoitusluokkaId);
 
 export const filterAlakayttotarkoitusLuokat = R.curry(
   (kayttotarkoitusluokkaId, alakayttotarkoitusluokat) =>
-    alakayttotarkoitusluokat.map(
-      R.filter(alaluokka =>
-        Maybe.map(
-          R.equals(alaluokka['kayttotarkoitusluokka-id']),
-          kayttotarkoitusluokkaId
-        ).orSome(true)
-      )
+    R.filter(
+      Maybe.map(
+        R.propEq('kayttotarkoitusluokka-id'),
+        kayttotarkoitusluokkaId
+      ).orSome(R.T),
+      alakayttotarkoitusluokat
     )
 );
+
+export const findAlakayttotarkoitusluokkaId = (
+  kayttotarkoitusluokkaId,
+  alakayttotarkoitusluokat
+) => {
+  const alaluokat = filterAlakayttotarkoitusLuokat(
+    kayttotarkoitusluokkaId,
+    alakayttotarkoitusluokat
+  );
+  return R.length(alaluokat) === 1 ? Maybe.Some(alaluokat[0].id) : Maybe.None();
+};
 
 export const validators = deep.map(
   R.compose(R.complement(R.isNil), R.prop('validators')),
@@ -379,12 +147,21 @@ export const sumEtValues = R.compose(
 
 export const partOfSum = R.curry((sum, value) => R.lift(R.divide)(value, sum));
 
-export const energiamuotokertoimet2018 = () => ({
-  'fossiilinen-polttoaine': Maybe.Some(1),
-  kaukojaahdytys: Maybe.Some(0.28),
-  kaukolampo: Maybe.Some(0.5),
-  sahko: Maybe.Some(1.2),
-  'uusiutuva-polttoaine': Maybe.Some(0.5)
+export const energiamuotokertoimet = () => ({
+  2018: {
+    'fossiilinen-polttoaine': Maybe.Some(1),
+    kaukojaahdytys: Maybe.Some(0.28),
+    kaukolampo: Maybe.Some(0.5),
+    sahko: Maybe.Some(1.2),
+    'uusiutuva-polttoaine': Maybe.Some(0.5)
+  },
+  2013: {
+    'fossiilinen-polttoaine': Maybe.Some(1),
+    kaukojaahdytys: Maybe.Some(0.4),
+    kaukolampo: Maybe.Some(0.7),
+    sahko: Maybe.Some(1.7),
+    'uusiutuva-polttoaine': Maybe.Some(0.5)
+  }
 });
 
 const fieldsWithErittelyOstoenergia = [
@@ -406,6 +183,22 @@ export const ostoenergiat = R.compose(
   kaytettavatEnergiamuodot
 );
 
+export const muutOstoenergiat = R.compose(
+  objects.mapKeys(key => 'muu-' + key),
+  R.map(unnestValidation),
+  R.map(R.prop('ostoenergia')),
+  R.defaultTo([]),
+  R.path(['tulokset', 'kaytettavat-energiamuodot', 'muu'])
+);
+
+export const muutEnergiamuotokertoimet = R.compose(
+  objects.mapKeys(key => 'muu-' + key),
+  R.map(unnestValidation),
+  R.map(R.prop('muotokerroin')),
+  R.defaultTo([]),
+  R.path(['tulokset', 'kaytettavat-energiamuodot', 'muu'])
+);
+
 export const multiplyWithKerroin = R.curry((kerroin, ostoenergiamaara) =>
   R.lift(R.multiply)(kerroin, ostoenergiamaara)
 );
@@ -417,6 +210,15 @@ export const perLammitettyNettoala = R.curry((energiatodistus, values) =>
     energiatodistusPath(['lahtotiedot', 'lammitetty-nettoala'])
   )(energiatodistus)
 );
+
+export const energiaPerLammitettyNettoala = energiaPath =>
+  R.compose(
+    R.map(fxmath.round(1)),
+    R.converge(R.lift(R.divide), [
+      energiatodistusPath(energiaPath),
+      energiatodistusPath(['lahtotiedot', 'lammitetty-nettoala'])
+    ])
+  );
 
 const fieldsWithUusiutuvaOmavaraisenergia = [
   'aurinkosahko',
@@ -524,7 +326,7 @@ export const polttoaineet = R.compose(
 const vapaaPolttoaine = R.path([
   'toteutunut-ostoenergiankulutus',
   'ostetut-polttoaineet',
-  'vapaa'
+  'muu'
 ]);
 
 export const vapaatPolttoaineet = R.compose(
@@ -537,4 +339,28 @@ export const vapaatKertoimet = R.compose(
   R.map(unnestValidation),
   R.map(R.prop('muunnoskerroin')),
   vapaaPolttoaine
+);
+
+const tilat = [
+  'draft',
+  'in-signing',
+  'signed',
+  'discarded',
+  'replaced',
+  'deleted'
+];
+
+export const tila = R.compose(R.map(parseInt), R.invertObj)(tilat);
+
+export const tilaKey = id => tilat[id];
+
+const kielisyydet = ['fi', 'sv', 'bilingual'];
+
+export const kielisyys = R.compose(R.map(parseInt), R.invertObj)(kielisyydet);
+
+export const kielisyysKey = id => kielisyydet[id];
+
+export const viimeinenVoimassaolo = R.compose(
+  R.map(R.compose(d => dfns.add(d, { years: 10 }), dfns.parseISO)),
+  R.prop('allekirjoitusaika')
 );

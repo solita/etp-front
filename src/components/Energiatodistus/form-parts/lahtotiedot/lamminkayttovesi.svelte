@@ -3,6 +3,7 @@
 
   import H3 from '@Component/H/H3';
   import Input from '@Component/Energiatodistus/Input';
+  import VuosikulutusPerAlaUnit from '@Component/Energiatodistus/form-parts/units/annual-energy-over-area';
 
   export let disabled;
   export let schema;
@@ -12,27 +13,27 @@
 </script>
 
 <H3 text={$_('energiatodistus.lahtotiedot.lkvn-kaytto.header')} />
-<div class="w-1/3 py-4 mb-4 flex flex-row items-end">
-
-  <div class="w-5/6">
+<div class="flex lg:flex-row flex-col">
+<div class="w-1/2 py-4 mb-4 flex flex-row items-end">
+  <div class="w-3/5">
     <Input
-      {disabled}
-      {schema}
-      {center}
-      bind:model={energiatodistus}
-      path={['lahtotiedot', 'lkvn-kaytto', 'vuosikulutus']} />
+        {disabled}
+        {schema}
+        {center}
+        bind:model={energiatodistus}
+        path={['lahtotiedot', 'lkvn-kaytto', 'ominaiskulutus']} />
   </div>
-  <div class="w-1/6 pl-2">{$_('energiatodistus.vuosikulutus-per-nelio')}</div>
+  <div class="w-2/5 pl-2 pr-20">{$_('energiatodistus.litraa-per-neliovuosi')}</div>
 </div>
-
-<div class="w-1/3 py-4 mb-4 flex flex-row items-end">
-  <div class="w-5/6">
+<div class="w-1/2 py-4 mb-4 flex flex-row items-end">
+  <div class="w-3/5">
     <Input
       {disabled}
       {schema}
       {center}
       bind:model={energiatodistus}
-      path={['lahtotiedot', 'lkvn-kaytto', 'kulutus-per-nelio']} />
+      path={['lahtotiedot', 'lkvn-kaytto', 'lammitysenergian-nettotarve']} />
   </div>
-  <div class="w-1/6 pl-2">{$_('energiatodistus.litraa-per-neliovuosi')}</div>
+  <div class="w-2/5 pl-2"><VuosikulutusPerAlaUnit/></div>
+</div>
 </div>

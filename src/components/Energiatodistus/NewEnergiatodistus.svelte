@@ -13,75 +13,73 @@
   import Spinner from '@Component/Spinner/Spinner';
   import EnergiatodistusForm from './EnergiatodistusForm';
   import * as et from './energiatodistus-utils';
+  import * as empty from './empty';
   import * as api from './energiatodistus-api';
+  import * as kayttajaApi from "@Component/Kayttaja/kayttaja-api";
 
-  import { flashMessageStore, breadcrumbStore } from '@/stores';
+  import { flashMessageStore } from '@/stores';
 
   export let params;
 
   let overlay = false;
-  let failure = false;
 
-  const toggleOverlay = value => () => (overlay = value);
+  const toggleOverlay = value => { overlay = value };
 
   let energiatodistus = R.equals(params.version, '2018')
-    ? et.emptyEnergiatodistus2018()
-    : et.emptyEnergiatodistus2013();
+    ? empty.energiatodistus2018()
+    : empty.energiatodistus2013();
+
+  let luokittelut = Maybe.None();
+  let whoami = Maybe.None();
 
   const submit = R.compose(
-    Future.forkBothDiscardFirst(
-      R.compose(
-        R.tap(toggleOverlay(false)),
-        flashMessageStore.add('Energiatodistus', 'error'),
-        R.always($_('energiatodistus.messages.save-error'))
-      ),
-      R.compose(
-        R.tap(() =>
-          flashMessageStore.addPersist(
-            'Energiatodistus',
-            'success',
-            $_('energiatodistus.messages.save-success')
-          )
-        ),
-        ({ id }) => replace(`/energiatodistus/${params.version}/${id}`)
-      )
+    Future.fork(
+      () => {
+        toggleOverlay(false);
+        flashMessageStore.add('Energiatodistus', 'error',
+            $_('energiatodistus.messages.save-error'));
+      },
+      ({id}) => {
+        flashMessageStore.addPersist('Energiatodistus', 'success',
+            $_('energiatodistus.messages.save-success'));
+        replace(`/energiatodistus/${params.version}/${id}`);
+      }
     ),
-    Future.both(Future.after(500, true)),
+    Future.delay(500),
     api.postEnergiatodistus(fetch, params.version),
-    R.tap(toggleOverlay(true))
+    R.tap(() => toggleOverlay(true))
   );
 
   $: title = `Energiatodistus ${params.version} - Uusi luonnos`;
 
-  // Load classifications to cache
+  // Load classifications
   $: R.compose(
     Future.fork(
-      R.compose(
-        R.tap(() => {
-          failure = true;
-        }),
-        R.tap(toggleOverlay(false)),
-        R.tap(flashMessageStore.add('Energiatodistus', 'error')),
-        R.always($_('energiatodistus.messages.load-error'))
-      ),
-      R.tap(toggleOverlay(false))
+      () => {
+        toggleOverlay(false);
+        flashMessageStore.add('Energiatodistus', 'error',
+            $_('energiatodistus.messages.load-error'));
+      },
+      response => {
+        luokittelut = Maybe.Some(response[0]);
+        whoami = Maybe.Some(response[1]);
+        toggleOverlay(false);
+      },
     ),
-    Future.parallel(5)
-  )([
-    api.kielisyys,
-    api.laatimisvaiheet,
-    api.alakayttotarkoitusluokat2018,
-    api.kayttotarkoitusluokat2018
-  ]);
+    Future.both(R.__, kayttajaApi.whoami),
+    api.luokittelut
+  )(params.version);
 </script>
 
 <Overlay {overlay}>
   <div slot="content">
-    {#if !failure}
+    {#if luokittelut.isSome()}
       <EnergiatodistusForm
         version={params.version}
         {title}
         {energiatodistus}
+        whoami={whoami.some()}
+        luokittelut = {luokittelut.some()}
         {submit} />
     {/if}
   </div>

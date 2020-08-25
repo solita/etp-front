@@ -153,4 +153,35 @@ describe('Validation:', () => {
       assert.equal(validation.isPaivamaara(null), false);
     });
   });
+
+  describe('Rakennustunnus validation', () => {
+    it('valid rakennustunnus', () => {
+      assert.equal(validation.isRakennustunnus('1035150826'), true);
+      assert.equal(validation.isRakennustunnus('103515074X'), true);
+      assert.equal(validation.isRakennustunnus('103515074x'), true);
+    });
+
+    it('invalid rakennustunnus', () => {
+      assert.equal(validation.isRakennustunnus('100012345A'), false);
+      assert.equal(validation.isRakennustunnus(null), false);
+    });
+  });
+
+  describe('OVT-tunnus validation', () => {
+    it('valid OVT-tunnus', () => {
+      assert.equal(validation.isOVTTunnus('003712345671'), true);
+      assert.equal(validation.isOVTTunnus('0037123456710'), true);
+      assert.equal(validation.isOVTTunnus('00371234567101'), true);
+      assert.equal(validation.isOVTTunnus('003712345671012'), true);
+      assert.equal(validation.isOVTTunnus('0037123456710123'), true);
+      assert.equal(validation.isOVTTunnus('00371234567101234'), true);
+    });
+
+    it('invalid OVT-tunnus', () => {
+      assert.equal(validation.isOVTTunnus('003712345671012345'), false);
+      assert.equal(validation.isOVTTunnus('000012345671'), false);
+      assert.equal(validation.isOVTTunnus(null), false);
+      assert.equal(validation.isOVTTunnus(''), false);
+    });
+  });
 });

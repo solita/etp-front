@@ -36,7 +36,8 @@
         {$_('energiatodistus.lahtotiedot.ilmanvaihto.lampotilasuhde')}
       </th>
       <th class="et-table--th">
-        {$_('energiatodistus.lahtotiedot.ilmanvaihto.jaatymisenesto')}
+        <span>{$_('energiatodistus.lahtotiedot.ilmanvaihto.jaatymisenesto')}</span>
+        <span class="block">{$_('units.celsius')}</span>
       </th>
     </tr>
   </thead>
@@ -120,11 +121,22 @@
   </tbody>
 </table>
 
-<div class="w-1/2 py-4 mb-4">
+<div class="flex lg:flex-row flex-col lg:items-end">
+<div class="w-1/2 py-4 mb-4 mr-8">
   <Input
     {disabled}
     {schema}
     center={false}
     bind:model={energiatodistus}
     path={['lahtotiedot', 'ilmanvaihto', 'lto-vuosihyotysuhde']} />
+</div>
+
+<div class="w-1/2 py-4 mb-4">
+  <Input
+      {disabled}
+      {schema}
+      center={false}
+      bind:model={energiatodistus}
+      path={['lahtotiedot', 'ilmanvaihto', 'tuloilma-lampotila']} />
+</div>
 </div>

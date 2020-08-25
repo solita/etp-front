@@ -1,18 +1,15 @@
 <script>
   import * as R from 'ramda';
-  import * as Either from '@Utility/either-utils';
-  import * as Maybe from '@Utility/maybe-utils';
-  import * as v from '@Utility/validation';
-  import Label from '@Component/Label/Label';
-  import * as keys from '@Utility/keys';
 
   import InputContainer from './InputContainer';
+  import SimpleInput from './SimpleInput';
 
   export let id;
   export let name;
 
   export let label = '';
   export let caret = false;
+  export let search = false;
   export let required = false;
   export let autocomplete = 'off';
   export let disabled = false;
@@ -21,14 +18,12 @@
 
   export let model = { empty: '' };
   export let lens = R.lensProp('empty');
+  export let currentValue = '';
 
   export let parse = R.identity;
   export let format = R.identity;
+  export let valid = true;
   export let validators = [];
-
-  export let handleSubmit = true;
-
-  let focused = false;
 
   export let i18n;
 </script>
@@ -61,6 +56,18 @@
     @apply border-hover;
   }
 
+  .inputwrapper.caret::after {
+    @apply font-icon absolute text-2xl font-bold text-disabled;
+    right: 0.5em;
+    content: 'expand_more';
+  }
+
+  .inputwrapper.search::after {
+    @apply font-icon absolute text-2xl font-bold text-disabled;
+    right: 0.5em;
+    content: 'search';
+  }
+
   .inputwrapper.focused {
     @apply border-primary;
   }
@@ -75,12 +82,6 @@
 
   .inputwrapper.error::after {
     @apply text-error;
-  }
-
-  .inputwrapper.caret::after {
-    @apply font-icon absolute text-base text-disabled;
-    right: 0.5em;
-    content: 'expand_more';
   }
 
   .inputwrapper.disabled {
@@ -120,46 +121,29 @@
 <InputContainer
   {lens}
   bind:model
+  bind:currentValue
+  {id}
   {i18n}
   {parse}
   {format}
   {validators}
-  {handleSubmit}
   on:keydown
+  bind:valid
   let:viewValue
-  let:errorMessage
-  let:valid>
-  <Label
+  let:errorMessage>
+  <SimpleInput
     {id}
-    {required}
+    {name}
     {label}
+    {caret}
+    {search}
+    {required}
+    {autocomplete}
+    {disabled}
     {compact}
-    error={focused && !valid}
-    {focused} />
-  <div
-    class="inputwrapper"
-    class:caret
-    class:focused
-    class:error={focused && !valid}
-    class:disabled>
-    <input
-      {id}
-      {name}
-      {disabled}
-      class="input"
-      class:center
-      class:error={focused && !valid}
-      type="text"
-      {autocomplete}
-      value={viewValue}
-      on:focus={event => {
-        focused = true;
-      }}
-      on:blur={event => {
-        focused = false;
-      }}
-      on:input />
-  </div>
+    {center}
+    {viewValue}
+    {valid} />
 
   {#if !valid}
     <div class="error-label">

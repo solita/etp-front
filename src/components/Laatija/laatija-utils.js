@@ -36,6 +36,11 @@ export const formSchema = () => ({
     Validation.minLengthConstraint(2),
     Validation.maxLengthConstraint(200)
   ],
+  'vastaanottajan-tarkenne': R.map(Validation.liftValidator, [
+    Validation.isRequired,
+    Validation.minLengthConstraint(2),
+    Validation.maxLengthConstraint(200)
+  ]),
   jakeluosoite: [
     Validation.isRequired,
     Validation.minLengthConstraint(2),
@@ -46,7 +51,8 @@ export const formSchema = () => ({
     Validation.isRequired,
     Validation.minLengthConstraint(2),
     Validation.maxLengthConstraint(200)
-  ]
+  ],
+  wwwosoite: R.map(Validation.liftValidator, [Validation.urlValidator])
 });
 
 export const formParsers = () => ({
@@ -55,14 +61,18 @@ export const formParsers = () => ({
   sukunimi: R.trim,
   email: R.trim,
   puhelin: R.trim,
+  'vastaanottajan-tarkenne': R.compose(Maybe.fromEmpty, R.trim),
   jakeluosoite: R.trim,
   postinumero: R.trim,
-  postitoimipaikka: R.trim
+  postitoimipaikka: R.trim,
+  wwwosoite: R.compose(Maybe.fromEmpty, R.trim)
 });
 
 export const deserialize = R.evolve({
+  'vastaanottajan-tarkenne': Maybe.fromNull,
   maa: Either.Right,
-  toimintaalue: Maybe.fromNull
+  toimintaalue: Maybe.fromNull,
+  wwwosoite: Maybe.fromNull
 });
 
 export const serializeImport = R.evolve({
@@ -103,7 +113,8 @@ export const emptyLaatija = () =>
     toimintaalue: Maybe.None(),
     etunimi: '',
     julkinenpuhelin: false,
-    login: Maybe.None()
+    login: Maybe.None(),
+    wwwosoite: Maybe.None()
   });
 
 export const putLaatijatFuture = R.curry((fetch, laatijat) =>
@@ -111,14 +122,6 @@ export const putLaatijatFuture = R.curry((fetch, laatijat) =>
     Fetch.responseAsJson,
     Future.encaseP(Fetch.fetchWithMethod(fetch, 'put', laatijaApi)),
     R.map(serializeImport)
-  )(laatijat)
-);
-
-export const postLaatijatFuture = R.curry((fetch, laatijat) =>
-  R.compose(
-    Fetch.responseAsJson,
-    Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', laatijaApi)),
-    R.map(serialize)
   )(laatijat)
 );
 
@@ -167,7 +170,8 @@ export const validate = {
   puhelin: Validation.isPuhelin,
   patevyystaso: Validation.isPatevyystaso,
   toteamispaivamaara: Validation.isPaivamaara,
-  maa: Validation.isFilled
+  maa: Validation.isFilled,
+  wwwosoite: Validation.isUrl
 };
 
 // Maa defaults to Finland as the transfer file does not have it as a field
@@ -198,3 +202,12 @@ export const rowValid = R.compose(
   R.values,
   R.evolve(validate)
 );
+
+export const formatVoimassaoloaika = toteamispaivamaara =>
+  `${dfns.format(
+    dfns.parse(toteamispaivamaara, 'yyyy-M-d', 0),
+    'd.M.yyyy'
+  )} - ${dfns.format(
+    dfns.add(dfns.parse(toteamispaivamaara, 'yyyy-M-d', 0), { years: 7 }),
+    'd.M.yyyy'
+  )}`;

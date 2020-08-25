@@ -13,6 +13,7 @@
   export let schema;
   export let disabled;
   export let energiatodistus;
+  export let inputLanguage;
 
   export let labelLocale;
 
@@ -33,13 +34,10 @@
   ) {
     energiatodistus = R.set(
       R.lensPath(['perustiedot', 'kayttotarkoitus']),
-      R.compose(
-        Either.orSome(Maybe.None()),
-        Either.map(alaluokat =>
-          R.length(alaluokat) === 1 ? Maybe.Some(alaluokat[0].id) : Maybe.None()
-        ),
-        et.filterAlakayttotarkoitusLuokat(kayttotarkoitusluokkaId)
-      )(alakayttotarkoitusluokat),
+      et.findAlakayttotarkoitusluokkaId(
+        kayttotarkoitusluokkaId,
+        alakayttotarkoitusluokat
+      ),
       energiatodistus
     );
   } else if (energiatodistus.perustiedot.kayttotarkoitus.isSome()) {
@@ -94,8 +92,9 @@
       {disabled}
       {schema}
       {center}
+      inputLanguage={Maybe.Some(inputLanguage)}
       bind:model={energiatodistus}
-      path={['perustiedot', 'katuosoite-fi']} />
+      path={['perustiedot', 'katuosoite']} />
   </div>
 
   <div class="lg:w-1/5 w-full px-4 py-4">
@@ -111,7 +110,7 @@
 <div class="flex lg:flex-row flex-col -mx-4 my-4">
   <div class="lg:w-1/2 w-full px-4 py-4">
     <Input
-      {disabled}
+      disabled={false}
       {schema}
       {center}
       bind:model={energiatodistus}
@@ -133,24 +132,26 @@
     <Select
       label={$_('energiatodistus.perustiedot.kayttotarkoitusluokka')}
       required={true}
+      allowNone={false}
       {disabled}
       bind:model={kayttotarkoitusluokkaId}
       lens={R.lens(R.identity, R.identity)}
       parse={Maybe.Some}
       format={et.selectFormat(labelLocale, kayttotarkoitusluokat)}
-      items={Either.foldRight([], R.pluck('id'), kayttotarkoitusluokat)} />
+      items={R.pluck('id', kayttotarkoitusluokat)} />
   </div>
 
   <div class="lg:w-1/2 w-full px-4 py-4">
     <Select
       label={$_('energiatodistus.perustiedot.alakayttotarkoitusluokka')}
       required={true}
+      allowNone={false}
       {disabled}
       bind:model={energiatodistus}
       lens={R.lensPath(['perustiedot', 'kayttotarkoitus'])}
       parse={Maybe.Some}
       format={et.selectFormat(labelLocale, alakayttotarkoitusluokat)}
-      items={Either.foldRight([], R.pluck('id'), selectableAlakayttotarkoitusluokat)} />
+      items={R.pluck('id', selectableAlakayttotarkoitusluokat)} />
   </div>
 </div>
 

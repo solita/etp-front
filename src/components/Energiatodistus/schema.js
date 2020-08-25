@@ -1,8 +1,11 @@
 import * as validation from '@Utility/validation';
 import * as parsers from '@Utility/parsers';
+import * as formats from '@Utility/formats';
+import * as R from 'ramda';
 
 const String = max => ({
   parse: parsers.optionalString,
+  format: formats.optionalString,
   validators: [
     validation.liftValidator(validation.minLengthConstraint(2)),
     validation.liftValidator(validation.maxLengthConstraint(max))
@@ -11,11 +14,13 @@ const String = max => ({
 
 const Integer = (min, max) => ({
   parse: parsers.optionalParser(parsers.parseInteger),
+  format: formats.optionalNumber,
   validators: validation.MaybeInterval(min, max)
 });
 
 const Float = (min, max) => ({
   parse: parsers.optionalParser(parsers.parseNumber),
+  format: formats.optionalNumber,
   validators: validation.MaybeInterval(min, max)
 });
 
@@ -24,7 +29,19 @@ const DateValue = () => ({
   validators: []
 });
 
+const StringValidator = validator => ({
+  parse: parsers.optionalString,
+  format: formats.optionalString,
+  validators: [validator]
+});
+
+const Rakennustunnus = StringValidator(
+  validation.liftValidator(validation.rakennustunnusValidator)
+);
+
 const FloatPos = Float(0.0, Infinity);
+
+const AnyFloat = Float(-Infinity, Infinity);
 
 const Rakennusvaippa = (min, max) => ({
   ala: FloatPos,
@@ -47,7 +64,9 @@ const Hyotysuhde = {
   'tuoton-hyotysuhde': FloatPos,
   'jaon-hyotysuhde': FloatPos,
   lampokerroin: FloatPos,
-  apulaitteet: FloatPos
+  apulaitteet: FloatPos,
+  'lampopumppu-tuotto-osuus': Float(0.0, 1.0),
+  'lampohavio-lammittamaton-tila': FloatPos
 };
 
 const MaaraTuotto = {
@@ -64,7 +83,7 @@ const SahkoLampo = {
   lampo: FloatPos
 };
 
-const VapaaPolttoaine = {
+const MuuPolttoaine = {
   nimi: String(30),
   yksikko: String(12),
   muunnoskerroin: FloatPos,
@@ -72,16 +91,14 @@ const VapaaPolttoaine = {
 };
 
 const Huomio = {
-  'teksti-fi': String(1000),
-  'teksti-sv': String(1000),
+  'teksti': String(1000),
   toimenpide: [
     {
-      'nimi-fi': String(100),
-      'nimi-sv': String(100),
-      lampo: FloatPos,
-      sahko: FloatPos,
-      jaahdytys: FloatPos,
-      'eluvun-muutos': FloatPos
+      'nimi': String(100),
+      lampo: AnyFloat,
+      sahko: AnyFloat,
+      jaahdytys: AnyFloat,
+      'eluvun-muutos': AnyFloat
     }
   ]
 };
@@ -95,26 +112,27 @@ const Yritys = {
   postinumero: YritysPostinumero
 };
 
-export const schema = {
+export const v2018 = {
+  laskuriviviite: String(50),
   perustiedot: {
     nimi: String(50),
-    rakennustunnus: String(200),
+    rakennustunnus: Rakennustunnus,
     kiinteistotunnus: String(50),
     rakennusosa: String(100),
-    'katuosoite-fi': String(100),
-    'katuosoite-sv': String(100),
+    'katuosoite': String(100),
     postinumero: String(8),
     valmistumisvuosi: Integer(100, new Date().getFullYear()),
     tilaaja: String(200),
     yritys: Yritys,
     havainnointikaynti: DateValue(),
-    'keskeiset-suositukset-fi': String(2500),
-    'keskeiset-suositukset-sv': String(2500)
+    'keskeiset-suositukset': String(2500)
   },
   lahtotiedot: {
     'lammitetty-nettoala': FloatPos,
     rakennusvaippa: {
       ilmanvuotoluku: Float(0, 50),
+      lampokapasiteetti: FloatPos,
+      ilmatilavuus: FloatPos,
       ulkoseinat: Rakennusvaippa(0.05, 2.0),
       ylapohja: Rakennusvaippa(0.03, 2.0),
       alapohja: Rakennusvaippa(0.03, 4.0),
@@ -142,7 +160,8 @@ export const schema = {
       },
       erillispoistot: PoistoTuloSfp,
       ivjarjestelma: PoistoTuloSfp,
-      'lto-vuosihyotysuhde': Float(0.0, 1.0)
+      'lto-vuosihyotysuhde': Float(0.0, 1.0),
+      'tuloilma-lampotila': FloatPos
     },
     lammitys: {
       'kuvaus-fi': String(75),
@@ -156,8 +175,8 @@ export const schema = {
       'jaahdytyskauden-painotettu-kylmakerroin': Float(1.0, 10.0)
     },
     'lkvn-kaytto': {
-      'kulutus-per-nelio': FloatPos,
-      vuosikulutus: FloatPos
+      ominaiskulutus: FloatPos,
+      'lammitysenergian-nettotarve': FloatPos
     },
     'sis-kuorma': {
       henkilot: SisKuorma(1.0, 14.0),
@@ -217,12 +236,7 @@ export const schema = {
       'pilkkeet-havu-sekapuu': FloatPos,
       'pilkkeet-koivu': FloatPos,
       puupelletit: FloatPos,
-      vapaa: [
-        VapaaPolttoaine,
-        VapaaPolttoaine,
-        VapaaPolttoaine,
-        VapaaPolttoaine
-      ]
+      muu: R.repeat(MuuPolttoaine, 4)
     },
     'sahko-vuosikulutus-yhteensa': FloatPos,
     'kaukolampo-vuosikulutus-yhteensa': FloatPos,
@@ -230,16 +244,40 @@ export const schema = {
     'kaukojaahdytys-vuosikulutus-yhteensa': FloatPos
   },
   huomiot: {
-    'suositukset-fi': String(1500),
-    'suositukset-sv': String(1500),
-    'lisatietoja-fi': String(500),
-    'lisatietoja-sv': String(500),
+    'suositukset': String(1500),
+    'lisatietoja': String(500),
     'iv-ilmastointi': Huomio,
     'valaistus-muut': Huomio,
     lammitys: Huomio,
     ymparys: Huomio,
     'alapohja-ylapohja': Huomio
   },
-  'lisamerkintoja-fi': String(6300),
-  'lisamerkintoja-sv': String(6300)
+  'lisamerkintoja': String(6300)
 };
+
+const MuuEnergiamuoto = {
+  nimi: String(30),
+  muotokerroin: FloatPos,
+  ostoenergia: FloatPos
+};
+
+const MuuEnergia = {
+  'nimi': String(30),
+  vuosikulutus: FloatPos
+};
+
+export const v2013 = R.compose(
+  R.assocPath(
+    ['tulokset', 'kaytettavat-energiamuodot', 'muu'],
+    R.repeat(MuuEnergiamuoto, 3)
+  ),
+  R.assocPath(
+    ['tulokset', 'uusiutuvat-omavaraisenergiat'],
+    R.repeat(MuuEnergia, 5)
+  ),
+  R.assocPath(
+    ['toteutunut-ostoenergiankulutus', 'ostettu-energia', 'muu'],
+    R.repeat(MuuEnergia, 5)
+  ),
+  R.dissocPath(['perustiedot', 'laatimisvaihe'])
+)(v2018);

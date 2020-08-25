@@ -4,9 +4,12 @@
 
   import * as EtUtils from '@Component/Energiatodistus/energiatodistus-utils';
   import * as Maybe from '@Utility/maybe-utils';
+  import * as formats from '@Utility/formats';
+  import * as fxmath from '@Utility/fxmath';
 
   import H3 from '@Component/H/H3';
   import Input from '@Component/Energiatodistus/Input';
+  import VuosikulutusPerAlaUnit from '@Component/Energiatodistus/form-parts/units/annual-energy-over-area';
 
   export let disabled;
   export let schema;
@@ -37,13 +40,28 @@
     <tr class="et-table--tr">
       <th class="et-table--th et-table--th__twocells" />
       <th class="et-table--th">
-        {$_('energiatodistus.tulokset.tekniset-jarjestelmat.sahko')}
+        <span>
+          {$_('energiatodistus.tulokset.tekniset-jarjestelmat.sahko')}
+        </span>
+        <span class="block">
+          <VuosikulutusPerAlaUnit />
+        </span>
       </th>
       <th class="et-table--th">
-        {$_('energiatodistus.tulokset.tekniset-jarjestelmat.lampo')}
+        <span>
+          {$_('energiatodistus.tulokset.tekniset-jarjestelmat.lampo')}
+        </span>
+        <span class="block">
+          <VuosikulutusPerAlaUnit />
+        </span>
       </th>
       <th class="et-table--th">
-        {$_('energiatodistus.tulokset.tekniset-jarjestelmat.kaukojaahdytys')}
+        <span>
+          {$_('energiatodistus.tulokset.tekniset-jarjestelmat.kaukojaahdytys')}
+        </span>
+        <span class="block">
+          <VuosikulutusPerAlaUnit />
+        </span>
       </th>
     </tr>
   </thead>
@@ -140,13 +158,13 @@
         {$_('energiatodistus.tulokset.yhteensa')}
       </td>
       <td class="et-table--td">
-        {R.compose( Maybe.get, R.map(Math.ceil) )(sahkoSum)}
+        {R.compose( formats.numberFormat, Maybe.get, R.map(fxmath.round(0)) )(sahkoSum)}
       </td>
       <td class="et-table--td">
-        {R.compose( Maybe.get, R.map(Math.ceil) )(lampoSum)}
+        {R.compose( formats.numberFormat, Maybe.get, R.map(fxmath.round(0)) )(lampoSum)}
       </td>
       <td class="et-table--td">
-        {R.compose( Maybe.get, R.map(Math.ceil) )(kaukojaahdytysSum)}
+        {R.compose( formats.numberFormat, Maybe.get, R.map(fxmath.round(0)) )(kaukojaahdytysSum)}
       </td>
     </tr>
   </tbody>

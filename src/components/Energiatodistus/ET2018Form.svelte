@@ -1,7 +1,7 @@
 <script>
   import * as R from 'ramda';
 
-  import { locale, _ } from '@Language/i18n';
+  import {locale, _} from '@Language/i18n';
   import * as Either from '@Utility/either-utils';
   import * as Maybe from '@Utility/maybe-utils';
   import * as validation from '@Utility/validation';
@@ -21,7 +21,10 @@
 
   import Input from './Input';
   import BasicInput from '@Component/Input/Input';
+  import Textarea from './Textarea';
 
+  import EnergiatodistuksenKorvaus from './energiatodistuksen-korvaus';
+  import EnergiatodistuksenKorvaava from './energiatodistuksen-korvaava';
   import RakennuksenPerustiedot from './RakennuksenPerustiedot';
   import ToimenpideEhdotukset from './ToimenpideEhdotukset';
 
@@ -33,6 +36,7 @@
   import SisaisetLampokuormat from './form-parts/lahtotiedot/sisaiset-lampokuormat';
   import Lamminkayttovesi from './form-parts/lahtotiedot/lamminkayttovesi';
 
+  import ELuku from './form-parts/tulokset/e-luku';
   import ELuvunErittely from './form-parts/tulokset/e-luvun-erittely';
   import UusiutuvatOmavaraisenergiat from './form-parts/tulokset/uusiutuvat-omavaraisenergiat';
   import TeknistenjarjestelmienEnergiankulutus from './form-parts/tulokset/teknistenjarjestelmien-energiankulutus';
@@ -46,115 +50,77 @@
 
   import Huomio from './form-parts/huomiot/huomio';
   import Suositukset from './form-parts/huomiot/suositukset';
+  import Laskutus from "./laskutus";
 
   export let title = '';
   export let energiatodistus;
+  export let inputLanguage;
+  export let luokittelut;
   export let schema;
   export let disabled = false;
+  export let whoami;
+
+  let eLuku = Maybe.None();
 
   $: labelLocale = LocaleUtils.label($locale);
 
-  let kielisyys = Either.Left('Not initialized');
-  Future.fork(
-    _ => {},
-    result => (kielisyys = Either.Right(result)),
-    api.kielisyys
-  );
-
-  let laatimisvaiheet = Either.Left('Not initialized');
-  Future.fork(
-    _ => {},
-    result => (laatimisvaiheet = Either.Right(result)),
-    api.laatimisvaiheet
-  );
-
-  let kayttotarkoitusluokat = Either.Left('Not initialized');
-  Future.fork(
-    _ => {},
-    result => (kayttotarkoitusluokat = Either.Right(result)),
-    api.kayttotarkoitusluokat2018
-  );
-
-  let alakayttotarkoitusluokat = Either.Left('Not initialized');
-  Future.fork(
-    _ => {},
-    result => (alakayttotarkoitusluokat = Either.Right(result)),
-    api.alakayttotarkoitusluokat2018
-  );
   $: isLaatimisvaiheOlemassaOlevaRakennus = R.compose(
     Maybe.isSome,
     R.filter(R.equals(2)),
     R.view(R.lensPath(['perustiedot', 'laatimisvaihe']))
   )(energiatodistus);
 
-  $: console.log(energiatodistus);
+  $: isEnergiatodistusKorvattu = R.compose(
+    R.ifElse(R.isNil, R.always(false), Maybe.isSome),
+    R.prop('korvaava-energiatodistus-id')
+  )(energiatodistus);
+
+  $: isEnergiatodistusKorvaava = R.compose(
+    Maybe.isSome,
+    R.prop('korvattu-energiatodistus-id')
+  )(energiatodistus);
+
+  $: showEnergiatodistusKorvaavuus = !(!isEnergiatodistusKorvaava && disabled);
 </script>
-
-<style type="text/postcss">
-  :global(.et-table) {
-    @apply border-b-1 border-disabled pb-8;
-  }
-
-  :global(.et-table__noborder) {
-    @apply border-b-0;
-  }
-
-  :global(.et-table--th),
-  :global(.et-table--td) {
-    @apply px-4 py-2 font-bold;
-  }
-
-  :global(.et-table--th) {
-    @apply text-primary text-sm text-center w-1/5;
-    height: 4em;
-  }
-
-  :global(.et-table--tr > .et-table--th:not(:first-child)),
-  :global(.et-table--tr > .et-table--td:not(:first-child)) {
-    @apply border-l-1 border-disabled;
-  }
-
-  :global(.et-table--thead) {
-    @apply bg-tertiary;
-  }
-
-  :global(.et-table--th__sixth) {
-    @apply w-1/6;
-  }
-
-  :global(.et-table--th__fourcells) {
-    @apply w-4/5;
-  }
-
-  :global(.et-table--th__threecells) {
-    @apply w-3/5;
-  }
-
-  :global(.et-table--th__twocells) {
-    @apply w-2/5;
-  }
-
-  :global(.et-table--td__fifth) {
-    @apply w-1/5;
-  }
-
-  :global(.et-table--tr:last-child) {
-    @apply mb-5;
-  }
-
-  :global(.et-table--tr > .et-table--td:first-child) {
-    @apply font-bold;
-  }
-
-  :global(.et-table--tr > .et-table--td:not(:first-child)) {
-    @apply text-center;
-  }
-</style>
 
 <div class="w-full mt-3">
   <H1 text={title} />
-  <div class="flex flex-col -mx-4">
 
+  {#if isEnergiatodistusKorvattu}
+    <H2 text={$_('energiatodistus.korvaava.header')} />
+    <EnergiatodistuksenKorvaava
+      korvaavaEnergiatodistusId={energiatodistus['korvaava-energiatodistus-id']} />
+    <HR />
+  {/if}
+  {#if showEnergiatodistusKorvaavuus}
+    <H2 text={$_('energiatodistus.korvaavuus.header')} />
+    <EnergiatodistuksenKorvaus
+      bind:model={energiatodistus}
+      lens={R.lensProp('korvattu-energiatodistus-id')}
+      initialKorvattavaId={energiatodistus['korvattu-energiatodistus-id']}
+      {disabled} />
+    <HR />
+  {/if}
+
+  <Laskutus {schema}
+            {whoami}
+            bind:energiatodistus/>
+
+  <H2 text={$_('energiatodistus.perustiedot.header')} />
+
+  <div class="flex lg:flex-row flex-col -mx-4">
+    {#if R.complement(R.isNil)(energiatodistus.id)}
+      <div class="lg:w-1/2 w-full px-4 py-2">
+        <BasicInput
+          id="energiatodistus.id"
+          name="energiatodistus.id"
+          label={$_('energiatodistus.id')}
+          disabled={true}
+          bind:model={energiatodistus}
+          lens={R.lensProp('id')}
+          i18n={$_} />
+      </div>
+    {/if}
     {#if R.complement(R.isNil)(energiatodistus['laatija-fullname'])}
       <div class="lg:w-1/2 w-full px-4 py-2">
         <BasicInput
@@ -168,7 +134,8 @@
           i18n={$_} />
       </div>
     {/if}
-
+  </div>
+  <div class="flex lg:flex-row flex-col -mx-4">
     <div class="lg:w-1/2 w-full px-4 py-4">
       <Input
         {disabled}
@@ -186,7 +153,9 @@
         bind:model={energiatodistus}
         path={['perustiedot', 'tilaaja']} />
     </div>
+  </div>
 
+  <div class="flex flex-col -mx-4">
     <div class="lg:w-1/2 w-full px-4 py-4">
       <Select
         label={$_('energiatodistus.perustiedot.kieli')}
@@ -194,9 +163,10 @@
         {disabled}
         bind:model={energiatodistus}
         lens={R.lensPath(['perustiedot', 'kieli'])}
+        allowNone={false}
         parse={Maybe.Some}
-        format={et.selectFormat(labelLocale, kielisyys)}
-        items={Either.foldRight([], R.pluck('id'), kielisyys)} />
+        format={et.selectFormat(labelLocale, luokittelut.kielisyys)}
+        items={R.pluck('id', luokittelut.kielisyys)} />
     </div>
 
     <div class="lg:w-1/2 w-full px-4 py-4">
@@ -207,8 +177,8 @@
         bind:model={energiatodistus}
         lens={R.lensPath(['perustiedot', 'laatimisvaihe'])}
         parse={Maybe.Some}
-        format={et.selectFormat(labelLocale, laatimisvaiheet)}
-        items={Either.foldRight([], R.pluck('id'), laatimisvaiheet)} />
+        format={et.selectFormat(labelLocale, luokittelut.laatimisvaiheet)}
+        items={R.pluck('id', luokittelut.laatimisvaiheet)} />
     </div>
     {#if isLaatimisvaiheOlemassaOlevaRakennus}
       <div class="lg:w-1/2 w-full px-4 py-4">
@@ -222,20 +192,35 @@
           path={['perustiedot', 'havainnointikaynti']} />
       </div>
     {/if}
+
+    <div class="lg:w-1/2 w-full px-4 py-4">
+      <Input
+        {disabled}
+        {schema}
+        center={false}
+        bind:model={energiatodistus}
+        path={['tulokset', 'laskentatyokalu']} />
+    </div>
   </div>
 
   <HR />
 
   <RakennuksenPerustiedot
     {schema}
+    {inputLanguage}
     {disabled}
     bind:energiatodistus
     {labelLocale}
-    {kayttotarkoitusluokat}
-    {alakayttotarkoitusluokat} />
+    kayttotarkoitusluokat={luokittelut.kayttotarkoitusluokat}
+    alakayttotarkoitusluokat={luokittelut.alakayttotarkoitusluokat} />
 
   <HR />
-  <ToimenpideEhdotukset {disabled} {schema} bind:energiatodistus />
+  <ToimenpideEhdotukset
+    versio={'2018'}
+    {disabled}
+    {inputLanguage}
+    {schema}
+    bind:energiatodistus />
 
   <HR />
   <H2 text={$_('energiatodistus.lahtotiedot.header')} />
@@ -257,13 +242,20 @@
   <Ilmanvaihtojarjestelma {disabled} {schema} bind:energiatodistus />
   <Lammitysjarjestelma {disabled} {schema} bind:energiatodistus />
   <Jaahdytysjarjestelma {disabled} {schema} bind:energiatodistus />
-  <SisaisetLampokuormat {disabled} {schema} bind:energiatodistus />
   <Lamminkayttovesi {disabled} {schema} bind:energiatodistus />
+  <SisaisetLampokuormat {disabled} {schema} bind:energiatodistus />
 
   <HR />
 
   <H2 text={$_('energiatodistus.tulokset.header')} />
-  <ELuvunErittely {disabled} {schema} bind:energiatodistus />
+
+  <ELuku {eLuku} {schema} {energiatodistus} />
+  <ELuvunErittely
+    bind:eLuku
+    {disabled}
+    {schema}
+    bind:energiatodistus
+    versio={2018} />
   <UusiutuvatOmavaraisenergiat {disabled} {schema} bind:energiatodistus />
   <TeknistenjarjestelmienEnergiankulutus
     {disabled}
@@ -271,24 +263,65 @@
     bind:energiatodistus />
   <Nettotarve {disabled} {schema} bind:energiatodistus />
   <Lampokuormat {disabled} {schema} bind:energiatodistus />
-  <Laskentatyokalu {disabled} {schema} bind:energiatodistus />
 
   <HR />
   <H2 text={$_('energiatodistus.toteutunut-ostoenergiankulutus.header')} />
-  <EnergiaverkostaOstetut {disabled} {schema} bind:energiatodistus />
+  <EnergiaverkostaOstetut
+    versio={2018}
+    {disabled}
+    {schema}
+    {inputLanguage}
+    bind:energiatodistus />
   <OstetutPolttoaineet {disabled} {schema} bind:energiatodistus />
   <ToteutunutOstoenergia {disabled} {schema} bind:energiatodistus />
 
   <HR />
-  <H2 text={$_('energiatodistus.huomiot.header')} />
-  <Huomio {disabled} {schema} huomio={'ymparys'} bind:energiatodistus />
+  <H2 text={$_('energiatodistus.huomiot.header.2018')} />
   <Huomio
     {disabled}
     {schema}
+    {inputLanguage}
+    huomio={'ymparys'}
+    bind:energiatodistus />
+  <Huomio
+    {disabled}
+    {schema}
+    {inputLanguage}
     huomio={'alapohja-ylapohja'}
     bind:energiatodistus />
-  <Huomio {disabled} {schema} huomio={'lammitys'} bind:energiatodistus />
-  <Huomio {disabled} {schema} huomio={'iv-ilmastointi'} bind:energiatodistus />
-  <Huomio {disabled} {schema} huomio={'valaistus-muut'} bind:energiatodistus />
-  <Suositukset {disabled} {schema} bind:energiatodistus />
+  <Huomio
+    {disabled}
+    {schema}
+    {inputLanguage}
+    huomio={'lammitys'}
+    bind:energiatodistus />
+  <Huomio
+    {disabled}
+    {schema}
+    {inputLanguage}
+    huomio={'iv-ilmastointi'}
+    bind:energiatodistus />
+  <Huomio
+    {disabled}
+    {schema}
+    {inputLanguage}
+    huomio={'valaistus-muut'}
+    bind:energiatodistus />
+
+  <Suositukset
+    versio={2018}
+    {disabled}
+    {schema}
+    {inputLanguage}
+    bind:energiatodistus />
+
+  <H2 text={$_('energiatodistus.lisamerkintoja')} />
+  <div class="w-full py-4 mb-4">
+    <Textarea
+      {disabled}
+      {schema}
+      inputLanguage={Maybe.Some(inputLanguage)}
+      bind:model={energiatodistus}
+      path={['lisamerkintoja']} />
+  </div>
 </div>

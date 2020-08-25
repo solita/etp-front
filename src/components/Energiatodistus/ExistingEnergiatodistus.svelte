@@ -4,14 +4,12 @@
   import { _ } from '@Language/i18n';
 
   import * as Maybe from '@Utility/maybe-utils';
-  import * as Either from '@Utility/either-utils';
   import * as Future from '@Utility/future-utils';
-  import * as Fetch from '@Utility/fetch-utils';
   import EnergiatodistusForm from './EnergiatodistusForm';
 
   import * as et from './energiatodistus-utils';
   import * as api from './energiatodistus-api';
-  import { breadcrumbStore } from '@/stores';
+  import * as kayttajaApi from '@Component/Kayttaja/kayttaja-api';
   import Overlay from '@Component/Overlay/Overlay';
   import Spinner from '@Component/Spinner/Spinner';
 
@@ -20,77 +18,79 @@
   export let params;
 
   let energiatodistus = Maybe.None();
+  let luokittelut = Maybe.None();
+  let whoami = Maybe.None();
 
   let overlay = true;
-  let disabled = false;
 
-  const toggleOverlay = value => () => (overlay = value);
-  const toggleDisabled = value => () => (disabled = value);
+  const toggleOverlay = value => { overlay = value };
 
   const resetView = () => {
     overlay = true;
     energiatodistus = Maybe.None();
-    disabled = false;
   };
 
   $: params.id && resetView();
 
-  $: submit = R.compose(
-    Future.forkBothDiscardFirst(
-      R.compose(
-        R.tap(toggleOverlay(false)),
-        flashMessageStore.add('Energiatodistus', 'error'),
-        R.always($_('energiatodistus.messages.save-error'))
-      ),
-      R.compose(
-        R.tap(toggleOverlay(false)),
-        flashMessageStore.add('Energiatodistus', 'success'),
-        R.always($_('energiatodistus.messages.save-success'))
-      )
+  const submit = (energiatodistus, onSuccessfulSave) => R.compose(
+    Future.fork(
+      () => {
+        toggleOverlay(false);
+        flashMessageStore.add('Energiatodistus', 'error',
+            $_('energiatodistus.messages.save-error'));
+      },
+      () => {
+        toggleOverlay(false);
+        flashMessageStore.add('Energiatodistus', 'success',
+            $_('energiatodistus.messages.save-success'));
+        onSuccessfulSave();
+      }
     ),
-    Future.both(Future.after(500, true)),
+    Future.delay(500),
     api.putEnergiatodistusById(fetch, params.version, params.id),
-    R.tap(toggleOverlay(true))
+    R.tap(() => toggleOverlay(true))
+  ) (energiatodistus);
+
+  // load energiatodistus and classifications in parallel
+  $: R.compose(
+    Future.fork(
+      () => {
+        toggleOverlay(false);
+        flashMessageStore.add('Energiatodistus', 'error',
+            $_('energiatodistus.messages.load-error'));
+      },
+      response => {
+        energiatodistus = Maybe.Some(response[0]);
+        luokittelut = Maybe.Some(response[1]);
+        whoami = Maybe.Some(response[2]);
+        toggleOverlay(false);
+      }
+    ),
+    Future.parallel(5),
+    R.prepend(R.__,
+      [api.luokittelut(params.version), kayttajaApi.whoami]),
+    R.tap(() => toggleOverlay(true)),
+    api.getEnergiatodistusById(fetch),
+  ) (params.version, params.id);
+
+  const tilaLabel = R.compose(
+    Maybe.orSome($_('energiatodistus.tila.loading')),
+    R.map(e => $_('energiatodistus.tila.' + et.tilaKey(e['tila-id'])))
   );
 
-  $: R.compose(
-    Future.forkBothDiscardFirst(
-      R.compose(
-        R.compose(
-          R.tap(toggleDisabled(true)),
-          flashMessageStore.add('Energiatodistus', 'error'),
-          R.always($_('energiatodistus.messages.load-error'))
-        ),
-        R.tap(toggleOverlay(false))
-      ),
-      R.compose(
-        response => {
-          energiatodistus = Maybe.Some(response[0]);
-        },
-        R.tap(toggleOverlay(false))
-      )
-    ),
-    Future.both(Future.after(400, true)),
-    Future.parallel(5),
-    R.prepend(R.__, [
-      api.kielisyys,
-      api.laatimisvaiheet,
-      api.alakayttotarkoitusluokat2018,
-      api.kayttotarkoitusluokat2018
-    ]),
-    api.getEnergiatodistusById(fetch)
-  )(params.version, params.id);
-
-  $: title = `Energiatodistus ${params.version}/${params.id}`;
+  $: title = `${$_('energiatodistus.title')} ${params.version}/${
+    params.id
+  } - ${tilaLabel(energiatodistus)}`;
 </script>
 
 <Overlay {overlay}>
   <div slot="content">
-    {#if Maybe.isSome(energiatodistus)}
+    {#if energiatodistus.isSome()}
       <EnergiatodistusForm
         version={params.version}
-        {disabled}
         energiatodistus={energiatodistus.some()}
+        luokittelut={luokittelut.some()}
+        whoami={whoami.some()}
         {submit}
         {title} />
     {/if}

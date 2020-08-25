@@ -11,12 +11,14 @@
   import NavigationTabBar from '@Component/NavigationTabBar/NavigationTabBar';
   import YritysForm from '@Component/Yritys/YritysForm';
   import * as YritysUtils from '@Component/Yritys/yritys-utils';
-  import { breadcrumbStore } from '@/stores';
   import Overlay from '@Component/Overlay/Overlay';
   import Spinner from '@Component/Spinner/Spinner';
 
   import FlashMessage from '@Component/FlashMessage/FlashMessage';
-  import { flashMessageStore } from '@/stores';
+  import { flashMessageStore, idTranslateStore } from '@/stores';
+
+  import * as laskutusApi from '@Component/Laskutus/laskutus-api';
+
 
   export let params;
 
@@ -24,6 +26,8 @@
 
   let overlay = true;
   let disabled = false;
+
+  let luokittelut = Maybe.None();
 
   const toggleOverlay = value => () => (overlay = value);
   const toggleDisabled = value => () => (disabled = value);
@@ -36,23 +40,25 @@
 
   $: params.id && resetView();
 
-  $: submit = R.compose(
-    Future.forkBothDiscardFirst(
-      R.compose(
-        R.tap(toggleOverlay(false)),
-        flashMessageStore.add('Yritys', 'error'),
-        R.always($_('yritys.messages.save-error'))
+  $: submit = updatedYritys =>
+    R.compose(
+      Future.forkBothDiscardFirst(
+        R.compose(
+          R.tap(toggleOverlay(false)),
+          flashMessageStore.add('Yritys', 'error'),
+          R.always($_('yritys.messages.save-error'))
+        ),
+        R.compose(
+          R.tap(toggleOverlay(false)),
+          flashMessageStore.add('Yritys', 'success'),
+          R.always($_('yritys.messages.save-success')),
+          R.tap(() => idTranslateStore.updateYritys(updatedYritys))
+        )
       ),
-      R.compose(
-        R.tap(toggleOverlay(false)),
-        flashMessageStore.add('Yritys', 'success'),
-        R.always($_('yritys.messages.save-success'))
-      )
-    ),
-    Future.both(Future.after(500, true)),
-    YritysUtils.putYritysByIdFuture(fetch, params.id),
-    R.tap(toggleOverlay(true))
-  );
+      Future.both(Future.after(500, true)),
+      YritysUtils.putYritysByIdFuture(fetch, params.id),
+      R.tap(toggleOverlay(true))
+    )(updatedYritys);
 
   $: R.compose(
     Future.forkBothDiscardFirst(
@@ -66,6 +72,7 @@
       ),
       R.compose(
         fetchedYritys => (yritys = Maybe.Some(fetchedYritys)),
+        R.tap(idTranslateStore.updateYritys),
         R.tap(toggleOverlay(false))
       )
     ),
@@ -73,25 +80,36 @@
     YritysUtils.getYritysByIdFuture(fetch)
   )(params.id);
 
-  $: breadcrumbStore.set([
-    {
-      label: $_('yritys.yritykset'),
-      url: '/#/yritykset'
-    },
-    {
-      label: Maybe.fold('...', R.prop('nimi'), yritys),
-      url: location.href
-    }
-  ]);
+  // Load classifications
+  $: R.compose(
+    Future.fork(
+      R.compose(
+        R.tap(toggleOverlay(false)),
+        R.tap(flashMessageStore.add('Yritys', 'error')),
+        R.always($_('yritys.messages.load-error'))
+      ),
+      R.compose(
+        response => {
+          luokittelut = Maybe.Some(response);
+        },
+        R.tap(toggleOverlay(false))
+      )
+    ),
+    laskutusApi.luokittelut
+  )();
+
 </script>
 
 <Overlay {overlay}>
   <div slot="content">
-    <YritysForm
-      {submit}
-      {disabled}
-      existing={Maybe.isSome(yritys)}
-      yritys={Maybe.getOrElse(YritysUtils.emptyYritys(), yritys)} />
+    {#if luokittelut.isSome()}
+      <YritysForm
+        {submit}
+        {disabled}
+        luokittelut={luokittelut.some()}
+        existing={Maybe.isSome(yritys)}
+        yritys={Maybe.orSome(YritysUtils.emptyYritys(), yritys)} />
+    {/if}
   </div>
   <div slot="overlay-content">
     <Spinner />

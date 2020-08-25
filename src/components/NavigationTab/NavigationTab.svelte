@@ -1,22 +1,31 @@
 <script>
-  import active from 'svelte-spa-router/active';
-  import { link } from 'svelte-spa-router';
+  import * as R from 'ramda';
+  import { link, location } from 'svelte-spa-router';
   import { _ } from '@Language/i18n';
-  export let text;
+  export let label;
   export let href;
-  export let dynamic = false;
   export let activePath;
+  export let disabled = false;
 </script>
 
 <style type="text/postcss">
-  a {
+  a,
+  span {
     @apply flex py-4 px-6 font-bold justify-center border-dark border-b-3 cursor-pointer uppercase shadow-none tracking-xl outline-none;
     transition: box-shadow 0.1s ease-in-out;
   }
 
+  span {
+    @apply cursor-not-allowed text-disabled;
+  }
+
   a:hover,
-  :global(a.active) {
+  a.active {
     @apply shadow-hover-2-primary border-hover;
+  }
+
+  a:focus {
+    @apply shadow-hover-2-secondary border-secondary;
   }
 
   a:hover {
@@ -24,10 +33,13 @@
   }
 </style>
 
-<a
-  href={`#${href}`}
-  use:active={activePath || href}
-  class="navigationtab"
-  tabindex="0">
-  {dynamic ? text : $_(text)}
-</a>
+<!-- purgecss: active -->
+{#if disabled}
+  <span>{label}</span>
+{:else}
+  <a
+    {href}
+    class:active={R.compose( R.equals($location), R.dropWhile(R.equals('#')), R.defaultTo(href) )(activePath)}>
+    {label}
+  </a>
+{/if}

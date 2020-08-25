@@ -6,6 +6,11 @@
 
   import H3 from '@Component/H/H3';
   import Input from '@Component/Energiatodistus/Input';
+  import VuosituottoUnit from '@Component/Energiatodistus/form-parts/units/annual-energy';
+  import VuosituottoAreaUnit from '@Component/Energiatodistus/form-parts/units/annual-energy-over-area.svelte';
+
+  import * as formats from '@Utility/formats';
+  import * as fxmath from '@Utility/fxmath';
 
   export let disabled;
   export let schema;
@@ -19,22 +24,24 @@
 
 <H3
   compact={true}
-  text={$_('energiatodistus.tulokset.uusiutuvat-omavaraisenergiat.header')} />
+  text={$_('energiatodistus.tulokset.uusiutuvat-omavaraisenergiat.header.2018')} />
 
 <table class="et-table mb-6">
   <thead class="et-table--thead">
     <tr class="et-table--tr">
       <th class="et-table--th et-table--th__twocells" />
       <th class="et-table--th">
-        {$_('energiatodistus.tulokset.uusiutuvat-omavaraisenergiat.vuosituotto')}
+        <VuosituottoUnit />
       </th>
-      <th class="et-table--th">{$_('energiatodistus.tulokset.kwhem2vuosi')}</th>
+      <th class="et-table--th">
+        <VuosituottoAreaUnit />
+      </th>
       <th class="et-table--th" />
     </tr>
   </thead>
 
   <tbody class="et-table--tbody">
-    {#each ['aurinkosahko', 'tuulisahko', 'aurinkolampo', 'muulampo', 'muusahko', 'lampopumppu'] as energiamuoto}
+    {#each ['aurinkosahko', 'aurinkolampo', 'tuulisahko', 'lampopumppu', 'muusahko', 'muulampo'] as energiamuoto}
       <tr class="et-table--tr">
         <td class="et-table--td">
           {$_(`energiatodistus.tulokset.uusiutuvat-omavaraisenergiat.labels.${energiamuoto}`)}
@@ -48,7 +55,7 @@
             path={['tulokset', 'uusiutuvat-omavaraisenergiat', energiamuoto]} />
         </td>
         <td class="et-table--td">
-          {R.compose( Maybe.orSome(''), R.map(Math.ceil), R.prop(energiamuoto) )(omavaraisenergiatPerLammitettyNettoala)}
+          {R.compose( Maybe.orSome(''), R.map(R.compose( formats.numberFormat, fxmath.round(0) )), R.prop(energiamuoto) )(omavaraisenergiatPerLammitettyNettoala)}
         </td>
         <td class="et-table--td" />
       </tr>

@@ -134,6 +134,36 @@ export const isPaivamaara = R.compose(
   )
 );
 
+export const isRakennustunnus = R.allPass([
+  R.compose(R.equals(10), R.length),
+  R.compose(R.test(/^1\d{8}[A-Z0-9]{1}$/), R.toUpper),
+  R.converge(R.equals, [
+    R.compose(henkilotunnusChecksum, R.slice(0, 9)),
+    R.compose(R.takeLast(1), R.toLower)
+  ])
+]);
+
+export const rakennustunnusValidator = {
+  predicate: isRakennustunnus,
+  label: R.applyTo('validation.invalid-rakennustunnus')
+};
+
+export const isOVTTunnus = R.allPass([
+  R.test(/^0037\d{8,13}$/),
+  R.compose(
+    isValidYtunnus,
+    R.join(''),
+    R.adjust(7, R.concat('-')),
+    R.take(8),
+    R.drop(4)
+  )
+]);
+
+export const OVTTunnusValidator = {
+  predicate: isOVTTunnus,
+  label: R.applyTo('validation.invalid-ovttunnus')
+};
+
 export const validate = (validators, value) =>
   Maybe.fromUndefined(
     R.find(R.compose(R.not, R.applyTo(value), R.prop('predicate')), validators)

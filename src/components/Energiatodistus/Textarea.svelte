@@ -2,7 +2,9 @@
   import * as R from 'ramda';
 
   import { locale, _ } from '@Language/i18n';
-  import * as et from './energiatodistus-utils';
+  import * as inputs from './inputs';
+  import * as formats from '@Utility/formats';
+  import * as Maybe from '@Utility/maybe-utils';
 
   import Textarea from '@Component/Textarea/Textarea';
 
@@ -12,22 +14,23 @@
   export let required = false;
   export let disabled = false;
   export let compact = false;
+  export let format = formats.optionalString;
+  export let inputLanguage = Maybe.None();
 
-  const id = R.replace(/-fi|-sv/g, '', R.join('.', path));
-  const lens = R.lensPath(path);
-  const type = R.view(lens, schema);
+  const id = inputs.id(path);
+  const type = inputs.type(schema, path);
 </script>
 
 <Textarea
   {id}
   name={id}
-  label={$_('energiatodistus.' + id)}
+  label={inputs.label($_, inputLanguage, path)}
   {required}
   {disabled}
   {compact}
   bind:model
-  {lens}
-  format={et.formatters.optionalText}
+  lens={inputs.dataLens(inputLanguage, path)}
+  format={type.format || format}
   parse={type.parse}
   validators={type.validators}
   i18n={$_} />

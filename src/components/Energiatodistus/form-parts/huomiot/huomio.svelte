@@ -1,15 +1,19 @@
 <script>
   import * as R from 'ramda';
   import { _ } from '@Language/i18n';
+  import * as Maybe from '@Utility/maybe-utils';
 
   import H3 from '@Component/H/H3';
   import Input from '@Component/Energiatodistus/Input';
   import Textarea from '@Component/Energiatodistus/Textarea';
+  import ELukuUnit from '@Component/Energiatodistus/form-parts/units/e-luku';
+  import VuosikulutusUnit from '@Component/Energiatodistus/form-parts/units/annual-energy';
 
   export let disabled;
   export let schema;
   export let energiatodistus;
   export let huomio;
+  export let inputLanguage;
 
   const base = `energiatodistus.huomiot.${huomio}`;
 </script>
@@ -21,7 +25,8 @@
     {disabled}
     {schema}
     bind:model={energiatodistus}
-    path={['huomiot', huomio, 'teksti-fi']} />
+    inputLanguage={Maybe.Some(inputLanguage)}
+    path={['huomiot', huomio, 'teksti']} />
 </div>
 
 {#each R.path(['huomiot', huomio, 'toimenpide'], energiatodistus) as _, index}
@@ -31,7 +36,8 @@
       {schema}
       center={false}
       bind:model={energiatodistus}
-      path={['huomiot', huomio, 'toimenpide', index, 'nimi-fi']} />
+      inputLanguage={Maybe.Some(inputLanguage)}
+      path={['huomiot', huomio, 'toimenpide', index, 'nimi']} />
   </div>
 {/each}
 
@@ -40,16 +46,20 @@
     <tr class="et-table--tr">
       <th class="et-table--th" />
       <th class="et-table--th">
-        {$_('energiatodistus.huomiot.toimenpide-lampo')}
+        <span>{$_('energiatodistus.huomiot.toimenpide-lampo')}</span>
+        <span class="block"><VuosikulutusUnit/></span>
       </th>
       <th class="et-table--th">
-        {$_('energiatodistus.huomiot.toimenpide-sahko')}
+        <span>{$_('energiatodistus.huomiot.toimenpide-sahko')}</span>
+        <span class="block"><VuosikulutusUnit/></span>
       </th>
       <th class="et-table--th">
-        {$_('energiatodistus.huomiot.toimenpide-jaahdytys')}
+        <span>{$_('energiatodistus.huomiot.toimenpide-jaahdytys')}</span>
+        <span class="block"><VuosikulutusUnit/></span>
       </th>
       <th class="et-table--th">
-        {$_('energiatodistus.huomiot.toimenpide-eluvun-muutos')}
+        <span>{$_('energiatodistus.huomiot.toimenpide-eluvun-muutos')}</span>
+        <span class="block"><ELukuUnit/></span>
       </th>
     </tr>
   </thead>

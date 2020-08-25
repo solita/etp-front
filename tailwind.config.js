@@ -18,7 +18,8 @@ module.exports = {
       success: '#538000',
       background: '#eee',
       hr: 'rgba(52, 56, 65, 0.3)',
-      transparent: 'rgba(0,0,0,0)'
+      transparent: 'rgba(0,0,0,0)',
+      tableborder: 'rgba(167,167,167,0.3)'
     },
     extend: {
       fontFamily: {
@@ -50,6 +51,12 @@ module.exports = {
       },
       minWidth: {
         '10': '10em'
+      },
+      width: {
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px'
       },
       minHeight: {
         '85': '85vh',

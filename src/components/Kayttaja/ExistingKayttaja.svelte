@@ -113,7 +113,13 @@
 
   const mergeKayttajaLaatija = (kayttaja, laatija) =>
     R.compose(
-      R.omit(['kayttaja', 'cognitoid', 'ensitallennus']),
+      R.omit([
+        'kayttaja',
+        'cognitoid',
+        'ensitallennus',
+        'virtuid',
+        'virtuorganisaatio'
+      ]),
       R.mergeRight
     )(kayttaja, laatija);
 </script>

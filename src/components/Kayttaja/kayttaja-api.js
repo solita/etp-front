@@ -43,11 +43,19 @@ export const getLaatijaById = R.curry((fetch, id) =>
 );
 
 export const serialize = R.compose(
-  R.omit(['id', 'email', 'login', 'cognitoid', 'ensitallennus'])
+  R.omit([
+    'id',
+    'email',
+    'login',
+    'cognitoid',
+    'ensitallennus',
+    'virtuid',
+    'virtuorganisaatio'
+  ])
 );
 
 export const serializeForNonAdmin = R.compose(
-  R.omit(['rooli', 'passivoitu', 'virtuid', 'virtuorganisaatio']),
+  R.omit(['rooli', 'passivoitu']),
   serialize
 );
 

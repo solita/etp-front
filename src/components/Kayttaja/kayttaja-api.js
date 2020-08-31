@@ -9,7 +9,8 @@ import * as kayttajat from '@Utility/kayttajat';
 
 const deserialize = R.evolve({
   login: R.compose(R.map(Date.parse), Maybe.fromNull),
-  cognitoid: Maybe.fromNull
+  cognitoid: Maybe.fromNull,
+  henkilotunnus: Maybe.fromNull
 });
 
 export const url = {
@@ -43,6 +44,9 @@ export const getLaatijaById = R.curry((fetch, id) =>
 );
 
 export const serialize = R.compose(
+  R.evolve({
+    henkilotunnus: Maybe.getOrElse(null)
+  }),
   R.omit([
     'id',
     'email',
@@ -55,7 +59,7 @@ export const serialize = R.compose(
 );
 
 export const serializeForNonAdmin = R.compose(
-  R.omit(['rooli', 'passivoitu']),
+  R.omit(['rooli', 'passivoitu', 'henkilotunnus']),
   serialize
 );
 

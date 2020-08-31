@@ -7,14 +7,12 @@
   import Button from '@Component/Button/Button';
   import Input from '@Component/Input/Input';
   import * as LaatijaUtils from '@Component/Laatija/laatija-utils';
-  import {
-    flashMessageStore,
-    currentUserStore,
-  } from '@/stores';
+  import { flashMessageStore, currentUserStore } from '@/stores';
   import * as Maybe from '@Utility/maybe-utils';
   import * as Either from '@Utility/either-utils';
   import * as validation from '@Utility/validation';
   import * as formats from '@Utility/formats';
+  import * as KayttajaUtils from '@Component/Kayttaja/kayttaja-utils';
 
   const formParsers = LaatijaUtils.formParsers();
   const formSchema = LaatijaUtils.formSchema();
@@ -26,8 +24,9 @@
     R.all(Either.isRight),
     R.filter(Either.isEither),
     R.values,
-    validation.validateModelObject(formSchema));
-
+    validation.validateModelObject(formSchema),
+    R.when(R.complement(KayttajaUtils.isPaakayttaja), R.omit(['henkilotunnus']))
+  );
 </script>
 
 <style type="text/postcss">

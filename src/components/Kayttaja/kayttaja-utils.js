@@ -54,3 +54,6 @@ export const kayttajaHasAccessToResource = R.curry((roolit, kayttaja) =>
 );
 
 export const isPaakayttaja = kayttajaHasAccessToResource([paakayttajaRole]);
+export const isPatevyydentoteaja = kayttajaHasAccessToResource([
+  patevyydentoteajaRole
+]);

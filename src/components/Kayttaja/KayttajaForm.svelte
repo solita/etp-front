@@ -74,6 +74,22 @@
           validators={formSchema.sukunimi}
           i18n={$_} />
       </div>
+      {#if KayttajaUtils.isPatevyydentoteaja(kayttaja)}
+        <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
+          <Input
+            id={'henkilotunnus'}
+            name={'henkilotunnus'}
+            label={$_('laatija.henkilotunnus')}
+            required={true}
+            bind:model={kayttaja}
+            lens={R.lensProp('henkilotunnus')}
+            format={Maybe.orSome('')}
+            parse={formParsers.henkilotunnus}
+            validators={formSchema.henkilotunnus}
+            disabled={true}
+            i18n={$_} />
+        </div>
+      {/if}
     </div>
     <div class="flex lg:flex-row flex-col py-4 -mx-4 my-4">
       <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
@@ -102,6 +118,35 @@
           i18n={$_} />
       </div>
     </div>
+    {#if KayttajaUtils.isPaakayttaja(kayttaja)}
+      <H1 text={$_('kayttaja.virtu')} />
+      <div class="flex lg:flex-row flex-col py-4 -mx-4 my-4">
+        <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
+          <Input
+            id={'virtuorganisaatio'}
+            name={'virtuorganisaatio'}
+            label={$_('kayttaja.virtuorganisaatio')}
+            required={true}
+            disabled={true}
+            bind:model={kayttaja}
+            format={Maybe.orSome('')}
+            lens={R.lensProp('virtuorganisaatio')}
+            i18n={$_} />
+        </div>
+        <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
+          <Input
+            id={'virtuid'}
+            name={'virtuid'}
+            label={$_('kayttaja.virtuid')}
+            required={true}
+            disabled={true}
+            bind:model={kayttaja}
+            format={Maybe.orSome('')}
+            lens={R.lensProp('virtuid')}
+            i18n={$_} />
+        </div>
+      </div>
+    {/if}
   </div>
 
   <div class="flex -mx-4 mt-20">

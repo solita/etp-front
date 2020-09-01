@@ -117,7 +117,7 @@
         'kayttaja',
         'cognitoid',
         'ensitallennus',
-        'virtuid',
+        'virtulocalid',
         'virtuorganisaatio'
       ]),
       R.mergeRight

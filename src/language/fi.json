@@ -90,7 +90,7 @@
     "kayttajatunnus": "Käyttäjätunnus",
     "puhelinnumero": "Puhelinnumero",
     "virtu": "Virtu kirjautumistiedot",
-    "virtuid": "Käyttäjätunnus (Virtu Local ID)",
+    "virtulocalid": "Käyttäjätunnus (Virtu Local ID)",
     "virtuorganisaatio": "Organisaatio",
     "messages": {
       "save-success": "Käyttäjän tiedot tallennettu onnistuneesti.",

@@ -135,14 +135,14 @@
         </div>
         <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
           <Input
-            id={'virtuid'}
-            name={'virtuid'}
-            label={$_('kayttaja.virtuid')}
+            id={'virtulocalid'}
+            name={'virtulocalid'}
+            label={$_('kayttaja.virtulocalid')}
             required={true}
             disabled={true}
             bind:model={kayttaja}
             format={Maybe.orSome('')}
-            lens={R.lensProp('virtuid')}
+            lens={R.lensProp('virtulocalid')}
             i18n={$_} />
         </div>
       </div>

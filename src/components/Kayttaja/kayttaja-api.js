@@ -11,7 +11,7 @@ const deserialize = R.evolve({
   login: R.compose(R.map(Date.parse), Maybe.fromNull),
   cognitoid: Maybe.fromNull,
   henkilotunnus: Maybe.fromNull,
-  virtuid: Maybe.fromNull,
+  virtulocalid: Maybe.fromNull,
   virtuorganisaatio: Maybe.fromNull
 });
 
@@ -55,7 +55,7 @@ export const serialize = R.compose(
     'login',
     'cognitoid',
     'ensitallennus',
-    'virtuid',
+    'virtulocalid',
     'virtuorganisaatio'
   ])
 );

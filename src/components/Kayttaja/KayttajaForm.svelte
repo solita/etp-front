@@ -130,7 +130,7 @@
             disabled={true}
             bind:model={kayttaja}
             format={Maybe.orSome('')}
-            lens={R.lensProp('virtuorganisaatio')}
+            lens={R.lensPath(['virtu', 'organisaatio'])}
             i18n={$_} />
         </div>
         <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
@@ -142,7 +142,7 @@
             disabled={true}
             bind:model={kayttaja}
             format={Maybe.orSome('')}
-            lens={R.lensProp('virtulocalid')}
+            lens={R.lensPath(['virtu', 'localid'])}
             i18n={$_} />
         </div>
       </div>

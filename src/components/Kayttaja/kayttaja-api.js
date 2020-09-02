@@ -11,8 +11,7 @@ const deserialize = R.evolve({
   login: R.compose(R.map(Date.parse), Maybe.fromNull),
   cognitoid: Maybe.fromNull,
   henkilotunnus: Maybe.fromNull,
-  virtulocalid: Maybe.fromNull,
-  virtuorganisaatio: Maybe.fromNull
+  virtu: { localid: Maybe.fromNull, organisaatio: Maybe.fromNull }
 });
 
 export const url = {
@@ -49,15 +48,7 @@ export const serialize = R.compose(
   R.evolve({
     henkilotunnus: Maybe.getOrElse(null)
   }),
-  R.omit([
-    'id',
-    'email',
-    'login',
-    'cognitoid',
-    'ensitallennus',
-    'virtulocalid',
-    'virtuorganisaatio'
-  ])
+  R.omit(['id', 'email', 'login', 'cognitoid', 'ensitallennus', 'virtu'])
 );
 
 export const serializeForNonAdmin = R.compose(

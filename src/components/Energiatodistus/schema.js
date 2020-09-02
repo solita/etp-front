@@ -1,4 +1,4 @@
-import * as validation from '@Utility/validation';
+import * as validations from '@Utility/validation';
 import * as parsers from '@Utility/parsers';
 import * as formats from '@Utility/formats';
 import * as R from 'ramda';
@@ -7,21 +7,21 @@ const String = max => ({
   parse: parsers.optionalString,
   format: formats.optionalString,
   validators: [
-    validation.liftValidator(validation.minLengthConstraint(2)),
-    validation.liftValidator(validation.maxLengthConstraint(max))
+    validations.liftValidator(validations.minLengthConstraint(2)),
+    validations.liftValidator(validations.maxLengthConstraint(max))
   ]
 });
 
 const Integer = (min, max) => ({
   parse: parsers.optionalParser(parsers.parseInteger),
   format: formats.optionalNumber,
-  validators: validation.MaybeInterval(min, max)
+  validators: validations.MaybeInterval(min, max)
 });
 
 const Float = (min, max) => ({
   parse: parsers.optionalParser(parsers.parseNumber),
   format: formats.optionalNumber,
-  validators: validation.MaybeInterval(min, max)
+  validators: validations.MaybeInterval(min, max)
 });
 
 const DateValue = () => ({
@@ -36,7 +36,7 @@ const StringValidator = validator => ({
 });
 
 const Rakennustunnus = StringValidator(
-  validation.liftValidator(validation.rakennustunnusValidator)
+  validations.liftValidator(validations.rakennustunnusValidator)
 );
 
 const FloatPos = Float(0.0, Infinity);
@@ -91,16 +91,17 @@ const MuuPolttoaine = {
 };
 
 const Huomio = {
-  'teksti': String(1000),
-  toimenpide: [
+  teksti: String(1000),
+  toimenpide: R.repeat(
     {
-      'nimi': String(100),
+      nimi: String(100),
       lampo: AnyFloat,
       sahko: AnyFloat,
       jaahdytys: AnyFloat,
       'eluvun-muutos': AnyFloat
-    }
-  ]
+    },
+    3
+  )
 };
 
 const YritysPostinumero = String(8);
@@ -119,7 +120,7 @@ export const v2018 = {
     rakennustunnus: Rakennustunnus,
     kiinteistotunnus: String(50),
     rakennusosa: String(100),
-    'katuosoite': String(100),
+    katuosoite: String(100),
     postinumero: String(8),
     valmistumisvuosi: Integer(100, new Date().getFullYear()),
     tilaaja: String(200),
@@ -151,8 +152,7 @@ export const v2018 = {
       luode: Ikkuna
     },
     ilmanvaihto: {
-      'kuvaus-fi': String(75),
-      'kuvaus-sv': String(75),
+      kuvaus: String(75),
       paaiv: {
         ...PoistoTuloSfp,
         lampotilasuhde: Float(0.0, 1.0),
@@ -164,8 +164,15 @@ export const v2018 = {
       'tuloilma-lampotila': FloatPos
     },
     lammitys: {
-      'kuvaus-fi': String(75),
-      'kuvaus-sv': String(75),
+      'lammitysmuoto-1': {
+        kuvaus: String(75)
+      },
+      'lammitysmuoto-2': {
+        kuvaus: String(75)
+      },
+      lammonjako: {
+        kuvaus: String(75)
+      },
       'tilat-ja-iv': Hyotysuhde,
       'lammin-kayttovesi': Hyotysuhde,
       takka: MaaraTuotto,
@@ -244,15 +251,15 @@ export const v2018 = {
     'kaukojaahdytys-vuosikulutus-yhteensa': FloatPos
   },
   huomiot: {
-    'suositukset': String(1500),
-    'lisatietoja': String(500),
+    suositukset: String(1500),
+    lisatietoja: String(500),
     'iv-ilmastointi': Huomio,
     'valaistus-muut': Huomio,
     lammitys: Huomio,
     ymparys: Huomio,
     'alapohja-ylapohja': Huomio
   },
-  'lisamerkintoja': String(6300)
+  lisamerkintoja: String(6300)
 };
 
 const MuuEnergiamuoto = {
@@ -262,7 +269,7 @@ const MuuEnergiamuoto = {
 };
 
 const MuuEnergia = {
-  'nimi': String(30),
+  nimi: String(30),
   vuosikulutus: FloatPos
 };
 
@@ -281,3 +288,17 @@ export const v2013 = R.compose(
   ),
   R.dissocPath(['perustiedot', 'laatimisvaihe'])
 )(v2018);
+
+export const redefineNumericValidation = (schema, constraint) => {
+  const path = R.append(R.__, R.split('.', constraint.property));
+  return R.compose(
+    R.assocPath(
+      path('validators'),
+      validations.MaybeInterval(constraint.error.min, constraint.error.max)
+    ),
+    R.assocPath(
+      path('warningValidators'),
+      validations.MaybeInterval(constraint.warning.min, constraint.warning.max)
+    )
+  )(schema);
+};

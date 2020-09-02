@@ -20,11 +20,16 @@
   export let energiatodistus;
   export let luokittelut;
   export let whoami;
+  export let validation;
 
   export let submit;
   export let title = '';
 
-  let schema = schemas['v' + version];
+  let schema = R.reduce(
+    schemas.redefineNumericValidation,
+    schemas['v' + version],
+    validation.numeric
+  );
 
   let inputLanguage = 'fi';
 
@@ -34,8 +39,10 @@
   };
   const ETForm = forms[version];
 
-  $: disabled = !R.and(energiatodistus['laatija-id'].fold(true)(R.equals(whoami.id)),
-                       R.propEq('tila-id', EtUtils.tila.draft, energiatodistus));
+  $: disabled = !R.and(
+    energiatodistus['laatija-id'].fold(true)(R.equals(whoami.id)),
+    R.propEq('tila-id', EtUtils.tila.draft, energiatodistus)
+  );
 
   const validateAndSubmit = onSuccessfulSave => () => {
     if (et.isValidForm(et.validators(schema), energiatodistus)) {
@@ -43,7 +50,8 @@
       submit(energiatodistus, onSuccessfulSave);
       if (energiatodistus['laatija-id'].map(R.equals(whoami.id)).orSome(true)) {
         localstorage.setDefaultLaskutettavaYritysId(
-          energiatodistus['laskutettava-yritys-id']);
+          energiatodistus['laskutettava-yritys-id']
+        );
       }
     } else {
       flashMessageStore.add(

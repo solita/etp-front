@@ -267,7 +267,7 @@ export const v2018 = {
   },
   huomiot: {
     suositukset: String(1500),
-    lisatietoja: String(500),
+    lisatietoja: String(350),
     'iv-ilmastointi': Huomio,
     'valaistus-muut': Huomio,
     lammitys: Huomio,

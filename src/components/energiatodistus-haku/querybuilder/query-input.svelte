@@ -1,14 +1,9 @@
 <script>
   import * as R from 'ramda';
   import * as Maybe from '@Utility/maybe-utils';
-  import * as EtHakuUtils from '@Component/energiatodistus-haku/energiatodistus-haku-utils';
   import { OPERATOR_TYPES } from '@Component/energiatodistus-haku/schema';
-  import * as dfns from 'date-fns';
 
   import Select from '@Component/Select/Select';
-  import SimpleInput from '@Component/Input/SimpleInput';
-  import DatePicker from '@Component/Datepicker/Datepicker';
-  import Radio from '@Component/Radio/Radio';
 
   import BooleanInput from './query-inputs/boolean-input';
   import TextInput from './query-inputs/text-input';
@@ -91,7 +86,7 @@
     <div class="w-full">
       <svelte:component
         this={inputForType(op.type)}
-        values={R.includes(R.head(values), op.defaultValues()) ? values : op.defaultValues()}
+        {values}
         {nameprefix}
         {luokittelut} />
     </div>

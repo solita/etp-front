@@ -189,6 +189,9 @@
       },
       valvontaApi.putValvonta(fetch, params.id, enabled)
     );
+
+  $: isDeleteEnabled =
+    enabled || Maybe.fold(false, Kayttajat.isPaakayttaja, whoami);
 </script>
 
 <style>
@@ -258,10 +261,10 @@
                     confirmMessage={$_('confirm.you-want-to-delete')}>
                     <span
                       class="material-icons delete-icon"
-                      class:text-disabled={!enabled}
-                      title={!enabled ? $_('energiatodistus.liitteet.poista_disabled') : ''}
+                      class:text-disabled={!isDeleteEnabled}
+                      title={!isDeleteEnabled ? $_('energiatodistus.liitteet.poista_disabled') : ''}
                       on:click|stopPropagation={_ => {
-                        if (enabled) confirm(deleteLiite, liite.id);
+                        if (isDeleteEnabled) confirm(deleteLiite, liite.id);
                       }}>
                       highlight_off
                     </span>

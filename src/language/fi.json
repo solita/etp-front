@@ -1023,6 +1023,7 @@
     "liitteet": {
       "title": "Liitteet",
       "empty": "Energiatodistuksella ei ole liitteitä.",
+      "poista_disabled": "Et voi poistaa liitettä energiatodistukselta joka ei ole valvonnassa.",
       "liite": {
         "createtime": "Lisätty",
         "nimi": "Tiedosto / Linkki",

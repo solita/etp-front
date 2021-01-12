@@ -262,7 +262,7 @@
                     <span
                       class="material-icons delete-icon"
                       class:text-disabled={!isDeleteEnabled}
-                      title={!isDeleteEnabled ? $_('energiatodistus.liitteet.poista_disabled') : ''}
+                      title={!isDeleteEnabled ? $_('energiatodistus.liitteet.poista-disabled') : ''}
                       on:click|stopPropagation={_ => {
                         if (isDeleteEnabled) confirm(deleteLiite, liite.id);
                       }}>

@@ -47,6 +47,11 @@
 
   $: countryNames = R.map(labelLocale, luokittelut.countries);
 
+  $: verkkolaskuoperaattoriNames = R.map(
+    vlo => vlo.nimi + ' - ' + vlo.valittajatunnus,
+    luokittelut.verkkolaskuoperaattorit
+  );
+
   $: laskutuskieletIds = R.pluck('id', luokittelut.laskutuskielet);
 
   $: formatLaskutuskieli = R.compose(
@@ -57,18 +62,29 @@
 
   $: parseLaskutuskieli = R.identity;
 
-  $: verkkolaskuoperaattoritIds = R.pluck(
-    'id',
-    luokittelut.verkkolaskuoperaattorit
-  );
-
-  $: formatVerkkolaskuoperaattori = R.compose(
+  const formatVerkkolaskuoperaattori = R.compose(
     Maybe.orSome(''),
     R.map(vlo => vlo.nimi + ' - ' + vlo.valittajatunnus),
     Maybe.findById(R.__, luokittelut.verkkolaskuoperaattorit)
   );
 
-  $: parseVerkkolaskuoperaattori = Maybe.fromNull;
+  const findVerkkolaskuoperaattori = R.curry((name, verkkolaskuoperaattorit) =>
+    R.compose(
+      Maybe.fromNull,
+      R.find(
+        R.compose(
+          R.includes(R.compose(R.toLower, R.last, R.split(' - '))(name)),
+          R.map(R.toLower),
+          R.props(['valittajatunnus'])
+        )
+      )
+    )(verkkolaskuoperaattorit)
+  );
+
+  const parseVerkkolaskuoperaattori = R.compose(
+    R.map(R.prop('id')),
+    findVerkkolaskuoperaattori(R.__, luokittelut.verkkolaskuoperaattorit)
+  );
 
   const isValidForm = R.compose(
     R.all(Either.isRight),
@@ -234,16 +250,20 @@
     </div>
     <div class="flex lg:flex-row flex-col py-4 -mx-4">
       <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
-        <Select
-          label={$_('yritys.verkkolaskuoperaattori')}
-          required={false}
-          {disabled}
-          format={formatVerkkolaskuoperaattori}
-          parse={parseVerkkolaskuoperaattori}
-          bind:model={yritys}
-          lens={R.lensProp('verkkolaskuoperaattori')}
-          allowNone={true}
-          items={verkkolaskuoperaattoritIds} />
+        <Autocomplete items={verkkolaskuoperaattoriNames}>
+          <Input
+            id={'verkkolaskuoperaattori'}
+            name={'verkkolaskuoperaattori'}
+            label={$_('yritys.verkkolaskuoperaattori')}
+            required={false}
+            {disabled}
+            format={Maybe.fold('', formatVerkkolaskuoperaattori)}
+            parse={parseVerkkolaskuoperaattori}
+            bind:model={yritys}
+            lens={R.lensProp('verkkolaskuoperaattori')}
+            search={true}
+            i18n={$_} />
+        </Autocomplete>
       </div>
     </div>
   </div>
@@ -256,7 +276,8 @@
         on:click={cancel}
         text={$_('peruuta')}
         type={'reset'}
-        style={'secondary'} {disabled} />
+        style={'secondary'}
+        {disabled} />
     </div>
   </div>
 </form>

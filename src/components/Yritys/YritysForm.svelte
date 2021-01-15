@@ -5,7 +5,8 @@
   import * as LocaleUtils from '@Language/locale-utils';
   import * as Maybe from '@Utility/maybe-utils';
   import * as Either from '@Utility/either-utils';
-  import * as validation from '@Utility/validation';
+  import * as Validation from '@Utility/validation';
+  import * as Parsers from '@Utility/parsers';
   import * as YritysUtils from './yritys-utils';
   import * as country from '@Component/Geo/country-utils';
 
@@ -69,19 +70,15 @@
   );
 
   const findVerkkolaskuoperaattori = R.curry((name, verkkolaskuoperaattorit) =>
-    R.compose(
-      Maybe.fromNull,
-      R.find(
-        R.compose(
-          R.includes(R.compose(R.toLower, R.last, R.split(' - '))(name)),
-          R.map(R.toLower),
-          R.props(['valittajatunnus'])
-        )
-      )
-    )(verkkolaskuoperaattorit)
-  );
+    Maybe.find(
+      R.compose(
+        R.includes(R.compose(R.toLower, R.last, R.split(' - '))(name)),
+        R.map(R.toLower),
+        R.props(['valittajatunnus'])
+      ), verkkolaskuoperaattorit));
 
   const parseVerkkolaskuoperaattori = R.compose(
+    Maybe.toEither(R.applyTo('validation.invalid-verkkolaskuoperaattori')),
     R.map(R.prop('id')),
     findVerkkolaskuoperaattori(R.__, luokittelut.verkkolaskuoperaattorit)
   );
@@ -90,7 +87,7 @@
     R.all(Either.isRight),
     R.filter(Either.isEither),
     R.values,
-    validation.validateModelObject(formSchema)
+    Validation.validateModelObject(formSchema)
   );
 
   const cancel = event => {
@@ -258,7 +255,7 @@
             required={false}
             {disabled}
             format={Maybe.fold('', formatVerkkolaskuoperaattori)}
-            parse={parseVerkkolaskuoperaattori}
+            parse={Parsers.optionalParser(parseVerkkolaskuoperaattori)}
             bind:model={yritys}
             lens={R.lensProp('verkkolaskuoperaattori')}
             search={true}

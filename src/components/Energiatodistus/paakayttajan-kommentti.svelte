@@ -6,6 +6,7 @@
   import Textarea from '@Component/Textarea/Textarea';
   import * as inputs from './inputs';
   import * as formats from '@Utility/formats';
+  import * as EtUtils from './energiatodistus-utils';
 
   import HR from '@Component/HR/HR';
 
@@ -23,7 +24,7 @@
   <div class="w-full">
     <Textarea
       {id}
-      disabled={false}
+      disabled={EtUtils.isReplaced(model)}
       name={id}
       label={$_(['energiatodistus', ...path].join('.'))}
       lens={R.lensPath(path)}

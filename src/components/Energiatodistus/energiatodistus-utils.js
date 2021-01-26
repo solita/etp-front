@@ -350,6 +350,7 @@ export const isTilaInTilat = tilat =>
   R.compose(R.includes(R.__, tilat), R.prop('tila-id'));
 
 export const isDraft = R.propEq('tila-id', tila.draft);
+export const isReplaced = R.propEq('tila-id', tila.replaced);
 export const isSigned = R.propEq('tila-id', tila.signed);
 
 const kielisyydet = ['fi', 'sv', 'bilingual'];

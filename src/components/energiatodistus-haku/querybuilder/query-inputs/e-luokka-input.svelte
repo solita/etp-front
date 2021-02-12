@@ -17,6 +17,7 @@
   }
 </script>
 
+<!-- purgecss: checked -->
 <style type="text/postcss">
   span::after {
     @apply select-none text-3xl;

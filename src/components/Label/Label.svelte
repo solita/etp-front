@@ -10,6 +10,7 @@
   export let unit;
 </script>
 
+<!-- purgecss: sr-only required error focused warning -->
 <style type="text/postcss">
   label {
     @apply text-secondary;

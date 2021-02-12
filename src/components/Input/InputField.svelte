@@ -13,6 +13,7 @@
   export let focused;
 </script>
 
+<!-- purgecss: center error -->
 <style type="text/postcss">
   input {
     @apply w-full relative font-medium py-1;

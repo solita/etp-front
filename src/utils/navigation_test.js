@@ -87,7 +87,7 @@ describe('Navigation', () => {
         {
           label: 'Liitteet',
           disabled: true
-        },
+        }
         // Hidden until implemented
         //{
         //  label: 'Muutoshistoria',
@@ -144,7 +144,7 @@ describe('Navigation', () => {
       const kayttaja = { rooli: 2, id: 1 };
       const expected = [
         { label: 'Energiatodistukset', href: '#/energiatodistus/all' },
-        { label: 'Laatijat', href: '#/laatija/all' },
+        { label: 'Laatijat', href: '#/laatija/all' }
         // Hidden until implemented
         // { label: 'Viestit', href: '#/viestit' }
       ];

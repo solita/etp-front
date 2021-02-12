@@ -2,6 +2,7 @@
   export let white = false;
 </script>
 
+<!-- purgecss: white -->
 <style type="text/postcss">
   .spinner {
     @apply inline-block relative w-12 h-12;

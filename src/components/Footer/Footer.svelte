@@ -19,9 +19,8 @@
           <span class="font-bold"> {$_('footer.phone')}: </span>
           <a class="font-bold" href="tel:0295250800"> 029 525 0800 </a>
           <span class="font-bold mt-2"> {$_('footer.email')}: </span>
-          <a
-            class="font-bold"
-            href="mailto:energiatodistus@ara.fi">energiatodistus@ara.fi
+          <a class="font-bold" href="mailto:energiatodistus@ara.fi"
+            >energiatodistus@ara.fi
           </a>
         </div>
       </div>

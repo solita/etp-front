@@ -11,11 +11,5 @@
     Navigation.parseRoot($_)
   );
 
-  R.forEach(
-    R.compose(
-      replace,
-      landingPageForKayttaja
-    ),
-    $currentUserStore
-  );
+  R.forEach(R.compose(replace, landingPageForKayttaja), $currentUserStore);
 </script>

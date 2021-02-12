@@ -7,6 +7,7 @@
   export let warning;
 </script>
 
+<!-- purgecss: caret search focused error disabled warning -->
 <style type="text/postcss">
   div {
     @apply flex relative items-center border-b-3 border-disabled text-dark;

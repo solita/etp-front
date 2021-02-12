@@ -92,6 +92,7 @@
   };
 </script>
 
+<!-- purgecss: disabled -->
 <style type="text/postcss">
   span.required::before {
     @apply font-icon text-xs align-top mr-1;
@@ -184,7 +185,12 @@
         if (allowNone && index === 0) {
           model = R.set(lens, Maybe.None(), model);
         } else {
-          model = R.compose(R.set(lens, R.__, model), parse, R.nth(R.__, items), R.when(R.always(allowNone), R.dec))(index);
+          model = R.compose(
+            R.set(lens, R.__, model),
+            parse,
+            R.nth(R.__, items),
+            R.when(R.always(allowNone), R.dec)
+          )(index);
         }
         active = Maybe.None();
         await tick();

@@ -11,6 +11,7 @@
   $: leafs = R.defaultTo([], R.view(leafsLens, item));
 </script>
 
+<!-- purgecss: active header -->
 <style type="text/postcss">
   .nodeitem {
     @apply py-4 cursor-pointer bg-light;

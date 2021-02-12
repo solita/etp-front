@@ -12,6 +12,7 @@
   $: checked = R.view(lens, model);
 </script>
 
+<!-- purgecss: inline-block hidden disabled font-bold -->
 <style type="text/postcss">
   div {
     @apply flex flex-row-reverse relative justify-end items-center;

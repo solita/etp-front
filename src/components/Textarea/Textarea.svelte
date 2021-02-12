@@ -51,6 +51,7 @@
     );
 </script>
 
+<!-- purgecss: focused error disabled -->
 <style type="text/postcss">
   .inputwrapper {
     @apply flex items-stretch border-b-3 border-disabled text-dark;

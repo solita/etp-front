@@ -28,26 +28,26 @@
       whoami = Maybe.Some(response);
       currentUserStore.set(whoami);
     },
-    kayttajaApi.whoami);
-
+    kayttajaApi.whoami
+  );
 </script>
 
 <style type="text/postcss">
   .appcontainer {
-      @apply flex flex-col flex-grow justify-between min-h-screen;
+    @apply flex flex-col flex-grow justify-between min-h-screen;
   }
 
   .headercontainer,
   .footercontainer {
-      @apply flex justify-center;
+    @apply flex justify-center;
   }
 
   .headercontainer {
-      @apply bg-secondary;
+    @apply bg-secondary;
   }
 
   .footercontainer {
-      @apply bg-background;
+    @apply bg-background;
   }
 </style>
 

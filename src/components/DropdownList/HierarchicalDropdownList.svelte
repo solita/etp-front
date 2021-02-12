@@ -8,6 +8,7 @@
   export let onclick = () => {};
 </script>
 
+<!-- purgecss: active -->
 <style>
   ol {
     @apply absolute top-auto left-0 right-0 overflow-auto z-10 shadow-dropdownlist;

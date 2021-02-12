@@ -28,6 +28,7 @@
   )(whoami);
 </script>
 
+<!-- purgecss: font-bold text-primary -->
 <style>
   .participant:not(:first-child)::before {
     content: ', ';

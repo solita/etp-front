@@ -34,7 +34,8 @@
       previousIndex = 0;
     }
     if (
-      listElement && listElement.children[index] &&
+      listElement &&
+      listElement.children[index] &&
       !checkIfInView(listElement, listElement.children[index], false)
     ) {
       listElement.children[index].scrollIntoView(previousIndex > index);
@@ -45,6 +46,7 @@
   $: R.forEach(scrollIndexToView, active);
 </script>
 
+<!-- purgecss: active -->
 <style type="text/postcss">
   ol {
     @apply absolute top-auto left-0 right-0 overflow-auto z-10 shadow-dropdownlist;

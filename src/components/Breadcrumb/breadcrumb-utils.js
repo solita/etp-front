@@ -38,9 +38,9 @@ export const yritysCrumb = R.curry((idTranslate, i18n, id) =>
 );
 
 export const yrityksetCrumb = R.curry((i18n, user) => {
-  const url = Kayttajat.isPaakayttaja(user) ?
-    '#/yritys/all' :
-    `#/laatija/${user.id}/yritykset`;
+  const url = Kayttajat.isPaakayttaja(user)
+    ? '#/yritys/all'
+    : `#/laatija/${user.id}/yritykset`;
 
   return createCrumb(url, i18n('navigation.yritykset'));
 });

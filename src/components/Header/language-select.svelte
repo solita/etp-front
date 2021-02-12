@@ -7,6 +7,7 @@
   };
 </script>
 
+<!-- purgecss: active -->
 <style type="text/postcss">
   .active {
     @apply font-bold;

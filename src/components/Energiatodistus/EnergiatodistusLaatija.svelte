@@ -9,11 +9,12 @@
   export let energiatodistus;
   export let whoami;
 
-  const laatijaFullName = R.compose(
+  $: laatijaFullName = R.compose(
     Maybe.orSome(''),
     R.prop('laatija-fullname')
   )(energiatodistus);
-  const laatijaId = R.compose(
+
+  $: laatijaId = R.compose(
     Maybe.orSome(''),
     R.prop('laatija-id')
   )(energiatodistus);

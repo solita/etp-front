@@ -162,7 +162,7 @@
                 label={$_('viesti.ketju.vastaanottaja')}
                 required={false}
                 bind:model={ketju}
-                lens={R.compose(R.lensProp('kayttajat'), arrayHeadLens)}
+                lens={R.compose(R.lensProp('vastaanottajat'), arrayHeadLens)}
                 parse={Parsers.optionalParser(parseVastaanottaja(laatijat))}
                 format={R.compose(
                   Maybe.orSome(''),
@@ -182,7 +182,7 @@
             disabled={!Kayttajat.isPaakayttaja(whoami)}
             allowNone={false}
             bind:model={ketju}
-            lens={R.lensProp('kayttajaryhma-id')}
+            lens={R.lensProp('vastaanottajaryhma-id')}
             format={Locales.labelForId($locale, vastaanottajaryhmat)}
             items={R.pluck('id', vastaanottajaryhmat)} />
         </div>

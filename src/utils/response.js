@@ -19,7 +19,7 @@ export const notFound = response => response.status === status.notFound;
 
 const localizationKeys = {
   401: 'errors.unauthorized',
-  404: 'errors.unexpected',
+  403: 'errors.forbidden',
   503: 'errors.unavailable'
 };
 export const localizationKey = response =>

@@ -29,6 +29,7 @@
   let focused = false;
   let node;
   let button;
+  let dropDownClicked = false;
 
   let active = Maybe.None();
 
@@ -151,7 +152,12 @@
   }} />
 
 <!-- purgecss: disabled -->
-<span class:focused class:required class:disabled class="label">{label}</span>
+<span
+  class:focused
+  class:required
+  class:disabled
+  class:error-submit={!dropDownClicked && required}
+  class="label">{label}</span>
 <div bind:this={node} on:keydown={handleKeydown}>
   <input
     bind:this={input}
@@ -166,6 +172,7 @@
     bind:this={button}
     class="button flex items-center"
     class:focused
+    class:error-submit={!dropDownClicked && required}
     tabindex={disabled ? -1 : 0}
     on:click={_ => disabled || (showDropdown = !showDropdown)}
     on:focus={_ => {
@@ -181,6 +188,7 @@
       items={selectableItems}
       {active}
       onclick={async (item, index) => {
+        dropDownClicked = true;
         if (allowNone && index === 0) {
           model = R.set(lens, Maybe.None(), model);
         } else {

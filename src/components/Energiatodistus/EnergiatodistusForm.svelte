@@ -54,6 +54,7 @@
 
   let korvausError = Maybe.None();
   let dirty = false;
+  let formSubmitAttemptError = false;
 
   const forms = {
     '2018': ET2018Form,
@@ -146,8 +147,10 @@
     );
     if (R.isEmpty(missing)) {
       validateAndSubmit(onSuccessfulSave)();
+      formSubmitAttemptError = false;
     } else {
       showMissingProperties(missing);
+      formSubmitAttemptError = true;
     }
   };
 
@@ -220,6 +223,10 @@
   :global(.et-table--tr > .et-table--td:not(:first-child)) {
     @apply text-center;
   }
+
+  :global(.form-submit-error .error-submit) {
+    @apply border-error text-error;
+  }
 </style>
 
 {#if !R.isNil(ETForm)}
@@ -239,7 +246,8 @@
         on:change={_ => {
           dirty = true;
         }}
-        on:reset={reset}>
+        on:reset={reset}
+        class:form-submit-error={formSubmitAttemptError}>
         <div class="w-full mt-3">
           <H1 text={title} />
 

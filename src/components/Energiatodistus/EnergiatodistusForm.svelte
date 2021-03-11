@@ -1,12 +1,14 @@
 <script>
   import * as R from 'ramda';
   import { replace, loc } from 'svelte-spa-router';
+  import { tick } from 'svelte';
 
   import * as et from './energiatodistus-utils';
   import * as Maybe from '@Utility/maybe-utils';
   import * as Formats from '@Utility/formats';
+  import * as Validations from '@Utility/validation';
   import * as schemas from './schema';
-  import { locale, _ } from '@Language/i18n';
+  import { _ } from '@Language/i18n';
   import * as localstorage from './local-storage';
 
   import H1 from '@Component/H/H1';
@@ -21,7 +23,7 @@
   import ET2013Form from './ET2013Form';
   import Signing from './signing';
   import * as EtUtils from './energiatodistus-utils';
-  import * as Validations from './validation';
+  import * as EtValidations from './validation';
   import * as Inputs from './inputs';
   import * as Postinumero from './postinumero';
 
@@ -40,7 +42,7 @@
   export let submit;
   export let title = '';
 
-  let schema = R.compose(
+  const saveSchema = R.compose(
     R.reduce(schemas.assocRequired, R.__, validation.required),
     R.reduce(schemas.redefineNumericValidation, R.__, validation.numeric),
     R.assocPath(
@@ -48,6 +50,11 @@
       Postinumero.Type(luokittelut.postinumerot)
     )
   )(schemas['v' + version]);
+
+  const requiredSchema = schemas.appendRequiredValidators(saveSchema,
+    isRequiredPredicate => isRequiredPredicate(inputLanguage)(energiatodistus));
+
+  let schema = saveSchema;
 
   let eTehokkuus = Maybe.None();
   let inputLanguage = 'fi';
@@ -95,10 +102,10 @@
   const validateAndSubmit = onSuccessfulSave => () => {
     const invalid = R.filter(
       R.propSatisfies(
-        Validations.isValidationRequired(whoami, energiatodistus),
+        EtValidations.isValidationRequired(whoami, energiatodistus),
         0
       ),
-      Validations.invalidProperties(schema, energiatodistus)
+      EtValidations.invalidProperties(saveSchema, energiatodistus)
     );
 
     if (R.isEmpty(invalid) && korvausError.isNone()) {
@@ -139,8 +146,9 @@
     Inputs.scrollIntoView(document, missing[0]);
   };
 
+  let etFormElement;
   const validateCompleteAndSubmit = onSuccessfulSave => () => {
-    const missing = Validations.missingProperties(
+    const missing = EtValidations.missingProperties(
       validation.required,
       energiatodistus
     );
@@ -148,6 +156,8 @@
       validateAndSubmit(onSuccessfulSave)();
     } else {
       showMissingProperties(missing);
+      schema = requiredSchema;
+      tick().then(_ => Validations.blurForm(etFormElement));
     }
   };
 
@@ -232,6 +242,7 @@
   <div class="w-full relative flex">
     <div class="w-5/6">
       <form
+        bind:this={etFormElement}
         on:submit|preventDefault={validateAndSubmit(noop)}
         on:input={_ => {
           dirty = true;

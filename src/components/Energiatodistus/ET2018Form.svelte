@@ -119,6 +119,7 @@
       {disabled}
       bind:model={energiatodistus}
       lens={R.lensPath(['perustiedot', 'laatimisvaihe'])}
+      allowNone={false}
       parse={Maybe.Some}
       format={et.selectFormat(labelLocale, luokittelut.laatimisvaiheet)}
       items={R.pluck('id', luokittelut.laatimisvaiheet)} />

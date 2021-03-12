@@ -54,7 +54,7 @@
 
   let korvausError = Maybe.None();
   let dirty = false;
-  let formSubmitAttemptError = false;
+  let hightlightRequiredInputs = false;
 
   const forms = {
     '2018': ET2018Form,
@@ -147,10 +147,10 @@
     );
     if (R.isEmpty(missing)) {
       validateAndSubmit(onSuccessfulSave)();
-      formSubmitAttemptError = false;
+      hightlightRequiredInputs = false;
     } else {
       showMissingProperties(missing);
-      formSubmitAttemptError = true;
+      hightlightRequiredInputs = true;
     }
   };
 
@@ -247,7 +247,7 @@
           dirty = true;
         }}
         on:reset={reset}
-        class:form-submit-error={formSubmitAttemptError}>
+        class:form-submit-error={hightlightRequiredInputs}>
         <div class="w-full mt-3">
           <H1 text={title} />
 

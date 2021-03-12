@@ -150,7 +150,7 @@
     }
   }} />
 
-<!-- purgecss: disabled -->
+<!-- purgecss: disabled error-submit -->
 <span
   class:focused
   class:required

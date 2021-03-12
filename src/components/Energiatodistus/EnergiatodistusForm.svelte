@@ -229,6 +229,8 @@
   }
 </style>
 
+<!-- purgecss: form-submit-error error-submit -->
+
 {#if !R.isNil(ETForm)}
   {#if R.propEq('tila-id', et.tila['in-signing'], energiatodistus)}
     <Signing {energiatodistus} reload={reset} />

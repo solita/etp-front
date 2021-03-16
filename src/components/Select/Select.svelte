@@ -150,12 +150,12 @@
     }
   }} />
 
-<!-- purgecss: disabled error-submit -->
+<!-- purgecss: disabled required-error -->
 <span
   class:focused
   class:required
   class:disabled
-  class:error-submit={!Maybe.isSome(selected) && required}
+  class:required-error={!Maybe.isSome(selected) && required}
   class="label">{label}</span>
 <div bind:this={node} on:keydown={handleKeydown}>
   <input
@@ -171,7 +171,7 @@
     bind:this={button}
     class="button flex items-center"
     class:focused
-    class:error-submit={!Maybe.isSome(selected) && required}
+    class:required-error={!Maybe.isSome(selected) && required}
     tabindex={disabled ? -1 : 0}
     on:click={_ => disabled || (showDropdown = !showDropdown)}
     on:focus={_ => {

@@ -54,7 +54,7 @@
 
   let korvausError = Maybe.None();
   let dirty = false;
-  let hightlightRequiredInputs = false;
+  let highlightRequiredInputs = false;
 
   const forms = {
     '2018': ET2018Form,
@@ -147,10 +147,10 @@
     );
     if (R.isEmpty(missing)) {
       validateAndSubmit(onSuccessfulSave)();
-      hightlightRequiredInputs = false;
+      highlightRequiredInputs = false;
     } else {
       showMissingProperties(missing);
-      hightlightRequiredInputs = true;
+      highlightRequiredInputs = true;
     }
   };
 
@@ -224,12 +224,12 @@
     @apply text-center;
   }
 
-  :global(.form-submit-error .error-submit) {
+  :global(.form-submit-error .required-error) {
     @apply border-error text-error;
   }
 </style>
 
-<!-- purgecss: form-submit-error error-submit -->
+<!-- purgecss: form-submit-error required-error -->
 
 {#if !R.isNil(ETForm)}
   {#if R.propEq('tila-id', et.tila['in-signing'], energiatodistus)}
@@ -249,7 +249,7 @@
           dirty = true;
         }}
         on:reset={reset}
-        class:form-submit-error={hightlightRequiredInputs}>
+        class:form-submit-error={highlightRequiredInputs}>
         <div class="w-full mt-3">
           <H1 text={title} />
 

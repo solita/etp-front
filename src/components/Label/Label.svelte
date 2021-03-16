@@ -5,6 +5,7 @@
   export let warning;
   export let focused;
   export let label = '';
+  export let requiredError;
   export let compact = false;
 
   export let unit;
@@ -43,6 +44,7 @@
   class:required
   class:warning
   class:error
+  class:required-error={requiredError}
   class:focused>
   {label}
   <svelte:component this={unit} />

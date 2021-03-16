@@ -16,7 +16,6 @@
   export let center = false;
   export let type = 'text';
   export let placeholder = '';
-
   export let viewValue;
   export let rawValue = '';
 
@@ -38,6 +37,8 @@
 
   $: error = focused && !valid && validationResult.type === 'error';
   $: warning = focused && !valid && validationResult.type === 'warning';
+
+  $: requiredError = required && rawValue.length < 1;
 </script>
 
 <Label
@@ -48,6 +49,7 @@
   {error}
   {warning}
   {focused}
+  {requiredError}
   unit={labelUnit} />
 <svelte:component
   this={wrapper}
@@ -56,7 +58,8 @@
   {focused}
   {error}
   {warning}
-  {disabled}>
+  {disabled}
+  {requiredError}>
   <InputField
     {id}
     {name}
@@ -67,6 +70,7 @@
     {viewValue}
     {type}
     {placeholder}
+    {requiredError}
     bind:rawValue
     bind:focused
     on:input

@@ -5,6 +5,7 @@
   export let focused;
   export let error;
   export let warning;
+  export let requiredError;
 </script>
 
 <style type="text/postcss">
@@ -64,6 +65,7 @@
   class:search={search && !disabled}
   class:focused
   class:error
+  class:required-error={requiredError}
   class:disabled
   class:warning>
   <slot />

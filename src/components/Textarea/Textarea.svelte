@@ -49,6 +49,8 @@
       },
       () => (valid = true)
     );
+
+  $: requiredError = required && viewValue.length < 1;
 </script>
 
 <style type="text/postcss">
@@ -109,11 +111,19 @@
 </style>
 
 <!-- purgecss: focused error disabled -->
-<Label {id} {required} {label} {compact} error={highlightError} {focused} />
+<Label
+  {id}
+  {required}
+  {label}
+  {compact}
+  error={highlightError}
+  {focused}
+  {requiredError} />
 <div
   class="inputwrapper"
   class:focused
   class:error={highlightError}
+  class:required-error={requiredError}
   class:disabled>
   <textarea
     {id}

@@ -466,6 +466,7 @@
       },
       "ikkunat": {
         "header": "Ikkunat ilmansuunnittain",
+        "label-context": "$unused",
         "kohtisuora": "kohtisuora",
         "arvo": "arvo",
         "labels": {
@@ -639,6 +640,7 @@
       },
       "sis-kuorma": {
         "header": "Sisäiset lämpökuormat eri käyttöasteilla",
+        "label-context": "$unused",
         "kayttoaste": "Käyttöaste",
         "lampokuorma": "Lämpökuorma",
         "labels": {

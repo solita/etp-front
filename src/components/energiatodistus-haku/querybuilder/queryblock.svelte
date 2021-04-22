@@ -70,7 +70,7 @@
   <div class="w-1/2 mr-4">
     <Autocomplete
       bind:completedValue
-      items={R.compose(R.map(Inputs.propertyLabel($_)), R.keys)(schema)}
+      items={R.compose(R.map(Inputs.aggregateLabel($_)), R.keys)(schema)}
       size={100000}>
       <SimpleInput
         label={$_('energiatodistus.haku.valitse_hakuehto')}

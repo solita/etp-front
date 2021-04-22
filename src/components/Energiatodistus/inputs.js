@@ -53,14 +53,9 @@ const labelContext = (i18n, path) =>
   R.length(path) > 1
     ? R.compose(
         R.filter(R.complement(R.equals('$unused'))),
-        Maybe.fromEmpty
-      )(
-        i18n(
-          'energiatodistus.' +
-            localeKey(R.slice(0, -1, path)) +
-            '.label-context'
-        )
-      )
+        Maybe.fromEmpty,
+        i18n
+      )(`energiatodistus.${localeKey(R.slice(0, -1, path))}.label-context`)
     : Maybe.None();
 
 export const fullLabel = (i18n, inputLanguage, path) =>
@@ -82,4 +77,34 @@ const language = R.compose(
 
 export const propertyLabel = R.curry((i18n, propertyName) =>
   fullLabel(i18n, language(propertyName), R.split('.', propertyName))
+);
+
+export const labelContextForPath = R.curry((i18n, path) =>
+  R.compose(
+    Maybe.orSome(''),
+    R.filter(R.complement(R.equals('$unused'))),
+    Maybe.fromEmpty,
+    i18n,
+    path => `energiatodistus.${path}.label-context`,
+    localeKey
+  )(path)
+);
+
+export const aggregateLabelContext = R.curry((i18n, propertyName) => {
+  const path = R.split('.', propertyName);
+  const propertiesBetween = R.map(
+    R.take(R.__, path),
+    R.compose(R.range(1), R.length)(path)
+  );
+  return R.filter(
+    R.length,
+    R.map(labelContextForPath(i18n), propertiesBetween)
+  );
+});
+
+export const aggregateLabel = R.curry((i18n, propertyName) =>
+  R.join(' / ', [
+    ...aggregateLabelContext(i18n, propertyName),
+    label(i18n, language(propertyName), R.split('.', propertyName))
+  ])
 );

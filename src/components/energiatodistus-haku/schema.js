@@ -327,8 +327,8 @@ const perustiedot = {
   rakennusosa: [...stringComparisons],
   havainnointikaynti: [havainnointikayntiEquals, havainnointikayntiBetween],
   kieli: [luokitteluEquals(OPERATOR_TYPES.KIELISYYS)],
-  'keskeiset-suositukset-fi': [stringContains],
-  'keskeiset-suositukset-sv': [stringContains]
+  'keskeiset-suositukset-fi': [...stringComparisons],
+  'keskeiset-suositukset-sv': [...stringComparisons]
 };
 
 const lahtotiedot = {
@@ -626,8 +626,8 @@ export const schema = {
   'toteutunut-ostoenergiankulutus': toteutunutOstoenergiankulutus,
   huomiot,
   versio: [versioEquals],
-  'lisamerkintoja-fi': [stringContains],
-  'lisamerkintoja-sv': [stringContains],
+  'lisamerkintoja-fi': [...stringComparisons],
+  'lisamerkintoja-sv': [...stringComparisons],
   laskuriviviite: [...stringComparisons],
   'laatija-id': [laatijaEquals]
 };

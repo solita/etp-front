@@ -1280,7 +1280,7 @@
           "publish-button": "Lähetä"
         },
         "rfc-reply": {
-          "title": "Vastaus lisäselvityspyyntö",
+          "title": "Vastaus lisäselvityspyyntöön",
           "description": "Vastaus",
           "save-button": "Tallenna",
           "reset-button": "Peruuta",

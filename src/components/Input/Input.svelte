@@ -72,7 +72,8 @@
     {viewValue}
     {valid}
     {validationResult}
-    {labelUnit} />
+    {labelUnit}
+    on:change />
 
   {#if !valid}
     <div class="validation-label">

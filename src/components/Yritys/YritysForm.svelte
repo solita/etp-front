@@ -37,6 +37,11 @@
 
   $: labelLocale = LocaleUtils.label($locale);
 
+  $: postinumeroValidators =
+    !yritys.maa.isRight() || yritys.maa.right() === 'FI'
+      ? formSchema.postinumero
+      : formSchema['postinumero-foreign'];
+
   const parseCountry = R.compose(
     R.map(R.prop('id')),
     Maybe.toEither(R.applyTo('country-not-found')),
@@ -190,7 +195,7 @@
             bind:model={yritys}
             lens={R.lensProp('postinumero')}
             parse={formParsers.postinumero}
-            validators={formSchema.postinumero}
+            validators={postinumeroValidators}
             {i18n} />
         </div>
         <div class="lg:w-1/3 lg:py-0 w-full px-4 py-4">
@@ -213,6 +218,12 @@
               name={'maa'}
               label={i18n('yritys.maa')}
               required={true}
+              on:change={event => {
+                document.getElementById('postinumero').focus();
+                setTimeout(() => {
+                  event.target.focus();
+                }, 10);
+              }}
               bind:model={yritys}
               lens={R.lensProp('maa')}
               format={formatCountry}

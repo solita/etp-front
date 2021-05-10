@@ -69,6 +69,7 @@
     {placeholder}
     bind:rawValue
     bind:focused
+    on:change
     on:input
     on:keypress />
 </svelte:component>

@@ -24,6 +24,11 @@ export const schema = {
   ),
   jakeluosoite: RequiredString(2, 200),
   postinumero: [Validation.isRequired, Validation.postinumeroValidator],
+  'postinumero-foreign': [
+    Validation.isRequired,
+    Validation.minLengthConstraint(1),
+    Validation.maxLengthConstraint(20)
+  ],
   postitoimipaikka: RequiredString(2, 200),
 
   wwwosoite: R.map(Validation.liftValidator, [Validation.urlValidator]),

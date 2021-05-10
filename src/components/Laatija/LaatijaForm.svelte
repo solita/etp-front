@@ -42,6 +42,11 @@
 
   $: labelLocale = LocaleUtils.label($locale);
 
+  $: postinumeroValidators =
+    !laatija.maa.isRight() || laatija.maa.right() === 'FI'
+      ? formSchema.postinumero
+      : formSchema['postinumero-foreign'];
+
   const parseCountry = R.compose(
     Either.map(R.prop('id')),
     Maybe.toEither(R.applyTo('country-not-found')),
@@ -247,7 +252,7 @@
           bind:model={laatija}
           lens={R.lensProp('postinumero')}
           parse={formParsers.postinumero}
-          validators={formSchema.postinumero}
+          validators={postinumeroValidators}
           {disabled}
           {i18n} />
       </div>
@@ -271,6 +276,12 @@
             name={'maa'}
             label={i18n('laatija.maa')}
             required={true}
+            on:change={event => {
+              document.getElementById('postinumero').focus();
+              setTimeout(() => {
+                event.target.focus();
+              }, 10);
+            }}
             bind:model={laatija}
             lens={R.lensProp('maa')}
             format={formatCountry}

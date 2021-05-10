@@ -55,6 +55,7 @@
     focused = false;
   }}
   on:blur
+  on:change
   on:input={event => (rawValue = event.target.value)}
   on:input
   on:keypress />

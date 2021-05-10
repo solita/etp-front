@@ -12,7 +12,7 @@ export const emptyYritys = () => ({
   jakeluosoite: '',
   postinumero: '',
   postitoimipaikka: '',
-  maa: '',
+  maa: Either.Right(Maybe.None()),
   laskutuskieli: 0,
   verkkolaskuosoite: Maybe.None(),
   verkkolaskuoperaattori: Either.Right(Maybe.None())
@@ -32,6 +32,11 @@ export const formSchema = () => ({
   ]),
   jakeluosoite: [validation.isRequired],
   postinumero: [validation.isRequired, validation.postinumeroValidator],
+  'postinumero-foreign': [
+    validation.isRequired,
+    validation.minLengthConstraint(1),
+    validation.maxLengthConstraint(20)
+  ],
   postitoimipaikka: [
     validation.isRequired,
     validation.minLengthConstraint(2),

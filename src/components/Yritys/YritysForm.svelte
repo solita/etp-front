@@ -1,5 +1,6 @@
 <script>
   import * as R from 'ramda';
+  import { tick } from 'svelte';
 
   import { locale, _ } from '@Language/i18n';
   import * as LocaleUtils from '@Language/locale-utils';
@@ -37,10 +38,9 @@
 
   $: labelLocale = LocaleUtils.label($locale);
 
-  $: postinumeroValidators =
-    !yritys.maa.isRight() || yritys.maa.right() === 'FI'
-      ? formSchema.postinumero
-      : formSchema['postinumero-foreign'];
+  $: postinumeroValidators = yritys.maa.toMaybe().exists(R.equals('FI'))
+    ? formSchema.postinumero
+    : formSchema['postinumero-foreign'];
 
   const parseCountry = R.compose(
     R.map(R.prop('id')),
@@ -220,9 +220,9 @@
               required={true}
               on:change={event => {
                 document.getElementById('postinumero').focus();
-                setTimeout(() => {
+                tick().then(() => {
                   event.target.focus();
-                }, 10);
+                });
               }}
               bind:model={yritys}
               lens={R.lensProp('maa')}

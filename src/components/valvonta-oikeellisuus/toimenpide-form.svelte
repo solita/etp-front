@@ -140,8 +140,9 @@
       type={'reset'}
       style={'secondary'} />
     <Button
+      disabled={Maybe.isNone(publish)}
       on:click={previewToimenpide}
-      text={Maybe.isNone(publish) || !Toimenpiteet.isDraft(toimenpide)
+      text={!Toimenpiteet.isDraft(toimenpide)
         ? $_(i18nRoot + '.download-button')
         : $_(i18nRoot + '.preview-button')} />
   </div>

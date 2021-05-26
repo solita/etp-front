@@ -195,7 +195,7 @@
       </div>
 
       {#if !R.isEmpty(templates)}
-        <div class="mt-5">
+        <div class="mt-5 ml-5">
           <Button
             text={i18n(i18nRoot + '.preview-button')}
             style={'secondary'}

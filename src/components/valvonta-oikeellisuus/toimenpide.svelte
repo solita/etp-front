@@ -58,6 +58,7 @@
     <div class="ml-2">
       <Link
         icon={Maybe.Some('download')}
+        target={'_blank'}
         href={valvontaApi.url.dokumentti(
           toimenpide['energiatodistus-id'],
           toimenpide.id

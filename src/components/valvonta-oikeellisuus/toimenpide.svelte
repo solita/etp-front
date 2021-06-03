@@ -57,11 +57,12 @@
   {#if !Toimenpiteet.isDraft(toimenpide) && Toimenpiteet.hasTemplate(toimenpide)}
     <div class="ml-2">
       <Link
-        icon={Maybe.Some('download')}
+        text={toimenpide.filename}
         target={'_blank'}
         href={valvontaApi.url.dokumentti(
           toimenpide['energiatodistus-id'],
-          toimenpide.id
+          toimenpide.id,
+          toimenpide['type-id']
         )} />
     </div>
   {/if}

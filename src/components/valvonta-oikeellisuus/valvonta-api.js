@@ -15,8 +15,8 @@ export const url = {
   valvonta: id => `${url.valvonnat}/${id}`,
   toimenpiteet: id => `${url.valvonta(id)}/toimenpiteet`,
   esikatselu: id => `${url.valvonta(id)}/toimenpiteet/preview`,
-  dokumentti: (id, toimenpideId) =>
-    `${url.toimenpiteet(id)}/${toimenpideId}/document`,
+  dokumentti: (id, toimenpideId, typeId) =>
+    `${url.toimenpiteet(id)}/${toimenpideId}/document/${typeId}`,
   toimenpide: (id, toimenpideId) => `${url.toimenpiteet(id)}/${toimenpideId}`
 };
 

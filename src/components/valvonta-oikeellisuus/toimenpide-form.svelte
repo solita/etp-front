@@ -72,7 +72,8 @@
       window.open(
         valvontaApi.url.dokumentti(
           toimenpide['energiatodistus-id'],
-          toimenpide.id
+          toimenpide.id,
+          toimenpide['type-id']
         ),
         '_blank'
       );

@@ -83,7 +83,6 @@
         },
         response => {
           let link = document.createElement('a');
-          link.download = 'preview.pdf';
           link.target = '_blank';
           link.href = URL.createObjectURL(response);
           link.click();

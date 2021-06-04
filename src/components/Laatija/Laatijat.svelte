@@ -4,7 +4,7 @@
   import * as qs from 'qs';
   import * as Maybe from '@Utility/maybe-utils';
 
-  import SimpleInput from '@Component/Input/SimpleInput';
+  import Input from '@Component/Input/Input';
   import PillInputWrapper from '@Component/Input/PillInputWrapper';
   import H1 from '@Component/H/H1';
   import Select from '@Component/Select/Select';
@@ -198,9 +198,9 @@
 
   <div class="flex lg:flex-row flex-col -mx-4 my-4">
     <div class="lg:w-2/3 w-full px-4 lg:pt-10">
-      <SimpleInput
-        label={' '}
-        wrapper={PillInputWrapper}
+      <Input
+        model={Maybe.orSome('', model.search)}
+        inputComponentWrapper={PillInputWrapper}
         search={true}
         on:input={evt => {
           cancel = R.compose(
@@ -213,8 +213,7 @@
             Future.after(200),
             R.tap(cancel)
           )(evt.target.value);
-        }}
-        viewValue={R.compose(Maybe.orSome(''), R.prop('search'))(model)} />
+        }} />
     </div>
 
     <div class="lg:w-1/3 w-full px-4 py-4">
@@ -253,59 +252,61 @@
       urlFn={urlForPage(model)}
       baseUrl={'#/laatija/all?'}
       let:pageItems>
-      <table class="etp-table">
-        <thead class="etp-table--thead">
-          <th class="etp-table--th">{$_('laatija.laatija')}</th>
-          <th class="etp-table--th">{$_('kayttaja.puhelinnumero')}</th>
-          <th class="etp-table--th">{$_('laatija.patevyystaso')}</th>
-          <th class="etp-table--th">{$_('laatijahaku.voimassaolo')}</th>
-          <th class="etp-table--th">{$_('laatija.paatoimintaalue')}</th>
-          <th class="etp-table--th">{$_('laatija.postinumero')}</th>
-          <th class="etp-table--th">{$_('laatijahaku.kunta')}</th>
-          <th class="etp-table--th">{$_('yritys.yritykset')}</th>
-          {#if Kayttajat.isPaakayttajaOrLaskuttaja(kayttaja)}
-            <th class="etp-table--th"
-              >{$_('laatijahaku.energiatodistukset')}</th>
-          {/if}
-        </thead>
-        <tbody class="etp-table--tbody">
-          {#each pageItems as laatija}
-            <tr data-cy="laatija-row" class="etp-table--tr">
-              <Linkrow
-                contents={[
-                  `${laatija.etunimi} ${laatija.sukunimi}`,
-                  laatija.puhelin,
-                  laatija.patevyystaso,
-                  formats.formatPatevyydenVoimassaoloaika(
-                    laatija.toteamispaivamaara
-                  ),
-                  laatija.toimintaalue,
-                  laatija.postinumero,
-                  laatija.postitoimipaikka
-                ]}
-                href={`#/kayttaja/${laatija.id}`} />
-              <td class="etp-table--td">
-                {#each laatija.yritys as { id, nimi }}
-                  <a
-                    class="text-primary hover:underline"
-                    href={`#/yritys/${id}`}>
-                    {nimi}
-                  </a>
-                {/each}
-              </td>
-              {#if Kayttajat.isPaakayttajaOrLaskuttaja(kayttaja)}
+      <div class="overflow-x-auto">
+        <table class="etp-table">
+          <thead class="etp-table--thead">
+            <th class="etp-table--th">{$_('laatija.laatija')}</th>
+            <th class="etp-table--th">{$_('kayttaja.puhelinnumero')}</th>
+            <th class="etp-table--th">{$_('laatija.patevyystaso')}</th>
+            <th class="etp-table--th">{$_('laatijahaku.voimassaolo')}</th>
+            <th class="etp-table--th">{$_('laatija.paatoimintaalue')}</th>
+            <th class="etp-table--th">{$_('laatija.postinumero')}</th>
+            <th class="etp-table--th">{$_('laatijahaku.kunta')}</th>
+            <th class="etp-table--th">{$_('yritys.yritykset')}</th>
+            {#if Kayttajat.isPaakayttajaOrLaskuttaja(kayttaja)}
+              <th class="etp-table--th"
+                >{$_('laatijahaku.energiatodistukset')}</th>
+            {/if}
+          </thead>
+          <tbody class="etp-table--tbody">
+            {#each pageItems as laatija}
+              <tr data-cy="laatija-row" class="etp-table--tr">
+                <Linkrow
+                  contents={[
+                    `${laatija.etunimi} ${laatija.sukunimi}`,
+                    laatija.puhelin,
+                    laatija.patevyystaso,
+                    formats.formatPatevyydenVoimassaoloaika(
+                      laatija.toteamispaivamaara
+                    ),
+                    laatija.toimintaalue,
+                    laatija.postinumero,
+                    laatija.postitoimipaikka
+                  ]}
+                  href={`#/kayttaja/${laatija.id}`} />
                 <td class="etp-table--td">
-                  <a
-                    class="font-icon text-2xl text-primary hover:underline"
-                    href={`#/energiatodistus/all?where=[[["=","laatija-id",${laatija.id}]]]`}>
-                    view_list
-                  </a>
+                  {#each laatija.yritys as { id, nimi }}
+                    <a
+                      class="text-primary hover:underline"
+                      href={`#/yritys/${id}`}>
+                      {nimi}
+                    </a>
+                  {/each}
                 </td>
-              {/if}
-            </tr>
-          {/each}
-        </tbody>
-      </table>
+                {#if Kayttajat.isPaakayttajaOrLaskuttaja(kayttaja)}
+                  <td class="etp-table--td">
+                    <a
+                      class="font-icon text-2xl text-primary hover:underline"
+                      href={`#/energiatodistus/all?where=[[["=","laatija-id",${laatija.id}]]]`}>
+                      view_list
+                    </a>
+                  </td>
+                {/if}
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
     </Pagination>
   {/each}
 </div>

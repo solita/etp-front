@@ -73,7 +73,7 @@
         valvontaApi.url.dokumentti(
           toimenpide['energiatodistus-id'],
           toimenpide.id,
-          toimenpide['type-id']
+          toimenpide['filename']
         ),
         '_blank'
       );

@@ -59,7 +59,7 @@
       <Link
         text={toimenpide.filename}
         target={'_blank'}
-        href={valvontaApi.url.dokumentti(
+        href={valvontaApi.url.document(
           toimenpide['energiatodistus-id'],
           toimenpide.id,
           toimenpide['filename']

@@ -70,7 +70,7 @@
   const previewToimenpide = () => {
     if (Validation.isValidForm(Schema.toimenpideSave)(toimenpide)) {
       window.open(
-        valvontaApi.url.dokumentti(
+        valvontaApi.url.document(
           toimenpide['energiatodistus-id'],
           toimenpide.id,
           toimenpide['filename']

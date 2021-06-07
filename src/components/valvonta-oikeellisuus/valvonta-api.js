@@ -14,8 +14,8 @@ export const url = {
   valvonnat: 'api/private/valvonta/oikeellisuus',
   valvonta: id => `${url.valvonnat}/${id}`,
   toimenpiteet: id => `${url.valvonta(id)}/toimenpiteet`,
-  esikatselu: id => `${url.valvonta(id)}/toimenpiteet/preview`,
-  dokumentti: (id, toimenpideId, filename) =>
+  preview: id => `${url.valvonta(id)}/toimenpiteet/preview`,
+  document: (id, toimenpideId, filename) =>
     `${url.toimenpiteet(id)}/${toimenpideId}/document/${filename}`,
   toimenpide: (id, toimenpideId) => `${url.toimenpiteet(id)}/${toimenpideId}`
 };
@@ -160,7 +160,7 @@ export const publishToimenpide = R.curry((id, toimenpideId) =>
 export const previewToimenpide = R.curry((id, toimenpide) =>
   R.compose(
     Fetch.responseAsBlob,
-    Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', url.esikatselu(id))),
+    Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', url.preview(id))),
     serializeToimenpide
   )(toimenpide)
 );

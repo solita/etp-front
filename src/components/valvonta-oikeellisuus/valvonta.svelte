@@ -4,6 +4,7 @@
   import * as Response from '@Utility/response';
   import * as Maybe from '@Utility/maybe-utils';
   import * as Kayttajat from '@Utility/kayttajat';
+  import * as Toimenpiteet from './toimenpiteet';
 
   import { _, locale } from '@Language/i18n';
   import { flashMessageStore } from '@/stores';
@@ -52,7 +53,20 @@
         resources = Maybe.Some(response);
         overlay = false;
       },
-      Future.parallelObject(5, {
+      R.compose(
+        R.map(response =>
+          R.over(
+            R.lensProp('toimenpiteet'),
+            R.filter(
+              Kayttajat.isPaakayttaja(response.whoami)
+                ? Toimenpiteet.visibleForPaakayttaja
+                : Toimenpiteet.visibleForLaatija
+            ),
+            response
+          )
+        ),
+        Future.parallelObject(5)
+      )({
         luokittelut: EnergiatodistusApi.luokittelutForVersion(params.versio),
         energiatodistus: EnergiatodistusApi.getEnergiatodistusById(
           params.versio,

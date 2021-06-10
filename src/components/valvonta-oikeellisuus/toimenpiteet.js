@@ -54,7 +54,6 @@ export const isDialogType = R.includes(R.__, [
   9,
   10,
   11,
-  12,
   13,
   14
 ]);
@@ -68,6 +67,18 @@ export const isAuditCaseToimenpideType = R.propSatisfies(
   R.includes(R.__, [3, 5, 6, 7, 9, 10, 11, 13, 14]),
   'id'
 );
+
+export const visibleForLaatija = toimenpide =>
+  R.both(
+    R.ifElse(isAuditReport, R.complement(isDraft), R.T),
+    R.propSatisfies(
+      R.includes(R.__, [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+      'type-id'
+    )
+  )(toimenpide);
+
+export const visibleForPaakayttaja = toimenpide =>
+  !R.both(isResponse, isDraft)(toimenpide);
 
 export const isVerified = isType(type.verified);
 export const isAnomaly = isType(type.anomaly);

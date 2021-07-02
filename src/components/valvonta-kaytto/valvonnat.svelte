@@ -29,6 +29,7 @@
   import Pagination from '@Component/Pagination/Pagination';
   import Checkbox from '@Component/Checkbox/Checkbox';
   import Select from '@Component/Select/Select';
+  import Address from '@Component/Address/address';
 
   let resources = Maybe.None();
   let overlay = true;
@@ -113,6 +114,7 @@
           R.omit(['offset', 'limit']),
           queryToBackendParams
         )(query),
+        luokittelut: api.luokittelut,
         toimenpidetyypit: api.toimenpidetyypit,
         valvojat: api.valvojat,
         valvonnat: api.valvonnat(queryToBackendParams(query))
@@ -279,11 +281,10 @@
                   {/if}
                   <td class="etp-table--td">{valvonta.id}</td>
                   <td class="etp-table--td">
-                    <!-- TODO implement generic address component
-                           <Address
-                      energiatodistus={valvonta.energiatodistus}
+                    <Address
+                      jakeluosoite={valvonta.katuosoite}
+                      postinumero={Maybe.fromNull(valvonta.postinumero)}
                       postinumerot={luokittelut.postinumerot} />
-                      -->
                   </td>
                   <td class="etp-table--td">
                     {R.join(

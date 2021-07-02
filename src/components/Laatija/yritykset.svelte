@@ -11,7 +11,7 @@
   import Autocomplete from '@Component/Autocomplete/Autocomplete';
   import Confirm from '@Component/Confirm/Confirm';
   import Overlay from '@Component/Overlay/Overlay.svelte';
-  import Address from '@Component/Yritys/address.svelte';
+  import Address from '@Component/Address/address';
 
   import * as kayttajaApi from '@Component/Kayttaja/kayttaja-api';
   import * as Kayttajat from '@Utility/kayttajat';
@@ -191,7 +191,14 @@
                       )}
                     </td>
                     <td class="etp-table--td">{yritys.ytunnus}</td>
-                    <td class="etp-table--td"><Address address={yritys} /></td>
+                    <td class="etp-table--td">
+                      <Address
+                        jakeluosoite={yritys.jakeluosoite}
+                        postinumero={Maybe.Some(yritys.postinumero)}
+                        postitoimipaikka={Maybe.Some(
+                          yritys.postitoimipaikka
+                        )} />
+                    </td>
                     <td class="etp-table--td">
                       {#if Tila.isProposal(yritys)}
                         {i18n('laatija.yritykset.table.proposal')}

@@ -206,3 +206,7 @@ export const notes = R.compose(
   Fetch.getJson(fetch),
   url.notes
 );
+
+export const luokittelut = Future.parallelObject(1, {
+  postinumerot: Fetch.cached(fetch, '/postinumerot')
+});

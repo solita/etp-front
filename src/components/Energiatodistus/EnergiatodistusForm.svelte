@@ -28,7 +28,7 @@
   import * as EtUtils from './energiatodistus-utils';
   import * as EtValidations from './validation';
   import * as Inputs from './inputs';
-  import * as Postinumero from './postinumero';
+  import * as Postinumero from '@Utility/postinumero';
   import * as Kayttajat from '@Utility/kayttajat';
 
   import ToolBar from '@Component/ToolBar/ToolBar';

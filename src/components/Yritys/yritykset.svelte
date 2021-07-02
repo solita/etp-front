@@ -11,7 +11,7 @@
 
   import Overlay from '@Component/Overlay/Overlay.svelte';
   import H1 from '@Component/H/H1.svelte';
-  import Address from './address';
+  import Address from '@Component/Address/address';
 
   const i18n = $_;
 
@@ -64,7 +64,12 @@
                 )}
               </td>
               <td class="etp-table--td">{yritys.ytunnus}</td>
-              <td class="etp-table--td"><Address address={yritys} /></td>
+              <td class="etp-table--td">
+                <Address
+                  jakeluosoite={yritys.jakeluosoite}
+                  postinumero={Maybe.Some(yritys.postinumero)}
+                  postitoimipaikka={Maybe.Some(yritys.postitoimipaikka)} />
+              </td>
             </tr>
           {/each}
         </tbody>

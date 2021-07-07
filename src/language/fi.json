@@ -1456,10 +1456,8 @@
         }
       },
       "kohde": {
-        "title": "Kohde"
-      },
-      "new-kohde": {
-        "title": "Uusi käytönvalvonta"
+        "title": "Kohde",
+        "new-kohde": "Uusi käytönvalvonta"
       },
       "valvonta": {
         "title": "Valvonta",

@@ -62,6 +62,42 @@ export const serializeToimenpide = R.compose(
   R.pick(['type-id', 'deadline-date', 'description', 'template-id'])
 );
 
+export const serializeKaytto = R.compose(
+  R.evolve({
+    'valvoja-id': Maybe.orSome(null),
+    'ilmoituspaikka-id': Maybe.orSome(null),
+    havaintopaiva: EM.fold(null, date =>
+      dfns.formatISO(date, { representation: 'date' })
+    )
+  })
+);
+export const deserializeKaytto = R.evolve({
+  'ilmoituspaikka-id': Maybe.fromNull,
+  'valvoja-id': Maybe.fromNull,
+  havaintopaiva: R.compose(
+    Parsers.toEitherMaybe,
+    R.map(Parsers.parseISODate),
+    Maybe.fromNull
+  )
+});
+
+export const postKaytto = R.curry((fetch, kaytto) =>
+  R.compose(
+    Fetch.responseAsJson,
+    Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', url.valvonnat)),
+    R.tap(console.log),
+    serializeKaytto
+  )(kaytto)
+);
+
+export const getKaytto = R.curry((id, kaytto) =>
+  R.compose(
+    R.map(deserializeKaytto),
+    Fetch.responseAsJson,
+    Future.encaseP(Fetch.fetchWithMethod(fetch, 'get', url.valvonta(id)))
+  )(kaytto)
+);
+
 export const valvonnat = R.compose(
   R.map(R.map(deserializeValvontaStatus)),
   Fetch.getJson(fetch),
@@ -78,6 +114,11 @@ export const valvontaCount = R.compose(
 export const toimenpidetyypit = Fetch.cached(
   fetch,
   '/valvonta/kaytto/toimenpidetyypit'
+);
+
+export const ilmoituspaikat = Fetch.cached(
+  fetch,
+  '/valvonta/kaytto/ilmoituspaikat'
 );
 
 export const templatesByType = R.compose(

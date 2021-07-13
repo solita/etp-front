@@ -44,8 +44,6 @@
   let form;
   let kohde = emptyKohde;
 
-  $: console.log(kohde);
-
   let resources = Maybe.None();
 
   Future.fork(
@@ -69,7 +67,7 @@
   );
 
   const submitNewKohde = event => {
-    if (kohde.katuosoite?.length > 3) {
+    if (kohde.katuosoite?.length >= 3) {
       overlay = true;
       addKohde(kohde);
     } else {

@@ -1456,8 +1456,33 @@
         }
       },
       "kohde": {
-        "title": "Kohde",
-        "new-kohde": "Uusi käytönvalvonta"
+        "rakennuksen-tiedot": "Rakennuksen tiedot",
+        "rakennustunnus": "Rakennustunnus",
+        "katuosoite": "Katuosoite",
+        "postinumero": "Postinumero",
+        "ilmoituksen-tiedot": "Ilmoituksen tiedot",
+        "havaintopaiva": "Havaintopäivä",
+        "ilmoituspaikka-id": "Ilmoituspaikka",
+        "ilmoituspaikka-description": "Ilmoituspaikan nimi",
+        "ilmoitustunnus": "Ilmoitustunnus",
+        "save": "Tallenna",
+        "reset": "Tyhjennä",
+        "revert": "Peru muutokset",
+        "cancel": "Peruuta",
+        "delete": "Poista",
+        "new-kohde": "Uusi käytönvalvonta",
+        "after-save-notice": "Voit lisätä liitteitä ja osapuolia tallentamisen jälkeen.",
+        "messages": {
+          "not-found": "Kohdetta ei löydy.",
+          "load-error": "Kohteen tietojen haku epäonnistui.",
+          "save-success": "Kohteen muutokset tallennettu.",
+          "save-error": "Kohteen tallennus epäonnistui.",
+          "delete-success": "Kohde poistettu.",
+          "delete-error": "Kohteen poistaminen epäonnistui.",
+          "add-success": "Kohde lisätty.",
+          "add-error": "Kohteen lisääminen epäonnistui.",
+          "validation-error": "Tiedoissa on virhe. Tarkista kohteen tiedot ennen lähettämistä."
+        }
       },
       "valvonta": {
         "title": "Valvonta",

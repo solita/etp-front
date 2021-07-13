@@ -81,21 +81,34 @@ export const deserializeKaytto = R.evolve({
   )
 });
 
+export const getKaytto = R.compose(
+  R.map(deserializeKaytto),
+  Fetch.responseAsJson,
+  Future.encaseP(Fetch.getFetch(fetch)),
+  url.valvonta
+);
+
 export const postKaytto = R.curry((fetch, kaytto) =>
   R.compose(
     Fetch.responseAsJson,
     Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', url.valvonnat)),
-    R.tap(console.log),
     serializeKaytto
   )(kaytto)
 );
 
-export const getKaytto = R.curry((id, kaytto) =>
+export const putKaytto = R.curry((fetch, id, kaytto) =>
   R.compose(
-    R.map(deserializeKaytto),
     Fetch.responseAsJson,
-    Future.encaseP(Fetch.fetchWithMethod(fetch, 'get', url.valvonta(id)))
+    Future.encaseP(Fetch.fetchWithMethod(fetch, 'put', url.valvonta(id))),
+    serializeKaytto
   )(kaytto)
+);
+
+export const deleteKaytto = R.curry((fetch, id) =>
+  R.compose(
+    R.chain(Fetch.rejectWithInvalidResponse),
+    Future.encaseP(Fetch.fetchWithMethod(fetch, 'delete', url.valvonta(id)))
+  )
 );
 
 export const valvonnat = R.compose(

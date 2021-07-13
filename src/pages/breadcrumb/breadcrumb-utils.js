@@ -98,7 +98,7 @@ export const valvontaKayttoCrumb = R.curry((i18n, [id], _) =>
         }
       ])
     ]
-  ])()
+  ])(id)
 );
 
 export const etKetjuCrumb = R.curry((i18n, etId) => [

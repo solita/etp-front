@@ -1,11 +1,19 @@
-import * as R from 'ramda';
-
 /**
- * This library contains implementations of some rambda functionality
+ * @module DeepObjects
+ * This library contains implementations of some ramda functionality
  * for nested object structures.
  */
 
+import * as R from 'ramda';
+
+/**
+ * @sig a -> Boolean
+ */
 export const isObject = R.is(Object);
+
+/**
+ * @sig a -> Boolean
+ */
 export const isArray = R.is(Array);
 
 export const values = R.curry((isValue, object) =>

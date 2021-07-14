@@ -1,3 +1,7 @@
+/**
+ * @module Fetch
+ */
+
 import * as R from 'ramda';
 import * as Future from './future-utils';
 import * as Maybe from './maybe-utils';

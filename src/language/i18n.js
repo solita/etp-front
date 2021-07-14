@@ -22,4 +22,20 @@ const setupI18n = () => {
   });
 };
 
+/**
+ * @global
+ * @name Translate
+ * @sig String -> String
+ *
+ * @description Translates the given string according to locale
+ */
+
+/**
+ * @global
+ * @name Locale
+ * @sig () -> String
+ *
+ * @description Returns the current locale
+ */
+
 export { setupI18n, _, locale, locales };

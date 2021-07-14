@@ -1,3 +1,7 @@
+/**
+ * @module Kayttajat
+ */
+
 import * as R from 'ramda';
 
 const roles = ['laatija', 'patevyydentoteaja', 'paakayttaja', 'laskuttaja'];

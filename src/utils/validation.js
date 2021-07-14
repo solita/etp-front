@@ -1,3 +1,7 @@
+/**
+ * @module Validation
+ */
+
 import * as dfns from 'date-fns';
 
 import * as R from 'ramda';

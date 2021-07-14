@@ -1,3 +1,4 @@
+/** @module Parsers */
 import * as R from 'ramda';
 import * as dfns from 'date-fns';
 
@@ -5,6 +6,11 @@ import * as Either from '@Utility/either-utils';
 import * as Maybe from '@Utility/maybe-utils';
 import * as Validation from '@Utility/validation';
 
+/**
+ * @description Parses integers from string and returns results wrapped in Either
+ *
+ * @sig String -> Either [Function, Number]
+ */
 export const parseInteger = R.compose(
   R.ifElse(
     R.test(/^\d+$/),

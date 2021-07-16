@@ -24,16 +24,16 @@ const setupI18n = () => {
 
 /**
  * @global
- * @name Translate
- * @sig String -> String
+ * @typedef {Function} Translate
+ * @sig string -> string
  *
  * @description Translates the given string according to locale
  */
 
 /**
  * @global
- * @name Locale
- * @sig () -> String
+ * @typedef {Function} Locale
+ * @sig () -> string
  *
  * @description Returns the current locale
  */

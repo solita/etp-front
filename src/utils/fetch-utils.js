@@ -1,5 +1,14 @@
 /**
  * @module Fetch
+ * @description Utilities for handling generic fetch related actions
+ */
+
+/**
+ * @typedef {Object} ErrorResponse
+ * @property {Object|string} body
+ * @property {number} status
+ * @property {string} url
+ * @property {string?} contentType
  */
 
 import * as R from 'ramda';
@@ -25,6 +34,10 @@ const isJson = R.compose(
   contentType
 );
 
+/**
+ * @private
+ * @sig Response -> Future [*,ErrorResponse]
+ */
 const invalidResponse = response =>
   R.compose(
     R.map(R.assoc('contentType', contentType(response))),
@@ -33,6 +46,9 @@ const invalidResponse = response =>
     R.ifElse(isJson, toJson, toText)
   )(response);
 
+/**
+ * @sig Response -> Future [ErrorResponse,Response]
+ */
 export const rejectWithInvalidResponse = R.ifElse(
   R.prop('ok'),
   Future.resolve,
@@ -44,24 +60,39 @@ export const responseAsJson = R.compose(
   R.chain(rejectWithInvalidResponse)
 );
 
+/**
+ * @sig Future [ErrorResponse,Response] -> Future [ErrorResponse,Blob]
+ */
 export const responseAsBlob = R.compose(
   R.chain(toBlob),
   R.chain(rejectWithInvalidResponse)
 );
 
+/**
+ * @sig Future [ErrorResponse,Response] -> Future [ErrorResponse,JSON]
+ */
 export const responseAsText = R.compose(
   R.chain(toText),
   R.chain(rejectWithInvalidResponse)
 );
 
+/**
+ * @sig Fetch -> string -> Promise
+ */
 export const getFetch = R.curry((fetch, url) =>
   fetch(url, { headers: { Accept: 'application/json' } })
 );
 
+/**
+ * @sig Fetch -> string -> Future [Response,JSON]
+ */
 export const getJson = R.curry((fetch, url) =>
   R.compose(responseAsJson, Future.encaseP(getFetch(fetch)))(url)
 );
 
+/**
+ * @sig Fetch -> string -> string -> Object|string -> Promise
+ */
 export const fetchWithMethod = R.curry((fetch, method, url, body) =>
   fetch(url, {
     method,
@@ -73,17 +104,23 @@ export const fetchWithMethod = R.curry((fetch, method, url, body) =>
   })
 );
 
+/**
+ * @sig Fetch -> string -> Promise
+ */
 export const postEmpty = R.curry((fetch, url) =>
   fetch(url, { method: 'post', headers: { Accept: 'application/json' } })
 );
 
+/**
+ * @sig Fetch -> string -> Promise
+ */
 export const deleteRequest = R.curry((fetch, url) =>
   fetch(url, { method: 'delete' })
 );
 
 /**
- * Cached future to fetch static data from backend
- * @type {any}
+ * @sig Fetch -> string -> Future [ErrorResponse, Response]
+ * @description Cached future to fetch static data from backend
  */
 export const cached = R.curry((fetch, url) =>
   R.compose(Future.cache, getJson)(fetch, api + url)

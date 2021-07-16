@@ -1,5 +1,6 @@
 /**
  * @module Validation
+ * @description Functions to validate inputs
  */
 
 import * as dfns from 'date-fns';
@@ -12,6 +13,15 @@ import BigInt from 'big-integer';
 
 export const DATE_FORMAT = 'dd.MM.yyyy';
 
+/**
+ * @typedef {Object} Validator
+ * @property {Function} predicate
+ * @property {Function} label
+ */
+
+/**
+ * @sig string -> number
+ */
 export const ytunnusChecksum = R.compose(
   R.unless(R.equals(0), R.subtract(11)),
   R.modulo(R.__, 11),
@@ -21,6 +31,9 @@ export const ytunnusChecksum = R.compose(
   R.slice(0, 7)
 );
 
+/**
+ * @sig string -> boolean
+ */
 export const isValidYtunnus = R.allPass([
   R.test(/^\d{7}-\d$/),
   R.converge(R.equals, [ytunnusChecksum, R.compose(parseInt, R.nth(8))])
@@ -51,6 +64,9 @@ export const interpolate = R.curry((template, values) =>
   )
 );
 
+/**
+ * @sig Validator -> string -> Object -> Validator
+ */
 export const constraint = (predicate, name, labelValues) => ({
   predicate: predicate,
   label: R.compose(
@@ -215,6 +231,9 @@ export const VerkkolaskuosoiteValidator = {
   label: R.applyTo('validation.invalid-verkkolaskuosoite')
 };
 
+/**
+ * @sig Array [Validator] -> a -> Either [Validator,a]
+ */
 export const validate = (validators, value) =>
   Maybe.fromUndefined(
     R.find(R.compose(R.not, R.applyTo(value), R.prop('predicate')), validators)
@@ -222,12 +241,18 @@ export const validate = (validators, value) =>
     .toEither(value)
     .swap();
 
+/**
+ * @sig Array [Validator] -> a -> Either [(Translate -> string),a]
+ */
 export const validateModelValue = R.curry((validators, value) =>
   Either.fromValueOrEither(value).flatMap(modelValue =>
     validate(validators, modelValue).leftMap(R.prop('label'))
   )
 );
 
+/**
+ * @sig Object -> Object -> Object
+ */
 export const validateModelObject = R.curry((schemaObject, object) =>
   R.evolve(
     deep.map(
@@ -239,6 +264,9 @@ export const validateModelObject = R.curry((schemaObject, object) =>
   )
 );
 
+/**
+ * @sig Object -> boolean
+ */
 export const isValidForm = schemaObject =>
   R.compose(
     R.all(Either.isRight),
@@ -256,8 +284,8 @@ const dispatchValidationEvents = (blurred, elements) =>
   R.forEach(dispatchValidationEvent(blurred), elements);
 
 /**
- * Dispatch custom validation event for all the form inputs to ensure
- * that the inputs are validated and they show error message
+ * @description Dispatch custom validation event for all the form inputs to ensure <br>
+ * that the inputs are validated and they show error message <br>
  * if not valid.
  */
 export const blurForm = form =>

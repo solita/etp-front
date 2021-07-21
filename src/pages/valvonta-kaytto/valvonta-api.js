@@ -9,6 +9,7 @@ import * as Query from '@Utility/query';
 import * as dfns from 'date-fns';
 
 import * as Toimenpiteet from './toimenpiteet';
+import * as EtApi from '@Component/Energiatodistus/energiatodistus-api';
 
 import * as EtApi from '@Pages/energiatodistus/energiatodistus-api';
 
@@ -20,7 +21,7 @@ export const url = {
   toimenpide: (id, toimenpideId) => `${url.toimenpiteet(id)}/${toimenpideId}`,
   document: (id, toimenpideId, filename) =>
     `${url.toimenpide(id, toimenpideId)}/document/${filename}`,
-  liitteet: (id, toimenpideId) => `${url.valvonta(id)}/liitteet`,
+  liitteet: id => `${url.valvonta(id)}/liitteet`,
   notes: id => `${url.valvonta(id)}/notes`
 };
 
@@ -201,6 +202,44 @@ export const previewToimenpide = R.curry((id, toimenpide) =>
     Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', url.preview(id))),
     serializeToimenpide
   )(toimenpide)
+);
+
+export const getKayttoLiitteet = id =>
+  R.compose(
+    R.map(R.map(EtApi.deserializeLiite)),
+    Fetch.getJson(fetch),
+    url.liitteet
+  )(id);
+
+export const postKayttoLiitteetFiles = R.curry((id, files) =>
+  R.compose(
+    R.chain(Fetch.rejectWithInvalidResponse),
+    Future.encaseP(files =>
+      fetch(url.liitteet(id) + '/files', {
+        method: 'POST',
+        body: EtApi.toFormData('files', files)
+      })
+    ),
+    R.tap(console.log)
+  )(files)
+);
+
+export const postKayttoLiitteetLink = R.curry((id, link) =>
+  R.compose(
+    R.chain(Fetch.rejectWithInvalidResponse),
+    Future.encaseP(
+      Fetch.fetchWithMethod(fetch, 'post', url.liitteet(id) + '/link')
+    )
+  )(link)
+);
+
+export const deleteKayttoLiite = R.curry((id, liiteId) =>
+  R.compose(
+    R.chain(Fetch.rejectWithInvalidResponse),
+    Future.encaseP(liiteId =>
+      Fetch.deleteRequest(fetch, url.liitteet(id) + '/' + liiteId)
+    )
+  )(liiteId)
 );
 
 export const getLiitteet = R.curry((id, toimenpideId) =>

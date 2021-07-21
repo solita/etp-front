@@ -21,6 +21,7 @@
   import Button from '@Component/Button/Button.svelte';
   import Select from '@Component/Select/Select.svelte';
   import Datepicker from '@Component/Input/Datepicker';
+  import Liitteet from '@Component/liitteet/liitteet.svelte';
   import { _, locale } from '@Language/i18n';
   import { flashMessageStore } from '@/stores';
 
@@ -69,8 +70,9 @@
         kohde = response.kohde;
         overlay = false;
       },
-      Future.parallelObject(3, {
+      Future.parallelObject(4, {
         kohde: api.getKaytto(id),
+        liitteet: api.getKayttoLiitteet(id),
         whoami: KayttajaApi.whoami,
         ilmoituspaikat: api.ilmoituspaikat
       })
@@ -149,6 +151,56 @@
     api.deleteKaytto(fetch, params.id)
   );
 
+  const errorMessage = (key, response) =>
+    i18n(
+      Response.notFound(response)
+        ? `${i18nRoot}.messages.not-found`
+        : Maybe.orSome(
+            `${i18nRoot}.messages.${key}-error`,
+            Response.localizationKey(response)
+          )
+    );
+
+  const fork = (key, successCallback) => future => {
+    console.log('future, ', future);
+    overlay = true;
+    Future.fork(
+      response => {
+        const msg = errorMessage(key, response);
+        flashMessageStore.add('valvonta-kaytto', 'error', msg);
+        overlay = false;
+      },
+      _ => {
+        flashMessageStore.add(
+          'valvonta-kaytto',
+          'success',
+          i18n(`${i18nRoot}.messages.${key}-success`)
+        );
+        successCallback();
+      },
+      future
+    );
+  };
+
+  const liiteOperation = (key, liiteFuture) => liite =>
+    fork(key, _ => load(params.id))(Future.parallel(1, [liiteFuture(liite)]));
+
+  const liiteApi = {
+    getUrl: R.always(api.url.liitteet(params.id)),
+
+    addFiles: liiteOperation(
+      'add-files',
+      api.postKayttoLiitteetFiles(params.id)
+    ),
+
+    addLink: liiteOperation('add-link', api.postKayttoLiitteetLink(params.id)),
+
+    deleteLiite: liiteOperation(
+      'delete-liite',
+      api.deleteKayttoLiite(params.id)
+    )
+  };
+
   $: load(params.id);
 </script>
 
@@ -156,7 +208,7 @@
 
 <Overlay {overlay}>
   <div slot="content">
-    {#each Maybe.toArray(resources) as { whoami, ilmoituspaikat }}
+    {#each Maybe.toArray(resources) as { whoami, liitteet, ilmoituspaikat }}
       <form
         class="content"
         bind:this={form}
@@ -275,8 +327,12 @@
               style={'error'} />
           </Confirm>
         </div>
-        <div class="flex">
-          <!-- Liitteet -->
+        <div class="flex flex-col">
+          <Liitteet
+            {liiteApi}
+            {liitteet}
+            emptyMessageKey={i18n(`${i18nRoot}.no-attachments`)}
+            flashModule="valvonta-kaytto" />
         </div>
       </form>
     {/each}

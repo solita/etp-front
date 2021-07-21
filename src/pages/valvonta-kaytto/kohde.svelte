@@ -83,7 +83,6 @@
     if (kohde.katuosoite?.length >= 3) {
       overlay = true;
       kohde = R.dissoc('id', kohde);
-      console.log('update kohde:', kohde);
       updateKohde(kohde);
     } else {
       flashMessageStore.add(
@@ -162,7 +161,6 @@
     );
 
   const fork = (key, successCallback) => future => {
-    console.log('future, ', future);
     overlay = true;
     Future.fork(
       response => {

@@ -219,8 +219,7 @@ export const postKayttoLiitteetFiles = R.curry((id, files) =>
         method: 'POST',
         body: EtApi.toFormData('files', files)
       })
-    ),
-    R.tap(console.log)
+    )
   )(files)
 );
 

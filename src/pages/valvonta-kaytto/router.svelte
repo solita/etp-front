@@ -6,6 +6,8 @@
   import Kohde from './kohde';
   import NewKohde from './new-kohde';
   import NotFound from '@Pages/not-found/not-found';
+  import Henkilo from './henkilo';
+  import NewHenkilo from './new-henkilo';
 
   import FlashMessage from '@Component/FlashMessage/FlashMessage';
   import { flashMessageStore } from '@/stores';
@@ -16,6 +18,8 @@
     '/new': NewKohde,
     '/:id/valvonta': Valvonta,
     '/:id/kohde': Kohde,
+    '/:id/henkilo/new': NewHenkilo,
+    '/:id/henkilo/:henkilo-id': Henkilo,
     '*': NotFound
   };
 </script>

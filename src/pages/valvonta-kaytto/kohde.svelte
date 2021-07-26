@@ -202,7 +202,7 @@
   $: load(params.id);
 </script>
 
-<H1 text={i18n(i18nRoot + '.new-kohde')} />
+<!-- <H1 text={i18n(i18nRoot + '.title')} /> -->
 
 <Overlay {overlay}>
   <div slot="content">

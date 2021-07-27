@@ -42,7 +42,6 @@
   let overlay = true;
   let henkilo = emptyHenkilo;
   let dirty = false;
-  $: console.log('dirty', dirty);
 
   let resources = Maybe.None();
 
@@ -70,7 +69,6 @@
   const submitNewHenkilo = (henkilo, event) => {
     if (henkilo.etunimi?.length >= 1 && henkilo.sukunimi?.length >= 1) {
       overlay = true;
-      console.log('SUBMITTING:', henkilo);
       addHenkilo(henkilo);
     } else {
       flashMessageStore.add(
@@ -101,10 +99,10 @@
           i18n(`${i18nRoot}.messages.success`)
         );
         dirty = false;
-        push('/valvonta/kaytto/' + params.id + '/henkilo/' + _.id);
+        push('/valvonta/kaytto/' + params['kohde-id'] + '/henkilo/' + _.id);
       }
     ),
-    api.postHenkilo(fetch, params.id)
+    api.postHenkilo(fetch, params['kohde-id'])
   );
 </script>
 

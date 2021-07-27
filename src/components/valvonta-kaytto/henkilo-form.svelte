@@ -6,6 +6,7 @@
   import Input from '@Component/Input/Input.svelte';
   import Button from '@Component/Button/Button.svelte';
   import Select from '@Component/Select/Select.svelte';
+  import Confirm from '@Component/Confirm/Confirm';
   import { _, locale } from '@Language/i18n';
 
   export let henkilo;
@@ -218,17 +219,18 @@
   {/each}
   <div class="flex space-x-4 py-8">
     <Button disabled={!dirty} type={'submit'} text={i18n(`${i18nRoot}.save`)} />
-    <!-- <Button
-          disabled={!dirty}
-          on:click={resetForm}
-          text={i18n(`${i18nRoot}.cancel`)}
-          style={'secondary'} /> -->
     {#if deleteHenkilo}
-      <Button
-        disabled={!dirty}
-        on:click={deleteHenkilo}
-        text={i18n(`${i18nRoot}.delete`)}
-        style={'error'} />
+      <Confirm
+        let:confirm
+        confirmButtonLabel={i18n('confirm.button.delete')}
+        confirmMessage={i18n('confirm.you-want-to-delete')}>
+        <Button
+          on:click={() => {
+            confirm(deleteHenkilo);
+          }}
+          text={i18n(`${i18nRoot}.delete`)}
+          style={'error'} />
+      </Confirm>
     {/if}
   </div>
 </form>

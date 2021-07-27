@@ -1493,7 +1493,7 @@
         "etunimi": "Etunimi",
         "sukunimi": "Sukunimi",
         "henkilotunnus": "Henkilötunnus",
-        "y-tunnus": "Y-tunnus",
+        "ytunnus": "Y-tunnus",
         "rooli-id": "Rooli",
         "rooli-description": "Roolin kuvaus",
         "email": "Sähköposti",

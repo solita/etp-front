@@ -8,6 +8,8 @@
   import NotFound from '@Pages/not-found/not-found';
   import Henkilo from './henkilo';
   import NewHenkilo from './new-henkilo';
+  import Yritys from './yritys';
+  import NewYritys from './new-yritys';
 
   import FlashMessage from '@Component/FlashMessage/FlashMessage';
   import { flashMessageStore } from '@/stores';
@@ -18,8 +20,10 @@
     '/new': NewKohde,
     '/:id/valvonta': Valvonta,
     '/:id/kohde': Kohde,
-    '/:id/henkilo/new': NewHenkilo,
-    '/:id/henkilo/:henkilo-id': Henkilo,
+    '/:kohde-id/henkilo/new': NewHenkilo,
+    '/:kohde-id/henkilo/:id': Henkilo,
+    '/:kohde-id/yritys/new': NewYritys,
+    '/:kohde-id/yritys/:id': Yritys,
     '*': NotFound
   };
 </script>

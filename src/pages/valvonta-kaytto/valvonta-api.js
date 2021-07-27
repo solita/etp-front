@@ -18,6 +18,8 @@ export const url = {
   valvonta: id => `${url.valvonnat}/${id}`,
   henkilot: kohdeId => `${url.valvonta(kohdeId)}/henkilot`,
   henkilo: (id, kohdeId) => `${url.henkilot(kohdeId)}/${id}`,
+  yritykset: kohdeId => `${url.valvonta(kohdeId)}/yritykset`,
+  yritys: (id, kohdeId) => `${url.yritykset(kohdeId)}/${id}`,
   toimenpiteet: id => `${url.valvonta(id)}/toimenpiteet`,
   preview: id => `${url.valvonta(id)}/toimenpiteet/preview`,
   toimenpide: (id, toimenpideId) => `${url.toimenpiteet(id)}/${toimenpideId}`,
@@ -84,14 +86,14 @@ export const deserializeKaytto = R.evolve({
   )
 });
 
-export const serializeHenkilo = R.compose(
+export const serializeOsapuoli = R.compose(
   R.evolve({
     'rooli-id': Maybe.orSome(null),
     maa: Maybe.orSome(null),
     'toimitustapa-id': Maybe.orSome(null)
   })
 );
-export const deserializeHenkilo = R.evolve({
+export const deserializeOsapuoli = R.evolve({
   'rooli-id': Maybe.fromNull,
   maa: Maybe.fromNull,
   'toimitustapa-id': Maybe.fromNull
@@ -128,7 +130,7 @@ export const deleteKaytto = R.curry((fetch, id) =>
 );
 
 export const getHenkilo = R.compose(
-  R.map(deserializeHenkilo),
+  R.map(deserializeOsapuoli),
   Fetch.responseAsJson,
   Future.encaseP(Fetch.getFetch(fetch)),
   url.henkilo
@@ -138,7 +140,7 @@ export const postHenkilo = R.curry((fetch, kohdeId, henkilo) =>
   R.compose(
     Fetch.responseAsJson,
     Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', url.henkilot(kohdeId))),
-    serializeHenkilo
+    serializeOsapuoli
   )(henkilo)
 );
 
@@ -148,7 +150,7 @@ export const putHenkilo = R.curry((fetch, id, kohdeId, henkilo) =>
     Future.encaseP(
       Fetch.fetchWithMethod(fetch, 'put', url.henkilo(id, kohdeId))
     ),
-    serializeHenkilo
+    serializeOsapuoli
   )(henkilo)
 );
 
@@ -157,6 +159,41 @@ export const deleteHenkilo = R.curry((fetch, id, kohdeId) =>
     R.chain(Fetch.rejectWithInvalidResponse),
     Future.encaseP(
       Fetch.fetchWithMethod(fetch, 'delete', url.henkilo(id, kohdeId))
+    )
+  )
+);
+export const getYritys = R.compose(
+  R.map(deserializeOsapuoli),
+  Fetch.responseAsJson,
+  Future.encaseP(Fetch.getFetch(fetch)),
+  url.yritys
+);
+
+export const postYritys = R.curry((fetch, kohdeId, yritys) =>
+  R.compose(
+    Fetch.responseAsJson,
+    Future.encaseP(
+      Fetch.fetchWithMethod(fetch, 'post', url.yritykset(kohdeId))
+    ),
+    serializeOsapuoli
+  )(yritys)
+);
+
+export const putYritys = R.curry((fetch, id, kohdeId, yritys) =>
+  R.compose(
+    Fetch.responseAsJson,
+    Future.encaseP(
+      Fetch.fetchWithMethod(fetch, 'put', url.yritys(id, kohdeId))
+    ),
+    serializeOsapuoli
+  )(yritys)
+);
+
+export const deleteYritys = R.curry((fetch, id, kohdeId) =>
+  R.compose(
+    R.chain(Fetch.rejectWithInvalidResponse),
+    Future.encaseP(
+      Fetch.fetchWithMethod(fetch, 'delete', url.yritys(id, kohdeId))
     )
   )
 );

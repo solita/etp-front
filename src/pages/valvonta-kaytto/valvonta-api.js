@@ -9,7 +9,6 @@ import * as Query from '@Utility/query';
 import * as dfns from 'date-fns';
 
 import * as Toimenpiteet from './toimenpiteet';
-import * as EtApi from '@Component/Energiatodistus/energiatodistus-api';
 
 import * as EtApi from '@Pages/energiatodistus/energiatodistus-api';
 

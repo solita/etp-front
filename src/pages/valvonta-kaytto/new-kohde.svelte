@@ -24,7 +24,7 @@
   import { flashMessageStore } from '@/stores';
 
   import * as api from './valvonta-api';
-  import * as KayttajaApi from '@Component/Kayttaja/kayttaja-api';
+  import * as KayttajaApi from '@Pages/Kayttaja/kayttaja-api';
 
   const i18n = $_;
   const i18nRoot = 'valvonta.kaytto.kohde';

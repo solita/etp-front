@@ -18,7 +18,6 @@
 
   import * as api from './valvonta-api';
   import * as geoApi from '@Component/Geo/geo-api';
-  // import * as KayttajaApi from '@Component/Kayttaja/kayttaja-api';
 
   const i18n = $_;
   const i18nRoot = 'valvonta.kaytto.osapuolet';

@@ -8,8 +8,6 @@
   import { _, locale } from '@Language/i18n';
   import { flashMessageStore } from '@/stores';
 
-  import * as ETViews from '@Pages/energiatodistus/views';
-
   import * as KayttajaApi from '@Pages/kayttaja/kayttaja-api';
   import * as ValvontaApi from './valvonta-api';
   import * as geoApi from '@Component/Geo/geo-api';
@@ -23,7 +21,6 @@
   import Manager from './manager.svelte';
   import Toimenpide from './toimenpide.svelte';
   import Note from './note.svelte';
-  import Yritykset from '../Yritys/yritykset.svelte';
 
   const i18n = $_;
   const i18nRoot = 'valvonta.kaytto.valvonta';
@@ -75,12 +72,6 @@
       )
     );
   };
-
-  $: {
-    console.log('osapuolet', osapuolet);
-  }
-
-  const kayttotarkoitusTitle = ETViews.kayttotarkoitusTitle($locale);
 
   const fork = (key, successCallback) => future => {
     overlay = true;

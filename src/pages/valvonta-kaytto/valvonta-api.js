@@ -129,6 +129,19 @@ export const deleteKaytto = R.curry((fetch, id) =>
   )
 );
 
+export const getHenkilot = R.compose(
+  R.map(deserializeOsapuoli),
+  Fetch.responseAsJson,
+  Future.encaseP(Fetch.getFetch(fetch)),
+  url.henkilot
+);
+export const getYritykset = R.compose(
+  R.map(deserializeOsapuoli),
+  Fetch.responseAsJson,
+  Future.encaseP(Fetch.getFetch(fetch)),
+  url.yritykset
+);
+
 export const getHenkilo = R.compose(
   R.map(deserializeOsapuoli),
   Fetch.responseAsJson,

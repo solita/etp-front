@@ -114,7 +114,7 @@
 
 <Overlay {overlay}>
   <div slot="content">
-    {#each Maybe.toArray(resources) as { whoami, ilmoituspaikat }}
+    {#each Maybe.toArray(resources) as { ilmoituspaikat }}
       <form
         class="content"
         bind:this={form}
@@ -215,7 +215,7 @@
           <Button
             disabled={!dirty}
             type={'submit'}
-            text={i18n(`${i18nRoot}.submit`)} />
+            text={i18n(`${i18nRoot}.save`)} />
           <Button
             disabled={!dirty}
             on:click={resetForm}

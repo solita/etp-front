@@ -1442,6 +1442,7 @@
     "kaytto": {
       "all": {
         "title": "Käytönvalvonta",
+        "new-kohde": "Uusi valvonta",
         "empty": "Ei valvontatoimenpiteitä",
         "ei-valvojaa": "Ei valvojaa",
         "include-closed": "Näytä myös päättyneet",
@@ -1488,7 +1489,7 @@
       },
       "osapuolet": {
         "uusi-henkilo": "Uusi henkilo",
-        "uusi-yritys": "Uusi henkilo",
+        "uusi-yritys": "Uusi yritys",
         "nimi": "Nimi",
         "etunimi": "Etunimi",
         "sukunimi": "Sukunimi",
@@ -1525,6 +1526,20 @@
       },
       "valvonta": {
         "title": "Valvonta",
+        "toimenpiteet": "Toimenpiteet",
+        "rakennustunnus": "Pysyvä rakennustunnus",
+        "ilmoitustunnus": "Ilmoitustunnus",
+        "osapuolet": {
+          "title": "Osapuolet",
+          "nimi": "Nimi",
+          "rooli": "Rooli",
+          "osoite": "Osoite",
+          "email": "Sähköposti",
+          "toimitustapa": "Toimitustapa",
+          "new-henkilo": "Uusi henkilö",
+          "new-yritys": "Uusi yritys",
+          "empty": "Ei osapuolia"
+        },
         "messages": {
           "not-found": "Käytönvalvonnan tietoja ei löydy"
         }

@@ -72,6 +72,7 @@
         bind:model={henkilo}
         lens={R.lensProp('henkilotunnus')}
         parse={R.trim}
+        format={Maybe.orSome('')}
         {i18n} />
     </div>
 
@@ -113,6 +114,7 @@
           bind:model={henkilo}
           lens={R.lensProp('email')}
           parse={R.trim}
+          format={Maybe.orSome('')}
           {i18n} />
       </div>
       <div class="w-full">
@@ -123,6 +125,7 @@
           bind:model={henkilo}
           lens={R.lensProp('puhelin')}
           parse={R.trim}
+          format={Maybe.orSome('')}
           {i18n} />
       </div>
     </div>
@@ -135,6 +138,7 @@
         bind:model={henkilo}
         lens={R.lensProp('vastaanottajan-tarkenne')}
         parse={R.trim}
+        format={Maybe.orSome('')}
         {i18n} />
     </div>
     <div class="py-4 w-full">
@@ -145,6 +149,7 @@
         bind:model={henkilo}
         lens={R.lensProp('jakeluosoite')}
         parse={R.trim}
+        format={Maybe.orSome('')}
         {i18n} />
     </div>
     <div
@@ -157,6 +162,7 @@
           bind:model={henkilo}
           lens={R.lensProp('postinumero')}
           parse={R.trim}
+          format={Maybe.orSome('')}
           {i18n} />
       </div>
       <div class="w-full">
@@ -167,6 +173,7 @@
           bind:model={henkilo}
           lens={R.lensProp('postitoimipaikka')}
           parse={R.trim}
+          format={Maybe.orSome('')}
           {i18n} />
       </div>
       <div class="w-full">

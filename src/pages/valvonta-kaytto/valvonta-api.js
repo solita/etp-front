@@ -22,8 +22,16 @@ export const url = {
   toimenpiteet: id => `${url.valvonta(id)}/toimenpiteet`,
   preview: id => `${url.valvonta(id)}/toimenpiteet/preview`,
   toimenpide: (id, toimenpideId) => `${url.toimenpiteet(id)}/${toimenpideId}`,
-  document: (id, toimenpideId, filename) =>
-    `${url.toimenpide(id, toimenpideId)}/document/${filename}`,
+  documentHenkilo: (henkiloId, id, toimenpideId, filename) =>
+    `${url.toimenpide(
+      id,
+      toimenpideId
+    )}/henkilot/${henkiloId}/document/${filename}`,
+  documentYritys: (yritysId, id, toimenpideId, filename) =>
+    `${url.toimenpide(
+      id,
+      toimenpideId
+    )}/yritykset/${yritysId}/document/${filename}`,
   liitteet: id => `${url.valvonta(id)}/liitteet`,
   notes: id => `${url.valvonta(id)}/notes`
 };
@@ -70,6 +78,10 @@ export const serializeKaytto = R.compose(
   R.evolve({
     'valvoja-id': Maybe.orSome(null),
     'ilmoituspaikka-id': Maybe.orSome(null),
+    'ilmoituspaikka-description': Maybe.orSome(null),
+    ilmoitustunnus: Maybe.orSome(null),
+    postinumero: Maybe.orSome(null),
+    rakennustunnus: Maybe.orSome(null),
     havaintopaiva: EM.fold(null, date =>
       dfns.formatISO(date, { representation: 'date' })
     )
@@ -78,6 +90,10 @@ export const serializeKaytto = R.compose(
 export const deserializeKaytto = R.evolve({
   'ilmoituspaikka-id': Maybe.fromNull,
   'valvoja-id': Maybe.fromNull,
+  'ilmoituspaikka-description': Maybe.fromNull,
+  ilmoitustunnus: Maybe.fromNull,
+  postinumero: Maybe.fromNull,
+  rakennustunnus: Maybe.fromNull,
   havaintopaiva: R.compose(
     Parsers.toEitherMaybe,
     R.map(Parsers.parseISODate),
@@ -89,14 +105,51 @@ export const serializeOsapuoli = R.compose(
   R.evolve({
     'rooli-id': Maybe.orSome(null),
     maa: Maybe.orSome(null),
-    'toimitustapa-id': Maybe.orSome(null)
-  })
+    'toimitustapa-id': Maybe.orSome(null),
+    email: Maybe.getOrElse(null),
+    jakeluosoite: Maybe.getOrElse(null),
+    postinumero: Maybe.getOrElse(null),
+    postitoimipaikka: Maybe.getOrElse(null),
+    puhelin: Maybe.getOrElse(null),
+    'rooli-description': Maybe.getOrElse(null),
+    'toimitustapa-description': Maybe.getOrElse(null),
+    'vastaanottajan-tarkenne': Maybe.getOrElse(null)
+  }),
+  R.dissoc('valvonta-id')
 );
 export const deserializeOsapuoli = R.evolve({
   'rooli-id': Maybe.fromNull,
   maa: Maybe.fromNull,
-  'toimitustapa-id': Maybe.fromNull
+  'toimitustapa-id': Maybe.fromNull,
+  email: Maybe.fromNull,
+  jakeluosoite: Maybe.fromNull,
+  postinumero: Maybe.fromNull,
+  postitoimipaikka: Maybe.fromNull,
+  puhelin: Maybe.fromNull,
+  'rooli-description': Maybe.fromNull,
+  'toimitustapa-description': Maybe.fromNull,
+  'vastaanottajan-tarkenne': Maybe.fromNull
 });
+
+export const serializeHenkiloOsapuoli = R.compose(
+  R.evolve({ henkilotunnus: Maybe.getOrElse(null) }),
+  serializeOsapuoli
+);
+
+export const deserializeHenkiloOsapuoli = R.compose(
+  R.evolve({ henkilotunnus: Maybe.fromNull }),
+  deserializeOsapuoli
+);
+
+export const serializeYritysOsapuoli = R.compose(
+  R.evolve({ ytunnus: Maybe.getOrElse(null) }),
+  serializeOsapuoli
+);
+
+export const deserializeYritysOsapuoli = R.compose(
+  R.evolve({ ytunnus: Maybe.fromNull }),
+  deserializeOsapuoli
+);
 
 export const getKaytto = R.compose(
   R.map(deserializeKaytto),
@@ -129,20 +182,20 @@ export const deleteKaytto = R.curry((fetch, id) =>
 );
 
 export const getHenkilot = R.compose(
-  R.map(deserializeOsapuoli),
+  R.map(deserializeHenkiloOsapuoli),
   Fetch.responseAsJson,
   Future.encaseP(Fetch.getFetch(fetch)),
   url.henkilot
 );
 export const getYritykset = R.compose(
-  R.map(deserializeOsapuoli),
+  R.map(deserializeYritysOsapuoli),
   Fetch.responseAsJson,
   Future.encaseP(Fetch.getFetch(fetch)),
   url.yritykset
 );
 
 export const getHenkilo = R.compose(
-  R.map(deserializeOsapuoli),
+  R.map(deserializeHenkiloOsapuoli),
   Fetch.responseAsJson,
   Future.encaseP(Fetch.getFetch(fetch)),
   url.henkilo
@@ -152,7 +205,7 @@ export const postHenkilo = R.curry((fetch, kohdeId, henkilo) =>
   R.compose(
     Fetch.responseAsJson,
     Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', url.henkilot(kohdeId))),
-    serializeOsapuoli
+    serializeHenkiloOsapuoli
   )(henkilo)
 );
 
@@ -162,7 +215,7 @@ export const putHenkilo = R.curry((fetch, id, kohdeId, henkilo) =>
     Future.encaseP(
       Fetch.fetchWithMethod(fetch, 'put', url.henkilo(id, kohdeId))
     ),
-    serializeOsapuoli
+    serializeHenkiloOsapuoli
   )(henkilo)
 );
 
@@ -175,7 +228,7 @@ export const deleteHenkilo = R.curry((fetch, id, kohdeId) =>
   )
 );
 export const getYritys = R.compose(
-  R.map(deserializeOsapuoli),
+  R.map(deserializeYritysOsapuoli),
   Fetch.responseAsJson,
   Future.encaseP(Fetch.getFetch(fetch)),
   url.yritys
@@ -187,7 +240,7 @@ export const postYritys = R.curry((fetch, kohdeId, yritys) =>
     Future.encaseP(
       Fetch.fetchWithMethod(fetch, 'post', url.yritykset(kohdeId))
     ),
-    serializeOsapuoli
+    serializeYritysOsapuoli
   )(yritys)
 );
 
@@ -197,7 +250,7 @@ export const putYritys = R.curry((fetch, id, kohdeId, yritys) =>
     Future.encaseP(
       Fetch.fetchWithMethod(fetch, 'put', url.yritys(id, kohdeId))
     ),
-    serializeOsapuoli
+    serializeYritysOsapuoli
   )(yritys)
 );
 

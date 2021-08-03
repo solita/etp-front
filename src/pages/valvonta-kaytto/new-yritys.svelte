@@ -23,18 +23,18 @@
   const i18nRoot = 'valvonta.kaytto.osapuolet';
   const emptyYritys = {
     nimi: '',
-    ytunnus: '',
+    ytunnus: Maybe.None(),
     'rooli-id': Maybe.None(),
-    'rooli-description': ' ',
-    email: '',
-    puhelin: '',
-    'vastaanottajan-tarkenne': '',
-    jakeluosoite: '',
-    postinumero: '',
-    postitoimipaikka: '',
+    'rooli-description': Maybe.None(),
+    email: Maybe.None(),
+    puhelin: Maybe.None(),
+    'vastaanottajan-tarkenne': Maybe.None(),
+    jakeluosoite: Maybe.None(),
+    postinumero: Maybe.None(),
+    postitoimipaikka: Maybe.None(),
     maa: Maybe.None(),
     'toimitustapa-id': Maybe.None(),
-    'toimitustapa-description': ' '
+    'toimitustapa-description': Maybe.None()
   };
 
   let overlay = true;

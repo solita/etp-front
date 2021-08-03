@@ -152,7 +152,13 @@
 
       {#each tapahtumat([toimenpiteet, notes]) as tapahtuma}
         {#if isToimenpide(tapahtuma)}
-          <Toimenpide {toimenpidetyypit} toimenpide={tapahtuma} {whoami} />
+          <Toimenpide
+            {valvonta}
+            {henkilot}
+            {yritykset}
+            {toimenpidetyypit}
+            toimenpide={tapahtuma}
+            {whoami} />
         {:else}
           <Note note={tapahtuma} />
         {/if}

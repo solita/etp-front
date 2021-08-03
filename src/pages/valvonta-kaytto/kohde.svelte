@@ -184,7 +184,7 @@
     fork(key, _ => load(params.id))(Future.parallel(1, [liiteFuture(liite)]));
 
   const liiteApi = {
-    getUrl: R.always(api.url.liitteet(params.id)),
+    getUrl: api.url.liitteet(params.id),
 
     addFiles: liiteOperation(
       'add-files',
@@ -228,6 +228,7 @@
               bind:model={kohde}
               lens={R.lensProp('rakennustunnus')}
               parse={R.trim}
+              format={Maybe.orSome('')}
               {i18n} />
           </div>
           <div class="py-4 w-full md:w-1/2">
@@ -249,6 +250,7 @@
               bind:model={kohde}
               lens={R.lensProp('postinumero')}
               parse={R.trim}
+              format={Maybe.orSome('')}
               {i18n} />
           </div>
         </div>
@@ -300,6 +302,7 @@
               bind:model={kohde}
               lens={R.lensProp('ilmoitustunnus')}
               parse={R.trim}
+              format={Maybe.orSome('')}
               {i18n} />
           </div>
         </div>

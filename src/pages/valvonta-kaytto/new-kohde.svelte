@@ -29,12 +29,12 @@
   const i18n = $_;
   const i18nRoot = 'valvonta.kaytto.kohde';
   const emptyKohde = {
-    rakennustunnus: '',
+    rakennustunnus: Maybe.None(),
     katuosoite: '',
-    postinumero: '',
+    postinumero: Maybe.None(),
     'ilmoituspaikka-id': Maybe.None(),
-    'ilmoituspaikka-description': ' ',
-    ilmoitustunnus: '',
+    'ilmoituspaikka-description': Maybe.None(),
+    ilmoitustunnus: Maybe.None(),
     havaintopaiva: Either.Right(Maybe.None()),
     'valvoja-id': Maybe.None()
   };
@@ -136,6 +136,7 @@
               bind:model={kohde}
               lens={R.lensProp('rakennustunnus')}
               parse={R.trim}
+              format={Maybe.orSome('')}
               {i18n} />
           </div>
           <div class="py-4 w-full md:w-1/2">
@@ -157,6 +158,7 @@
               bind:model={kohde}
               lens={R.lensProp('postinumero')}
               parse={R.trim}
+              format={Maybe.orSome('')}
               {i18n} />
           </div>
         </div>
@@ -208,6 +210,7 @@
               bind:model={kohde}
               lens={R.lensProp('ilmoitustunnus')}
               parse={R.trim}
+              format={Maybe.orSome('')}
               {i18n} />
           </div>
         </div>

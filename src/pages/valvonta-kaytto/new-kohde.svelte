@@ -225,11 +225,6 @@
             text={i18n(`${i18nRoot}.reset`)}
             type={'reset'}
             style={'secondary'} />
-          <!-- <Button
-            disabled={!dirty}
-            on:click={() => alert('DELETE')}
-            text={i18n(`${i18nRoot}.delete`)}
-            style={'error'} /> -->
         </div>
         <div class="flex">
           <span>{i18n(`${i18nRoot}.after-save-notice`)}</span>

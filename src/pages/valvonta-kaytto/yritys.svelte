@@ -52,8 +52,6 @@
   const submitYritys = (yritys, event) => {
     if (yritys.nimi?.length >= 1) {
       overlay = true;
-      yritys = R.dissoc('id', yritys);
-      // yritys = R.dissoc('id', R.dissoc('valvonta-id', yritys)); //valvonta-id is dissallowed, but missing valvonta-id will cause server error on getYritys
       updateYritys(yritys);
     } else {
       flashMessageStore.add(

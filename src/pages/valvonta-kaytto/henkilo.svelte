@@ -52,8 +52,6 @@
   const submitHenkilo = (henkilo, event) => {
     if (henkilo.etunimi?.length >= 1 && henkilo.sukunimi?.length >= 1) {
       overlay = true;
-      henkilo = R.dissoc('id', henkilo);
-      // henkilo = R.dissoc('id', R.dissoc('valvonta-id', henkilo)); //valvonta-id is dissallowed, but missing valvonta-id will cause server error on getHenkilo
       updateHenkilo(henkilo);
     } else {
       flashMessageStore.add(

@@ -142,6 +142,8 @@
       <Manager
         {valvojat}
         {valvonta}
+        {henkilot}
+        {yritykset}
         {toimenpiteet}
         {toimenpidetyypit}
         {templatesByType}

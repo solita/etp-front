@@ -20,7 +20,10 @@ export const url = {
   yritykset: kohdeId => `${url.valvonta(kohdeId)}/yritykset`,
   yritys: (id, kohdeId) => `${url.yritykset(kohdeId)}/${id}`,
   toimenpiteet: id => `${url.valvonta(id)}/toimenpiteet`,
-  preview: id => `${url.valvonta(id)}/toimenpiteet/preview`,
+  previewHenkilo: (id, henkiloId) =>
+    `${url.valvonta(id)}/toimenpiteet/henkilot/${henkiloId}/preview`,
+  previewYritys: (id, yritysId) =>
+    `${url.valvonta(id)}/toimenpiteet/yritykset/${yritysId}/preview`,
   toimenpide: (id, toimenpideId) => `${url.toimenpiteet(id)}/${toimenpideId}`,
   documentHenkilo: (henkiloId, id, toimenpideId, filename) =>
     `${url.toimenpide(
@@ -215,6 +218,7 @@ export const putHenkilo = R.curry((fetch, id, kohdeId, henkilo) =>
     Future.encaseP(
       Fetch.fetchWithMethod(fetch, 'put', url.henkilo(id, kohdeId))
     ),
+    R.dissoc('id'),
     serializeHenkiloOsapuoli
   )(henkilo)
 );
@@ -250,6 +254,7 @@ export const putYritys = R.curry((fetch, id, kohdeId, yritys) =>
     Future.encaseP(
       Fetch.fetchWithMethod(fetch, 'put', url.yritys(id, kohdeId))
     ),
+    R.dissoc('id'),
     serializeYritysOsapuoli
   )(yritys)
 );
@@ -352,12 +357,26 @@ export const putValvonta = R.curry((id, body) =>
   )(body)
 );
 
-export const previewToimenpide = R.curry((id, toimenpide) =>
-  R.compose(
-    Fetch.responseAsBlob,
-    Future.encaseP(Fetch.fetchWithMethod(fetch, 'post', url.preview(id))),
-    serializeToimenpide
-  )(toimenpide)
+export const previewToimenpideForHenkiloOsapuoli = R.curry(
+  (id, henkiloId, toimenpide) =>
+    R.compose(
+      Fetch.responseAsBlob,
+      Future.encaseP(
+        Fetch.fetchWithMethod(fetch, 'post', url.previewHenkilo(id, henkiloId))
+      ),
+      serializeToimenpide
+    )(toimenpide)
+);
+
+export const previewToimenpideForYritysOsapuoli = R.curry(
+  (id, yritysId, toimenpide) =>
+    R.compose(
+      Fetch.responseAsBlob,
+      Future.encaseP(
+        Fetch.fetchWithMethod(fetch, 'post', url.previewYritys(id, yritysId))
+      ),
+      serializeToimenpide
+    )(toimenpide)
 );
 
 export const getKayttoLiitteet = id =>

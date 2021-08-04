@@ -33,21 +33,10 @@
   const i18n = $_;
   const i18nRoot = 'valvonta.kaytto.kohde';
 
-  const emptyKohde = {
-    rakennustunnus: '',
-    katuosoite: '',
-    postinumero: '',
-    'ilmoituspaikka-id': Maybe.None(),
-    'ilmoituspaikka-description': ' ',
-    ilmoitustunnus: '',
-    havaintopaiva: Either.Right(Maybe.None()),
-    'valvoja-id': Maybe.None()
-  };
-
   let overlay = true;
   let dirty = false;
   let form;
-  let kohde = emptyKohde;
+  let kohde;
 
   let resources = Maybe.None();
   const enableOverlay = _ => {

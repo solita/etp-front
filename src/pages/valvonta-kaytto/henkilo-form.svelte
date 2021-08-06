@@ -2,6 +2,7 @@
   import * as R from 'ramda';
   import * as Maybe from '@Utility/maybe-utils';
   import * as Locales from '@Language/locale-utils';
+  import * as Parsers from '@Utility/parsers';
 
   import Input from '@Component/Input/Input.svelte';
   import Button from '@Component/Button/Button.svelte';
@@ -71,7 +72,7 @@
         label={i18n(`${i18nRoot}.henkilotunnus`)}
         bind:model={henkilo}
         lens={R.lensProp('henkilotunnus')}
-        parse={R.trim}
+        parse={Parsers.optionalString}
         format={Maybe.orSome('')}
         {i18n} />
     </div>
@@ -113,7 +114,7 @@
           label={i18n(`${i18nRoot}.email`)}
           bind:model={henkilo}
           lens={R.lensProp('email')}
-          parse={R.trim}
+          parse={Parsers.optionalString}
           format={Maybe.orSome('')}
           {i18n} />
       </div>
@@ -124,7 +125,7 @@
           label={i18n(`${i18nRoot}.puhelin`)}
           bind:model={henkilo}
           lens={R.lensProp('puhelin')}
-          parse={R.trim}
+          parse={Parsers.optionalString}
           format={Maybe.orSome('')}
           {i18n} />
       </div>
@@ -137,7 +138,7 @@
         label={i18n(`${i18nRoot}.vastaanottajan-tarkenne`)}
         bind:model={henkilo}
         lens={R.lensProp('vastaanottajan-tarkenne')}
-        parse={R.trim}
+        parse={Parsers.optionalString}
         format={Maybe.orSome('')}
         {i18n} />
     </div>
@@ -148,7 +149,7 @@
         label={i18n(`${i18nRoot}.jakeluosoite`)}
         bind:model={henkilo}
         lens={R.lensProp('jakeluosoite')}
-        parse={R.trim}
+        parse={Parsers.optionalString}
         format={Maybe.orSome('')}
         {i18n} />
     </div>
@@ -161,7 +162,7 @@
           label={i18n(`${i18nRoot}.postinumero`)}
           bind:model={henkilo}
           lens={R.lensProp('postinumero')}
-          parse={R.trim}
+          parse={Parsers.optionalString}
           format={Maybe.orSome('')}
           {i18n} />
       </div>
@@ -172,7 +173,7 @@
           label={i18n(`${i18nRoot}.postitoimipaikka`)}
           bind:model={henkilo}
           lens={R.lensProp('postitoimipaikka')}
-          parse={R.trim}
+          parse={Parsers.optionalString}
           format={Maybe.orSome('')}
           {i18n} />
       </div>

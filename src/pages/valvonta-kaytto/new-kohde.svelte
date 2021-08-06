@@ -135,7 +135,7 @@
               label={i18n(`${i18nRoot}.rakennustunnus`)}
               bind:model={kohde}
               lens={R.lensProp('rakennustunnus')}
-              parse={R.trim}
+              parse={Parsers.optionalString}
               format={Maybe.orSome('')}
               {i18n} />
           </div>
@@ -157,7 +157,7 @@
               label={i18n(`${i18nRoot}.postinumero`)}
               bind:model={kohde}
               lens={R.lensProp('postinumero')}
-              parse={R.trim}
+              parse={Parsers.optionalString}
               format={Maybe.orSome('')}
               {i18n} />
           </div>
@@ -209,7 +209,7 @@
               label={i18n(`${i18nRoot}.ilmoitustunnus`)}
               bind:model={kohde}
               lens={R.lensProp('ilmoitustunnus')}
-              parse={R.trim}
+              parse={Parsers.optionalString}
               format={Maybe.orSome('')}
               {i18n} />
           </div>

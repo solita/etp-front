@@ -42,7 +42,6 @@
     "laatijat": "Laatijat",
     "laskutusajot": "Laskutusajot",
     "tyojono": "Työjono",
-    "kaytonvalvonta": "Käytönvalvonta",
     "halytykset": "Hälytykset",
     "uusi-kayttaja": "Uusi käyttäjä",
     "kayttajat": "Käyttäjät",
@@ -60,8 +59,15 @@
     "yritys-laatijat": "Laatijat",
     "ohjeet": "Laatijan ohjeet",
     "valvonta": {
-      "valvonta": "Valvonta",
-      "oikeellisuus": "Oikeellisuuden valvonta"
+      "kaytto": {
+        "all": "Käytönvalvonta",
+        "kohde": "KV {id}",
+        "valvonta": "Valvonta"
+      },
+      "oikeellisuus": {
+        "all": "Oikeellisuuden valvonta",
+        "valvonta": "Valvonta"
+      }
     },
     "confirmation": {
       "title": "Varmistus poistumisesta",
@@ -1485,7 +1491,19 @@
           "add-success": "Kohde lisätty.",
           "add-error": "Kohteen lisääminen epäonnistui.",
           "validation-error": "Tiedoissa on virhe. Tarkista kohteen tiedot ennen lähettämistä."
-        }
+        },
+        "osapuolet": {
+          "title": "Osapuolet",
+          "nimi": "Nimi",
+          "rooli": "Rooli",
+          "osoite": "Osoite",
+          "email": "Sähköposti",
+          "toimitustapa": "Toimitustapa",
+          "new-henkilo": "Uusi henkilö",
+          "new-yritys": "Uusi yritys",
+          "empty": "Ei osapuolia"
+        },
+        "attachments": "Liitteet ja linkit"
       },
       "osapuolet": {
         "uusi-henkilo": "Uusi henkilo",
@@ -1529,17 +1547,6 @@
         "toimenpiteet": "Toimenpiteet",
         "rakennustunnus": "Pysyvä rakennustunnus",
         "ilmoitustunnus": "Ilmoitustunnus",
-        "osapuolet": {
-          "title": "Osapuolet",
-          "nimi": "Nimi",
-          "rooli": "Rooli",
-          "osoite": "Osoite",
-          "email": "Sähköposti",
-          "toimitustapa": "Toimitustapa",
-          "new-henkilo": "Uusi henkilö",
-          "new-yritys": "Uusi yritys",
-          "empty": "Ei osapuolia"
-        },
         "messages": {
           "not-found": "Käytönvalvonnan tietoja ei löydy"
         }

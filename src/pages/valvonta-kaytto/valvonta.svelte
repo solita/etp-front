@@ -3,11 +3,10 @@
   import * as Future from '@Utility/future-utils';
   import * as Response from '@Utility/response';
   import * as Maybe from '@Utility/maybe-utils';
+  import * as Locales from '@Language/locale-utils';
 
   import { _, locale } from '@Language/i18n';
   import { flashMessageStore } from '@/stores';
-
-  import * as ETViews from '@Pages/energiatodistus/views';
 
   import * as KayttajaApi from '@Pages/kayttaja/kayttaja-api';
   import * as ValvontaApi from './valvonta-api';
@@ -51,12 +50,14 @@
       },
       R.chain(
         whoami =>
-          Future.parallelObject(5, {
+          Future.parallelObject(7, {
             toimenpiteet: ValvontaApi.toimenpiteet(params.id),
             notes: Future.resolve([]),
             toimenpidetyypit: ValvontaApi.toimenpidetyypit,
             templatesByType: ValvontaApi.templatesByType,
             valvojat: ValvontaApi.valvojat,
+            henkilot: ValvontaApi.getHenkilot(params.id),
+            yritykset: ValvontaApi.getYritykset(params.id),
             valvonta: ValvontaApi.valvonta(params.id),
             whoami: Future.resolve(whoami)
           }),
@@ -64,8 +65,6 @@
       )
     );
   };
-
-  const kayttotarkoitusTitle = ETViews.kayttotarkoitusTitle($locale);
 
   const fork = (key, successCallback) => future => {
     overlay = true;
@@ -118,31 +117,49 @@
 
 <Overlay {overlay}>
   <div slot="content" class="w-full mt-3">
-    {#each Maybe.toArray(resources) as { toimenpiteet, notes, toimenpidetyypit, templatesByType, valvojat, valvonta, whoami }}
+    {#each Maybe.toArray(resources) as { toimenpiteet, notes, toimenpidetyypit, templatesByType, valvojat, henkilot, yritykset, valvonta, whoami }}
       <H1
         text={i18n(i18nRoot + '.title') +
           Maybe.fold('', R.concat(' - '), diaarinumero(toimenpiteet))} />
 
+      <div class="flex flex-col my-4">
+        <span>{`${valvonta.katuosoite}, ${valvonta.postinumero}`}</span>
+        <span>
+          {`${i18n(i18nRoot + '.rakennustunnus')}: ${valvonta.rakennustunnus}`}
+        </span>
+        <span>
+          {`${i18n(i18nRoot + '.ilmoitustunnus')}: ${valvonta.ilmoitustunnus}`}
+        </span>
+      </div>
+
       <Manager
         {valvojat}
         {valvonta}
+        {henkilot}
+        {yritykset}
         {toimenpiteet}
         {toimenpidetyypit}
         {templatesByType}
         {saveValvonta}
         reload={_ => load(params)} />
 
-      <H2 text="Toimenpiteet" />
+      <H2 text={i18n(i18nRoot + '.toimenpiteet')} />
 
       {#each tapahtumat([toimenpiteet, notes]) as tapahtuma}
         {#if isToimenpide(tapahtuma)}
-          <Toimenpide {toimenpidetyypit} toimenpide={tapahtuma} {whoami} />
+          <Toimenpide
+            {valvonta}
+            {henkilot}
+            {yritykset}
+            {toimenpidetyypit}
+            toimenpide={tapahtuma}
+            {whoami} />
         {:else}
           <Note note={tapahtuma} />
         {/if}
       {/each}
       {#if R.isEmpty(tapahtumat)}
-        <p>Ei tapahtumia</p>
+        <p>{i18n(i18nRoot + '.ei-tapahtumia')}</p>
       {/if}
     {/each}
   </div>

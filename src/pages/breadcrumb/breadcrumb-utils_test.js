@@ -624,7 +624,7 @@ describe('BreadcrumbUtils', () => {
         const expected = [
           {
             url: '#/valvonta/oikeellisuus/all',
-            label: 'navigation.valvonta.oikeellisuus'
+            label: 'navigation.valvonta.oikeellisuus.all'
           }
         ];
 
@@ -649,7 +649,7 @@ describe('BreadcrumbUtils', () => {
           },
           {
             url: '#/valvonta/oikeellisuus/2018/1',
-            label: 'navigation.valvonta.valvonta'
+            label: 'navigation.valvonta.oikeellisuus.valvonta'
           }
         ];
 
@@ -664,7 +664,7 @@ describe('BreadcrumbUtils', () => {
         const expected = [
           {
             url: '#/valvonta/kaytto/all',
-            label: 'navigation.kaytonvalvonta'
+            label: 'navigation.valvonta.kaytto.all'
           }
         ];
 
@@ -678,7 +678,7 @@ describe('BreadcrumbUtils', () => {
         const expected = [
           {
             url: `#/valvonta/kaytto/1`,
-            label: 'navigation.kaytonvalvonta'
+            label: 'navigation.valvonta.kaytto.valvonta'
           }
         ];
 

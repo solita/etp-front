@@ -11,19 +11,18 @@ describe('Navigation', () => {
     'navigation.liitteet': 'Liitteet',
     'navigation.muutoshistoria': 'Muutoshistoria',
     'navigation.energiatodistukset': 'Energiatodistukset',
+    'navigation.yritys': 'Yritys',
     'navigation.yritykset': 'Yritykset',
+    'navigation.yritys-laatijat': 'Laatijat',
     'navigation.omattiedot': 'Omat tiedot',
     'navigation.laatijoidentuonti': 'Laatijoiden tuonti',
     'navigation.laatijat': 'Laatijat',
     'navigation.tyojono': 'Työjono',
-    'navigation.kaytonvalvonta': 'Käytönvalvonta',
     'navigation.halytykset': 'Hälytykset',
     'navigation.kayttajat': 'Käyttäjät',
-    'navigation.valvonta.oikeellisuus': 'Oikeellisuuden valvonta',
     'navigation.valvonta.valvonta': 'Valvonta',
-    'navigation.yritys': 'Yritys',
-    'navigation.yritykset': 'Yritykset',
-    'navigation.yritys-laatijat': 'Laatijat'
+    'navigation.valvonta.oikeellisuus.all': 'Oikeellisuuden valvonta',
+    'navigation.valvonta.kaytto.all': 'Käytönvalvonta'
   });
 
   describe('locationParts', () => {
@@ -391,7 +390,12 @@ describe('Navigation', () => {
       assert.deepEqual(
         R.map(
           R.dissoc('badge'),
-          Navigation.parseValvonta(isDev, i18n, whoami, locationParts)
+          Navigation.parseValvontaOikeellisuus(
+            isDev,
+            i18n,
+            whoami,
+            locationParts
+          )
         ),
         expected
       );
@@ -406,7 +410,12 @@ describe('Navigation', () => {
       assert.deepEqual(
         R.map(
           R.dissoc('badge'),
-          Navigation.parseValvonta(isDev, i18n, whoami, locationParts)
+          Navigation.parseValvontaOikeellisuus(
+            isDev,
+            i18n,
+            whoami,
+            locationParts
+          )
         ),
         expected
       );
@@ -423,7 +432,12 @@ describe('Navigation', () => {
       ];
 
       assert.deepEqual(
-        Navigation.parseValvonta(isDev, i18n, whoami, locationParts),
+        Navigation.parseValvontaOikeellisuus(
+          isDev,
+          i18n,
+          whoami,
+          locationParts
+        ),
         expected
       );
     });

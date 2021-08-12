@@ -22,6 +22,7 @@ describe('Navigation', () => {
     'navigation.kayttajat': 'Käyttäjät',
     'navigation.valvonta.valvonta': 'Valvonta',
     'navigation.valvonta.oikeellisuus.all': 'Oikeellisuuden valvonta',
+    'navigation.valvonta.oikeellisuus.valvonta': 'Valvonta',
     'navigation.valvonta.kaytto.all': 'Käytönvalvonta'
   });
 

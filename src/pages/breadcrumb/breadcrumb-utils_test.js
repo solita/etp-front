@@ -677,8 +677,12 @@ describe('BreadcrumbUtils', () => {
       it('should return existing', () => {
         const expected = [
           {
-            url: `#/valvonta/kaytto/1`,
-            label: 'navigation.valvonta.kaytto.valvonta'
+            url: '#/valvonta/kaytto/all',
+            label: 'navigation.valvonta.kaytto.all'
+          },
+          {
+            url: `#/valvonta/kaytto/1/kohde`,
+            label: 'navigation.valvonta.kaytto.kohde'
           }
         ];
 

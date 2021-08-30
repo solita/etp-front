@@ -1,3 +1,5 @@
+import * as R from 'ramda';
+
 import Quill from 'quill';
 import { ImageDrop } from 'quill-image-drop-module';
 import MagicUrl from 'quill-magic-url';
@@ -31,11 +33,18 @@ export const quill = (node, {html, toolbar}) => {
       })
     );
   };
-
   q.on('text-change', handler);
+
+  const toolbarElement = node.parentElement
+    .getElementsByClassName('ql-toolbar')[0];
+  const click = e => e.preventDefault();
+  toolbarElement.addEventListener('mousedown', click);
 
   return {
     update: ({html, _}) => q.clipboard.dangerouslyPasteHTML(DOMPurify.sanitize(html)),
-    destroy: _ => q.off('text-change', handler)
+    destroy: _ => {
+      q.off('text-change', handler);
+      toolbarElement.removeEventListener('mousedown', click);
+    }
   };
 };

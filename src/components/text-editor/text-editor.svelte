@@ -1,22 +1,14 @@
 <script>
   import * as R from 'ramda';
-  import DOMPurify from 'dompurify';
-
   import { quill } from './quill';
-  import Marked from 'marked';
+
+  import * as MD from './markdown';
   import Turndown from 'turndown';
   import Style from '@Component/text-editor/style.svelte';
   import Input from '@Component/Input/Input.svelte';
 
   const turndownService = new Turndown();
-
   turndownService.keep(['sub', 'sup', 'u']);
-
-  Marked.use({
-    tokenizer: {
-      url: _ => null
-    }
-  });
 
   export let id;
   export let required;
@@ -67,11 +59,11 @@
     {#if !disabled}
       <div
         on:focusin={api.focus}
-        on:focusout={event => api.blur(toMarkdown(event.target.innerHTML))}
+        on:editor-focus-out={event => api.blur(toMarkdown(event.detail.html))}
         on:text-change={event => api.input(toMarkdown(event.detail.html))}
-        use:quill={{html: Marked(viewValue), toolbar}} />
+        use:quill={{html: MD.toHtml(viewValue), toolbar}} />
     {:else}
-      {@html DOMPurify.sanitize(Marked(viewValue))}
+      {@html MD.toHtml(viewValue)}
     {/if}
   </Style>
 </Input>

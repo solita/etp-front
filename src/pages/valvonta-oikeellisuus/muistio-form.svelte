@@ -263,7 +263,7 @@
       {i18n} />
 
     <span
-      class="material-icons delete-icon mt-6"
+      class="material-icons delete-icon cursor-pointer mt-6"
       on:click|stopPropagation={_ => removeTiedoksiRecipient(i)}>
       highlight_off
     </span>

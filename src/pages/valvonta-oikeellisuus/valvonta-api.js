@@ -66,7 +66,8 @@ export const serializeToimenpide = R.compose(
     'description',
     'template-id',
     'virheet',
-    'severity-id'
+    'severity-id',
+    'tiedoksi'
   ])
 );
 

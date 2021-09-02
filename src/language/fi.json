@@ -1369,7 +1369,12 @@
           "select-severity": "Valitse vakavuus",
           "response-title": "Valvontamuistio",
           "response-description": "ARA pyytää vastausta {deadline-date} mennessä.",
-          "draft-info": "Voit jatkaa valvontamuistion tekemistä myöhemmin"
+          "draft-info": "Voit jatkaa valvontamuistion tekemistä myöhemmin",
+          "tiedoksi-title": "Lähetä valvontamuistio tiedoksi",
+          "tiedoksi-description": "Jos sähköpostiosoitetta ei ole syötetty, tulee valvontamuistio lähettää manuaalisesti",
+          "tiedoksi-name": "Vastaanottaja",
+          "tiedoksi-email": "Sähköpostiosoite",
+          "tiedoksi-add": "Lisää vastaanottaja"
         },
         "audit-reply": {
           "title": "Vastaus valvontamuistioon",

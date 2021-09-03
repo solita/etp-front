@@ -158,7 +158,7 @@
     <div class="my-5">
       <div class="flex mb-2">
         <div class="text-primary font-bold truncate">
-          {formatVirhetyyppi(virhe['type-id'])}
+          {@html formatVirhetyyppi(virhe['type-id'])}
         </div>
         {#if !disabled}
           <div class="ml-2 flex">

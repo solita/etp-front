@@ -97,7 +97,7 @@
       on:click={_ => onclick(item, index)}>
       {#if component}
         <svelte:component this={component} state={item} />
-      {:else}{item}{/if}
+      {:else}{@html item}{/if}
     </li>
   {/each}
 </ol>

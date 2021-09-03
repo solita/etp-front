@@ -100,13 +100,15 @@
   const addTiedoksiRecipient = _ => {
     toimenpide = R.over(
       R.lensProp('tiedoksi'),
-      R.append({ name: '', email: '' }),
+      R.append({ name: '', email: Maybe.None() }),
       toimenpide
     );
+    dirty = true;
   };
 
   const removeTiedoksiRecipient = index => {
     toimenpide = R.over(R.lensProp('tiedoksi'), R.remove(index, 1), toimenpide);
+    dirty = true;
   };
 </script>
 
@@ -228,7 +230,7 @@
 
 <H2 text={i18n(i18nRoot + '.severity-title')} />
 
-<div class="w-1/2 py-4">
+<div class="w-1/2 py-4 mb-5">
   <Select
     id="severity-id"
     name="severity-id"
@@ -250,16 +252,24 @@
 {#each toimenpide.tiedoksi as _, i}
   <div class="flex space-x-4 mb-8 mt-4">
     <Input
+      id={`tiedoksi.${i}.name`}
+      name={`tiedoksi.${i}.name`}
       label={i18n(i18nRoot + '.tiedoksi-name')}
       required={true}
       bind:model={toimenpide}
       lens={R.lensPath(['tiedoksi', i, 'name'])}
+      validators={schema.tiedoksi[0].name}
       {i18n} />
 
     <Input
+      id={`tiedoksi.${i}.email`}
+      name={`tiedoksi.${i}.email`}
       label={i18n(i18nRoot + '.tiedoksi-email')}
       bind:model={toimenpide}
       lens={R.lensPath(['tiedoksi', i, 'email'])}
+      parse={Maybe.fromNull}
+      format={Maybe.orSome('')}
+      validators={schema.tiedoksi[0].email}
       {i18n} />
 
     <span
@@ -273,4 +283,5 @@
 <TextButton
   icon="add"
   text={i18n(i18nRoot + '.tiedoksi-add')}
+  type="button"
   on:click={addTiedoksiRecipient} />

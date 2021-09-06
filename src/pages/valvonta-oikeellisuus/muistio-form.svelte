@@ -15,6 +15,7 @@
   import TextEditor from '@Component/text-editor/text-editor';
   import Autocomplete from '@Component/Autocomplete/Autocomplete.svelte';
   import Input from '@Component/Input/Input.svelte';
+  import UnescapedItem from '@Component/DropdownList/UnescapedItem.svelte';
 
   const i18nRoot = 'valvonta.oikeellisuus.toimenpide.audit-report';
   const i18n = $_;
@@ -138,17 +139,19 @@
 <H2 text={i18n(i18nRoot + '.virheet-title')} />
 {#if !disabled}
   <div class="w-1/2 py-4">
-    <Autocomplete items={R.map(Locales.label($locale), newVirhetypes)}
-                  size={1000}>
+    <Autocomplete
+      items={R.map(Locales.label($locale), newVirhetypes)}
+      size={1000}
+      component={UnescapedItem}>
       <Input
-          id="add-virhe"
-          name="add-virhe"
-          label={i18n(i18nRoot + '.add-virhe')}
-          required={false}
-          {disabled}
-          on:input={selectNewVirhe}
-          search={true}
-          {i18n} />
+        id="add-virhe"
+        name="add-virhe"
+        label={i18n(i18nRoot + '.add-virhe')}
+        required={false}
+        {disabled}
+        on:input={selectNewVirhe}
+        search={true}
+        {i18n} />
     </Autocomplete>
   </div>
 {/if}

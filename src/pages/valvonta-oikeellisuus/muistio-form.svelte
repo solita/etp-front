@@ -245,16 +245,16 @@
     items={R.pluck('id', severities)} />
 </div>
 
-<H2 text={i18n(i18nRoot + '.tiedoksi-title')} />
+<H2 text={i18n(i18nRoot + '.tiedoksi.title')} />
 
-<p>{i18n(i18nRoot + '.tiedoksi-description')}</p>
+<p>{i18n(i18nRoot + '.tiedoksi.description')}</p>
 
 {#each toimenpide.tiedoksi as _, i}
   <div class="flex space-x-4 mb-8 mt-4">
     <Input
       id={`tiedoksi.${i}.name`}
       name={`tiedoksi.${i}.name`}
-      label={i18n(i18nRoot + '.tiedoksi-name')}
+      label={i18n(i18nRoot + '.tiedoksi.name')}
       required={true}
       bind:model={toimenpide}
       lens={R.lensPath(['tiedoksi', i, 'name'])}
@@ -264,7 +264,7 @@
     <Input
       id={`tiedoksi.${i}.email`}
       name={`tiedoksi.${i}.email`}
-      label={i18n(i18nRoot + '.tiedoksi-email')}
+      label={i18n(i18nRoot + '.tiedoksi.email')}
       bind:model={toimenpide}
       lens={R.lensPath(['tiedoksi', i, 'email'])}
       parse={Maybe.fromNull}
@@ -282,6 +282,6 @@
 
 <TextButton
   icon="add"
-  text={i18n(i18nRoot + '.tiedoksi-add')}
+  text={i18n(i18nRoot + '.tiedoksi.add')}
   type="button"
   on:click={addTiedoksiRecipient} />

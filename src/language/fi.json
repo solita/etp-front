@@ -1370,7 +1370,14 @@
           "select-severity": "Valitse vakavuus",
           "response-title": "Valvontamuistio",
           "response-description": "ARA pyytää vastausta {deadline-date} mennessä.",
-          "draft-info": "Voit jatkaa valvontamuistion tekemistä myöhemmin"
+          "draft-info": "Voit jatkaa valvontamuistion tekemistä myöhemmin",
+          "tiedoksi": {
+            "title": "Lähetä valvontamuistio tiedoksi",
+            "description": "Jos sähköpostiosoitetta ei ole syötetty, tulee valvontamuistio lähettää manuaalisesti",
+            "name": "Vastaanottaja",
+            "email": "Sähköpostiosoite",
+            "add": "Lisää vastaanottaja"
+          }
         },
         "audit-reply": {
           "title": "Vastaus valvontamuistioon",
@@ -1519,9 +1526,9 @@
         },
         "attachments": "Liitteet ja linkit"
       },
-      "osapuolet": {
-        "uusi-henkilo": "Uusi henkilo",
-        "uusi-yritys": "Uusi yritys",
+      "osapuoli": {
+        "new-henkilo-title": "Uusi henkilo",
+        "new-yritys-title": "Uusi yritys",
         "nimi": "Nimi",
         "etunimi": "Etunimi",
         "sukunimi": "Sukunimi",
@@ -1541,16 +1548,13 @@
         "warning-toimitustapa-suomifi-yritys": "Kun toimitustapa on suomi.fi, tulee Y-tunnus ja osoitetiedot olla täytettynä",
         "warning-toimitustapa-email": "Kun toimitustapa on sahköposti, tulee sahköpostiosoitteen olla täytettynä",
         "save": "Tallenna",
-        "cancel": "Peru muutokset",
+        "revert": "Peru muutokset",
         "delete": "Poista",
         "messages": {
           "not-found": "Osapuolta ei ole olemassa.",
           "load-error": "Osapuolen tietojen haku epäonnistui.",
           "save-success": "Osapuolen muutokset tallennettu.",
           "save-error": "Osapuolen tallennus epäonnistui.",
-          "publish-success": "Osapuoli on lähetetty.",
-          "publish-error": "Osapuolen lähetys epäonnistui.",
-          "preview-error": "Osapuolen esikatselu epäonnistui.",
           "add-success": "Osapuoli lisätty.",
           "add-error": "Osapuolen lisääminen epäonnistui.",
           "validation-error": "Tiedoissa on virhe. Tarkista osapuolen tiedot ennen lähettämistä."

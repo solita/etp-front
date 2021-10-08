@@ -3,29 +3,32 @@
   import * as R from 'ramda';
   import * as qs from 'qs';
   import * as Maybe from '@Utility/maybe-utils';
+  import * as Future from '@Utility/future-utils';
+  import * as Formats from '@Utility/formats';
+  import * as Kayttajat from '@Utility/kayttajat';
+  import * as LocaleUtils from '@Language/locale-utils';
+  import { locale, _ } from '@Language/i18n';
+  import { flashMessageStore } from '@/stores';
 
+  import Overlay from '@Component/Overlay/Overlay.svelte';
+  import Spinner from '@Component/Spinner/Spinner.svelte';
+  import H1 from '@Component/H/H1.svelte';
   import Input from '@Component/Input/Input';
   import PillInputWrapper from '@Component/Input/PillInputWrapper';
-  import H1 from '@Component/H/H1';
   import Select from '@Component/Select/Select';
+  import Linkrow from '@Component/linkrow/linkrow';
   import Pagination from '@Component/Pagination/items-pagination';
+
   import * as laatijaApi from '@Pages/laatija/laatija-api';
   import * as yritysApi from '@Pages/yritys/yritys-api';
   import * as geoApi from '@Component/Geo/geo-api';
   import * as kayttajaApi from '@Pages/kayttaja/kayttaja-api';
-  import { locale, _ } from '@Language/i18n';
-  import * as locales from '@Language/locale-utils';
-  import * as Kayttajat from '@Utility/kayttajat';
 
-  import Linkrow from '@Component/linkrow/linkrow';
+  const i18n = $_;
 
-  import * as Future from '@Utility/future-utils';
-  import * as formats from '@Utility/formats';
-
-  import { flashMessageStore } from '@/stores';
-
-  let laatijat = Maybe.None();
-  let kayttaja = Maybe.None();
+  let resources = Maybe.None();
+  let overlay = true;
+  let cancel = () => {};
 
   const formatYritys = R.curry((yritykset, ids) =>
     R.compose(
@@ -43,9 +46,17 @@
   const formatLocale = R.curry((localizations, id) =>
     R.compose(
       Maybe.orSome(id),
-      R.map(locales.label($locale)),
+      R.map(LocaleUtils.label($locale)),
       Maybe.findById(id)
     )(localizations)
+  );
+
+  const formatToimintaalue = R.curry((toimintaalueet, toimintaalue) =>
+    R.compose(
+      Maybe.orSome('-'),
+      R.map(formatLocale(toimintaalueet)),
+      Maybe.fromNull
+    )(toimintaalue)
   );
 
   const formatLaatija = R.curry(
@@ -65,35 +76,9 @@
       )
   );
 
-  Future.fork(
-    response => {
-      const msg = Response.notFound(response)
-        ? $_('laatija.messages.not-found')
-        : $_(
-            Maybe.orSome('laatija.messages.load-error'),
-            Response.localizationKey(response)
-          );
-      flashMessageStore.add('Laatija', 'error', msg);
-    },
-    ({ laatijatResponse, yritykset, patevyydet, toimintaalueet, whoami }) => {
-      laatijat = R.compose(
-        Maybe.Some,
-        R.map(formatLaatija(patevyydet, yritykset, toimintaalueet))
-      )(laatijatResponse);
-      kayttaja = Maybe.Some(whoami);
-    },
-    Future.parallelObject(5, {
-      laatijatResponse: laatijaApi.laatijat,
-      yritykset: yritysApi.getAllYritykset,
-      patevyydet: laatijaApi.patevyydet,
-      toimintaalueet: geoApi.toimintaalueet,
-      whoami: kayttajaApi.whoami
-    })
-  );
-
   const formatTila = R.compose(
-    Maybe.orSome($_('validation.no-selection')),
-    Maybe.map(state => $_(`laatijahaku.tilat.` + state)),
+    Maybe.orSome(i18n('validation.no-selection')),
+    Maybe.map(state => i18n(`laatijahaku.tilat.` + state)),
     R.when(R.complement(Maybe.isMaybe), Maybe.of)
   );
 
@@ -114,7 +99,9 @@
         'toimintaalue',
         'puhelin'
       ]),
-      R.over(R.lensProp('yritys'), R.pluck('nimi'))
+      R.over(R.lensProp('yritys'), R.pluck('nimi')),
+      Maybe.Some,
+      R.map(formatLaatija(patevyydet, yritykset, toimintaalueet))
     )(laatija)
   );
 
@@ -129,14 +116,26 @@
           ])(laatija)
         )
       ],
-      [R.equals(1), R.always(R.propSatisfies(Maybe.isNone, 'login', laatija))],
+      [
+        R.equals(1),
+        R.always(
+          R.propSatisfies(
+            Maybe.isNone,
+            'login',
+            R.evolve(
+              {
+                login: Maybe.fromNull
+              },
+              laatija
+            )
+          )
+        )
+      ],
       [R.equals(2), R.always(R.propEq('laatimiskielto', true, laatija))],
       [R.equals(3), R.always(R.propEq('voimassa', false, laatija))],
       [R.T, R.always(true)]
     ])(state)
   );
-
-  let cancel = () => {};
 
   const urlForPage = R.curry((query, page) =>
     R.compose(
@@ -180,133 +179,211 @@
     })
   )(model);
 
-  $: results = R.compose(
-    Maybe.orSome([]),
-    R.map(
-      R.filter(
-        R.allPass([
-          matchTila(Maybe.orSome(-1, model.state)),
-          matchSearch(Maybe.orSome('', model.search))
-        ])
+  const getSearchResults = R.curry((model, laatijat) =>
+    R.compose(
+      Maybe.orSome([]),
+      R.map(
+        R.filter(
+          R.allPass([
+            matchTila(Maybe.orSome(-1, model.state)),
+            matchSearch(Maybe.orSome('', model.search))
+          ])
+        )
       )
-    )
-  )(laatijat);
+    )(laatijat)
+  );
+
+  $: {
+    overlay = true;
+
+    Future.fork(
+      response => {
+        overlay = false;
+        const msg = Response.notFound(response)
+          ? i18n('laatija.messages.not-found')
+          : i18n(
+              Maybe.orSome('laatija.messages.load-error'),
+              Response.localizationKey(response)
+            );
+        flashMessageStore.add('Laatija', 'error', msg);
+      },
+
+      response => {
+        overlay = false;
+        resources = Maybe.Some(response);
+        console.log(getSearchResults(model, response.laatijat));
+      },
+      Future.parallelObject(5, {
+        laatijat: laatijaApi.laatijat,
+        yritykset: yritysApi.getAllYritykset,
+        patevyydet: laatijaApi.patevyydet,
+        toimintaalueet: geoApi.toimintaalueet,
+        whoami: kayttajaApi.whoami
+      })
+    );
+  }
 </script>
 
-<div class="w-full mt-3">
-  <H1 text={$_('laatijahaku.title')} />
+<Overlay {overlay}>
+  <div slot="content" class="w-full mt-3">
+    <H1 text={i18n('laatijahaku.title')} />
 
-  <div class="flex lg:flex-row flex-col -mx-4 my-4">
-    <div class="lg:w-2/3 w-full px-4 lg:pt-10">
-      <Input
-        model={Maybe.orSome('', model.search)}
-        inputComponentWrapper={PillInputWrapper}
-        search={true}
-        on:input={evt => {
-          cancel = R.compose(
-            Future.value(val => {
-              model = R.mergeRight(model, {
-                search: Maybe.Some(val),
+    <div class="flex flex-col my-4 space-y-4 ">
+      <div
+        class="flex lg:flex-row flex-col space-y-4 lg:space-y-0 lg:space-x-4 py-4">
+        <div class="w-full">
+          <Select
+            label={i18n('laatijahaku.tila')}
+            disabled={false}
+            model={model.state}
+            lens={R.identity}
+            format={formatTila}
+            parse={R.identity}
+            inputValueParse={Maybe.orSome('')}
+            noneLabel={'laatijahaku.kaikki'}
+            items={R.map(Maybe.Some, [0, 1, 2, 3])}
+            on:change={evt =>
+              (model = R.mergeRight(model, {
+                state: Maybe.Some(evt.target.value),
                 page: Maybe.Some(0)
-              });
-            }),
-            Future.after(200),
-            R.tap(cancel)
-          )(evt.target.value);
-        }} />
-    </div>
-
-    <div class="lg:w-1/3 w-full px-4 py-4">
-      <Select
-        label={$_('laatijahaku.tila')}
-        disabled={false}
-        model={model.state}
-        lens={R.identity}
-        format={formatTila}
-        parse={R.identity}
-        inputValueParse={Maybe.orSome('')}
-        noneLabel={'laatijahaku.kaikki'}
-        items={R.map(Maybe.Some, [0, 1, 2, 3])}
-        on:change={evt =>
-          (model = R.mergeRight(model, {
-            state: Maybe.Some(evt.target.value),
-            page: Maybe.Some(0)
-          }))} />
-    </div>
-  </div>
-
-  <div class="mt-10">
-    <H1
-      text={$_('laatijahaku.results', {
-        values: { count: R.length(results) }
-      })} />
-  </div>
-  {#each R.compose(Maybe.toArray, R.sequence(Maybe.of))([
-    Maybe.Some(results),
-    kayttaja
-  ]) as [laatijat, kayttaja]}
-    <Pagination
-      items={laatijat}
-      page={Maybe.orSome(0, model.page)}
-      pageSize={20}
-      urlFn={urlForPage(model)}
-      baseUrl={'#/laatija/all?'}
-      let:pageItems>
-      <div class="overflow-x-auto">
-        <table class="etp-table">
-          <thead class="etp-table--thead">
-            <th class="etp-table--th">{$_('laatija.laatija')}</th>
-            <th class="etp-table--th">{$_('kayttaja.puhelin')}</th>
-            <th class="etp-table--th">{$_('laatija.patevyystaso')}</th>
-            <th class="etp-table--th">{$_('laatijahaku.voimassaolo')}</th>
-            <th class="etp-table--th">{$_('laatija.paatoimintaalue')}</th>
-            <th class="etp-table--th">{$_('laatija.postinumero')}</th>
-            <th class="etp-table--th">{$_('laatijahaku.kunta')}</th>
-            <th class="etp-table--th">{$_('yritys.yritykset')}</th>
-            {#if Kayttajat.isPaakayttajaOrLaskuttaja(kayttaja)}
-              <th class="etp-table--th"
-                >{$_('laatijahaku.energiatodistukset')}</th>
-            {/if}
-          </thead>
-          <tbody class="etp-table--tbody">
-            {#each pageItems as laatija}
-              <tr data-cy="laatija-row" class="etp-table--tr">
-                <Linkrow
-                  contents={[
-                    `${laatija.etunimi} ${laatija.sukunimi}`,
-                    laatija.puhelin,
-                    laatija.patevyystaso,
-                    formats.formatPatevyydenVoimassaoloaika(
-                      laatija.toteamispaivamaara
-                    ),
-                    laatija.toimintaalue,
-                    laatija.postinumero,
-                    laatija.postitoimipaikka
-                  ]}
-                  href={`#/kayttaja/${laatija.id}`} />
-                <td class="etp-table--td">
-                  {#each laatija.yritys as { id, nimi }}
-                    <a
-                      class="text-primary hover:underline"
-                      href={`#/yritys/${id}`}>
-                      {nimi}
-                    </a>
-                  {/each}
-                </td>
-                {#if Kayttajat.isPaakayttajaOrLaskuttaja(kayttaja)}
-                  <td class="etp-table--td">
-                    <a
-                      class="font-icon text-2xl text-primary hover:underline"
-                      href={`#/energiatodistus/all?where=[[["=","energiatodistus.laatija-id",${laatija.id}]]]`}>
-                      view_list
-                    </a>
-                  </td>
-                {/if}
-              </tr>
-            {/each}
-          </tbody>
-        </table>
+              }))} />
+        </div>
+        <div class="w-full">
+          <Select
+            label={i18n('laatijahaku.tila')}
+            disabled={false}
+            model={model.state}
+            lens={R.identity}
+            format={formatTila}
+            parse={R.identity}
+            inputValueParse={Maybe.orSome('')}
+            noneLabel={'laatijahaku.kaikki'}
+            items={R.map(Maybe.Some, [0, 1, 2, 3])}
+            on:change={evt =>
+              (model = R.mergeRight(model, {
+                state: Maybe.Some(evt.target.value),
+                page: Maybe.Some(0)
+              }))} />
+        </div>
+        <div class="w-full">
+          <Select
+            label={i18n('laatijahaku.tila')}
+            disabled={false}
+            model={model.state}
+            lens={R.identity}
+            format={formatTila}
+            parse={R.identity}
+            inputValueParse={Maybe.orSome('')}
+            noneLabel={'laatijahaku.kaikki'}
+            items={R.map(Maybe.Some, [0, 1, 2, 3])}
+            on:change={evt =>
+              (model = R.mergeRight(model, {
+                state: Maybe.Some(evt.target.value),
+                page: Maybe.Some(0)
+              }))} />
+        </div>
       </div>
-    </Pagination>
-  {/each}
-</div>
+
+      <div class="lg:w-2/3 w-full">
+        <Input
+          model={Maybe.orSome('', model.search)}
+          inputComponentWrapper={PillInputWrapper}
+          search={true}
+          on:input={evt => {
+            cancel = R.compose(
+              Future.value(val => {
+                model = R.mergeRight(model, {
+                  search: Maybe.Some(val),
+                  page: Maybe.Some(0)
+                });
+              }),
+              Future.after(200),
+              R.tap(cancel)
+            )(evt.target.value);
+          }} />
+      </div>
+    </div>
+
+    <!-- {#each R.compose(Maybe.toArray, R.sequence(Maybe.of))([
+      Maybe.Some(results),
+      resources
+    ]) as [results, { laatijat, yritykset, patevyydet, toimintaalueet, whoami }]} -->
+    {#each Maybe.toArray(resources) as { laatijat, yritykset, patevyydet, toimintaalueet, whoami }}
+      <div class="mt-10">
+        <!-- <H1
+          text={i18n('laatijahaku.results', {
+            values: { count: R.length(getSearchResults(laatijat)) }
+          })} /> -->
+      </div>
+
+      <Pagination
+        items={laatijat}
+        page={Maybe.orSome(0, model.page)}
+        pageSize={5}
+        urlFn={urlForPage(model)}
+        baseUrl={'#/laatija/all?'}
+        let:pageItems>
+        <div class="overflow-x-auto">
+          <table class="etp-table">
+            <thead class="etp-table--thead">
+              <th class="etp-table--th">{i18n('laatija.laatija')}</th>
+              <th class="etp-table--th">{i18n('kayttaja.puhelin')}</th>
+              <th class="etp-table--th">{i18n('laatija.patevyystaso')}</th>
+              <th class="etp-table--th">{i18n('laatijahaku.voimassaolo')}</th>
+              <th class="etp-table--th">{i18n('laatija.paatoimintaalue')}</th>
+              <th class="etp-table--th">{i18n('laatija.postinumero')}</th>
+              <th class="etp-table--th">{i18n('laatijahaku.kunta')}</th>
+              <th class="etp-table--th">{i18n('yritys.yritykset')}</th>
+              {#if Kayttajat.isPaakayttajaOrLaskuttaja(whoami)}
+                <th class="etp-table--th">
+                  {i18n('laatijahaku.energiatodistukset')}
+                </th>
+              {/if}
+            </thead>
+            <tbody class="etp-table--tbody">
+              {#each pageItems as laatija}
+                <tr data-cy="laatija-row" class="etp-table--tr">
+                  <Linkrow
+                    contents={[
+                      `${laatija.etunimi} ${laatija.sukunimi}`,
+                      laatija.puhelin,
+                      formatLocale(patevyydet, laatija.patevyystaso),
+                      Formats.formatPatevyydenVoimassaoloaika(
+                        laatija.toteamispaivamaara
+                      ),
+                      formatToimintaalue(toimintaalueet, laatija.toimintaalue),
+                      laatija.postinumero,
+                      laatija.postitoimipaikka
+                    ]}
+                    href={`#/kayttaja/${laatija.id}`} />
+                  <td class="etp-table--td">
+                    {#each formatYritys(yritykset, laatija.yritys) as { id, nimi }}
+                      <a
+                        class="text-primary hover:underline"
+                        href={`#/yritys/${id}`}>
+                        {nimi}
+                      </a>
+                    {/each}
+                  </td>
+                  {#if Kayttajat.isPaakayttajaOrLaskuttaja(whoami)}
+                    <td class="etp-table--td">
+                      <a
+                        class="font-icon text-2xl text-primary hover:underline"
+                        href={`#/energiatodistus/all?where=[[["=","energiatodistus.laatija-id",${laatija.id}]]]`}>
+                        view_list
+                      </a>
+                    </td>
+                  {/if}
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      </Pagination>
+    {/each}
+  </div>
+
+  <div slot="overlay-content">
+    <Spinner />
+  </div>
+</Overlay>

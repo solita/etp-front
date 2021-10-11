@@ -99,9 +99,7 @@
         'toimintaalue',
         'puhelin'
       ]),
-      R.over(R.lensProp('yritys'), R.pluck('nimi')),
-      Maybe.Some,
-      R.map(formatLaatija(patevyydet, yritykset, toimintaalueet))
+      R.over(R.lensProp('yritys'), R.pluck('nimi'))
     )(laatija)
   );
 
@@ -137,13 +135,26 @@
     ])(state)
   );
 
+  const matchPatevyys = R.curry((patevyys, laatija) =>
+    R.ifElse(
+      R.equals(Maybe.None(), patevyys),
+      R.T,
+      R.equals(patevyys, Maybe.Some(R.prop('patevyystaso')(laatija)))
+    )(laatija)
+  );
+
   const urlForPage = R.curry((query, page) =>
     R.compose(
       R.join('&'),
       R.map(R.join('=')),
       R.toPairs,
       R.mergeLeft({ page }),
-      R.evolve({ state: Maybe.orSome(''), search: Maybe.orSome('') })
+      R.evolve({
+        state: Maybe.orSome(''),
+        search: Maybe.orSome(''),
+        patevyystaso: Maybe.orSome(''),
+        toimintaalue: Maybe.orSome('')
+      })
     )(query)
   );
 
@@ -151,7 +162,9 @@
     R.mergeRight({
       search: Maybe.None(),
       page: Maybe.Some(0),
-      state: Maybe.None()
+      state: Maybe.None(),
+      patevyystaso: Maybe.None(),
+      toimintaalue: Maybe.None()
     }),
     R.evolve({
       search: Maybe.Some,
@@ -164,9 +177,19 @@
         R.filter(i => !isNaN(i)),
         R.map(i => parseInt(i, 10)),
         Maybe.fromEmpty
+      ),
+      patevyystaso: R.compose(
+        R.filter(i => !isNaN(i)),
+        R.map(i => parseInt(i, 10)),
+        Maybe.fromEmpty
+      ),
+      toimintaalue: R.compose(
+        R.filter(i => !isNaN(i)),
+        R.map(i => parseInt(i, 10)),
+        Maybe.fromEmpty
       )
     }),
-    R.pick(['search', 'page', 'state'])
+    R.pick(['search', 'page', 'state', 'patevyystaso', 'toimintaalue'])
   )(qs.parse($querystring));
 
   $: R.compose(
@@ -175,22 +198,29 @@
     R.evolve({
       search: Maybe.orSome(''),
       page: Maybe.orSome(0),
-      state: Maybe.orSome('')
+      state: Maybe.orSome(''),
+      patevyystaso: Maybe.orSome(''),
+      toimintaalue: Maybe.orSome('')
     })
   )(model);
 
-  const getSearchResults = R.curry((model, laatijat) =>
-    R.compose(
-      Maybe.orSome([]),
-      R.map(
-        R.filter(
-          R.allPass([
-            matchTila(Maybe.orSome(-1, model.state)),
-            matchSearch(Maybe.orSome('', model.search))
-          ])
+  const getSearchResults = R.curry(
+    (model, laatijat, patevyydet, yritykset, toimintaalueet) =>
+      R.compose(
+        Maybe.orSome([]),
+        R.map(
+          R.filter(
+            R.allPass([
+              matchTila(Maybe.orSome(-1, model.state)),
+              matchPatevyys(model.patevyystaso)
+              // matchSearch(
+              //   Maybe.orSome('', model.search),
+              //   formatLaatija(patevyydet, yritykset, toimintaalueet)
+              // )
+            ])
+          )
         )
-      )
-    )(laatijat)
+      )(laatijat)
   );
 
   $: {
@@ -211,7 +241,16 @@
       response => {
         overlay = false;
         resources = Maybe.Some(response);
-        console.log(getSearchResults(model, response.laatijat));
+
+        console.log(
+          getSearchResults(
+            model,
+            Maybe.Some(response.laatijat),
+            Maybe.Some(response.patevyydet),
+            Maybe.Some(response.yritykset),
+            Maybe.Some(response.toimintaalueet)
+          )
+        );
       },
       Future.parallelObject(5, {
         laatijat: laatijaApi.laatijat,
@@ -221,94 +260,137 @@
         whoami: kayttajaApi.whoami
       })
     );
+
+    console.log(model.patevyystaso);
+    console.log(
+      R.ifElse(R.propEq('patevyystaso', Maybe.None()), R.T, R.F)(model)
+    );
   }
 </script>
 
 <Overlay {overlay}>
   <div slot="content" class="w-full mt-3">
     <H1 text={i18n('laatijahaku.title')} />
-
-    <div class="flex flex-col my-4 space-y-4 ">
-      <div
-        class="flex lg:flex-row flex-col space-y-4 lg:space-y-0 lg:space-x-4 py-4">
-        <div class="w-full">
-          <Select
-            label={i18n('laatijahaku.tila')}
-            disabled={false}
-            model={model.state}
-            lens={R.identity}
-            format={formatTila}
-            parse={R.identity}
-            inputValueParse={Maybe.orSome('')}
-            noneLabel={'laatijahaku.kaikki'}
-            items={R.map(Maybe.Some, [0, 1, 2, 3])}
-            on:change={evt =>
-              (model = R.mergeRight(model, {
-                state: Maybe.Some(evt.target.value),
-                page: Maybe.Some(0)
-              }))} />
-        </div>
-        <div class="w-full">
-          <Select
-            label={i18n('laatijahaku.tila')}
-            disabled={false}
-            model={model.state}
-            lens={R.identity}
-            format={formatTila}
-            parse={R.identity}
-            inputValueParse={Maybe.orSome('')}
-            noneLabel={'laatijahaku.kaikki'}
-            items={R.map(Maybe.Some, [0, 1, 2, 3])}
-            on:change={evt =>
-              (model = R.mergeRight(model, {
-                state: Maybe.Some(evt.target.value),
-                page: Maybe.Some(0)
-              }))} />
-        </div>
-        <div class="w-full">
-          <Select
-            label={i18n('laatijahaku.tila')}
-            disabled={false}
-            model={model.state}
-            lens={R.identity}
-            format={formatTila}
-            parse={R.identity}
-            inputValueParse={Maybe.orSome('')}
-            noneLabel={'laatijahaku.kaikki'}
-            items={R.map(Maybe.Some, [0, 1, 2, 3])}
-            on:change={evt =>
-              (model = R.mergeRight(model, {
-                state: Maybe.Some(evt.target.value),
-                page: Maybe.Some(0)
-              }))} />
-        </div>
-      </div>
-
-      <div class="lg:w-2/3 w-full">
-        <Input
-          model={Maybe.orSome('', model.search)}
-          inputComponentWrapper={PillInputWrapper}
-          search={true}
-          on:input={evt => {
-            cancel = R.compose(
-              Future.value(val => {
-                model = R.mergeRight(model, {
-                  search: Maybe.Some(val),
+    {#each Maybe.toArray(resources) as { laatijat, yritykset, patevyydet, toimintaalueet, whoami }}
+      <div class="flex flex-col my-4 space-y-4 ">
+        <div
+          class="flex lg:flex-row flex-col space-y-4 lg:space-y-0 lg:space-x-4 py-4">
+          <div class="w-full">
+            <Select
+              label={i18n('laatijahaku.tila')}
+              disabled={false}
+              model={model.state}
+              lens={R.identity}
+              format={formatTila}
+              parse={R.identity}
+              inputValueParse={Maybe.orSome('')}
+              noneLabel={'laatijahaku.kaikki'}
+              items={R.map(Maybe.Some, [0, 1, 2, 3])}
+              on:change={evt =>
+                (model = R.mergeRight(model, {
+                  state: Maybe.Some(evt.target.value),
                   page: Maybe.Some(0)
-                });
-              }),
-              Future.after(200),
-              R.tap(cancel)
-            )(evt.target.value);
-          }} />
-      </div>
-    </div>
+                }))} />
+          </div>
+          <div class="w-full">
+            <Select
+              label={i18n('laatija.patevyystaso')}
+              disabled={false}
+              model={model.patevyystaso}
+              lens={R.identity}
+              format={R.compose(
+                Maybe.orSome(''),
+                Maybe.map(LocaleUtils.label($locale)),
+                Maybe.findById(R.__, patevyydet)
+              )}
+              parse={R.identity}
+              noneLabel={'laatijahaku.kaikki'}
+              items={R.pluck('id', patevyydet)}
+              on:change={evt =>
+                (model = R.mergeRight(model, {
+                  patevyystaso: Maybe.Some(evt.target.value),
+                  page: Maybe.Some(0)
+                }))} />
+          </div>
+          <div class="w-full">
+            <Select
+              label={i18n('laatija.paatoimintaalue')}
+              disabled={false}
+              model={model.toimintaalue}
+              lens={R.identity}
+              format={R.compose(
+                Maybe.orSome(''),
+                Maybe.map(LocaleUtils.label($locale)),
+                Maybe.findById(R.__, toimintaalueet)
+              )}
+              parse={Maybe.fromNull}
+              inputValueParse={Maybe.orSome('')}
+              noneLabel={'laatijahaku.kaikki'}
+              items={R.pluck('id', toimintaalueet)}
+              on:change={evt =>
+                (model = R.mergeRight(model, {
+                  toimintaalue: Maybe.Some(evt.target.value),
+                  page: Maybe.Some(0)
+                }))} />
+          </div>
+        </div>
 
-    <!-- {#each R.compose(Maybe.toArray, R.sequence(Maybe.of))([
+        <div class="lg:w-2/3 w-full">
+          <!-- <Checkbox
+          disabled={false}
+          label={i18n('laatijahaku.patevyyden-paattymisaika')}
+          bind:model={model.datesactive}
+          lens={R.identity}
+          format={R.compose(R.not, Maybe.orSome(false))}
+          parse={R.compose(Maybe.Some, R.not)} /> -->
+
+          <div class="flex flex-col lg:flex-row w-full">
+            <!-- <Datepicker
+            label={i18n('laatijahaku.datestart')}
+            bind:model={model.datestart}
+            lens={R.identity}
+            format={Maybe.fold('', formats.formatDateInstant)}
+            parse={Parsers.optionalParser(Parsers.parseDate)}
+            transform={EM.fromNull}
+            validators={schema['deadline-date']}
+            {i18n} />
+          <Datepicker
+            label={i18n('laatijahaku.dateend')}
+            bind:model={model.dateend}
+            lens={R.identity}
+            format={Maybe.fold('', formats.formatDateInstant)}
+            parse={Parsers.optionalParser(Parsers.parseDate)}
+            transform={EM.fromNull}
+            validators={schema['deadline-date']}
+            {i18n} /> -->
+          </div>
+        </div>
+
+        <div class="lg:w-2/3 w-full">
+          <Input
+            model={Maybe.orSome('', model.search)}
+            inputComponentWrapper={PillInputWrapper}
+            search={true}
+            on:input={evt => {
+              cancel = R.compose(
+                Future.value(val => {
+                  model = R.mergeRight(model, {
+                    search: Maybe.Some(val),
+                    page: Maybe.Some(0)
+                  });
+                }),
+                Future.after(200),
+                R.tap(cancel)
+              )(evt.target.value);
+            }} />
+        </div>
+      </div>
+
+      <!-- {#each R.compose(Maybe.toArray, R.sequence(Maybe.of))([
       Maybe.Some(results),
       resources
     ]) as [results, { laatijat, yritykset, patevyydet, toimintaalueet, whoami }]} -->
-    {#each Maybe.toArray(resources) as { laatijat, yritykset, patevyydet, toimintaalueet, whoami }}
+
       <div class="mt-10">
         <!-- <H1
           text={i18n('laatijahaku.results', {

@@ -235,7 +235,8 @@
     "julkisettiedot-header": "Valitse julkiset tiedot",
     "todistustenlaatimiskielto": "Todistustenlaatimiskiellossa",
     "api-key-header": "Laskentaohjelmisto",
-    "api-key": "Anna uusi tiedonsiirron salasana (vähintään 8 merkkiä)",
+    "api-key": "Anna uusi tiedonsiirron salasana",
+    "api-key-description": "Salasanan pitää olla vähintään 8 merkkiä. Se saa sisältää A-Z kirjaimia, 0-9 numeroita tai .-_! merkkejä.",
     "cancel": "Peruuta muutokset",
     "save": "Tallenna",
     "messages": {

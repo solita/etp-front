@@ -2,7 +2,7 @@
   import * as R from 'ramda';
 
   import { locale, _ } from '@Language/i18n';
-   import * as Maybe from '@Utility/maybe-utils';
+  import * as Maybe from '@Utility/maybe-utils';
   import * as et from './energiatodistus-utils';
   import * as LocaleUtils from '@Language/locale-utils';
 

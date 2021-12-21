@@ -127,7 +127,7 @@
     content: '*';
   }
 
-  div:not(.selectsearch) {
+  div:not(.listcontainer) {
     @apply relative;
   }
 
@@ -186,6 +186,8 @@
       event.target !== button
     ) {
       active = Maybe.None();
+    } else if (searchable) {
+      R.head(searchInput).focus();
     }
   }} />
 
@@ -228,21 +230,22 @@
     {R.compose(Maybe.orSome($_(noneLabel)), R.map(format))(selected)}
   </div>
   {#if showDropdown}
-    <div
-      class="absolute w-full pt-2 px-2 bg-light shadow-dropdownlist selectsearch">
+    <div class="absolute listcontainer w-full">
       {#if searchable}
-        <Input
-          model={searchText}
-          format={Maybe.orSome('')}
-          parse={Parsers.optionalString}
-          lens={R.identity}
-          search={true}
-          on:input={evt => {
-            textCancel();
-            textCancel = Future.value(value => {
-              searchText = value;
-            }, Future.after(500, Maybe.fromEmpty(R.trim(evt.target.value))));
-          }} />
+        <div class="w-full p-2 bg-light shadow-dropdownlist selectsearch">
+          <Input
+            model={searchText}
+            format={Maybe.orSome('')}
+            parse={Parsers.optionalString}
+            lens={R.identity}
+            search={true}
+            on:input={evt => {
+              textCancel();
+              textCancel = Future.value(value => {
+                searchText = value;
+              }, Future.after(500, Maybe.fromEmpty(R.trim(evt.target.value))));
+            }} />
+        </div>
       {/if}
 
       <DropdownList

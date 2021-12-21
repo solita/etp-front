@@ -7,8 +7,11 @@
   import * as Either from '@Utility/either-utils';
   import * as keys from '@Utility/keys';
   import * as Validation from '@Utility/validation';
+  import * as Parsers from '@Utility/parsers';
+  import * as Future from '@Utility/future-utils';
 
   import DropdownList from '@Component/DropdownList/DropdownList';
+  import Input from '@Component/Input/Input';
 
   export let id;
   export let items = [];
@@ -23,6 +26,7 @@
   export let allowNone = true;
   export let noneLabel = 'validation.no-selection';
   export let validation = false;
+  export let searchable = false;
 
   export let name = '';
 
@@ -37,6 +41,8 @@
   let node;
   let button;
   let blurred = false;
+  let searchText = Maybe.None();
+  let textCancel = () => {};
 
   let active = Maybe.None();
 
@@ -48,8 +54,11 @@
   $: showDropdown = Maybe.isSome(active);
 
   $: selectableItems = allowNone
-    ? [$_(noneLabel), ...R.map(format, items)]
-    : R.map(format, items);
+    ? [$_(noneLabel), ...searchTextFilter(R.map(format, items))]
+    : searchTextFilter(R.map(format, items));
+
+  $: searchTextFilter = items =>
+    R.filter(R.includes(searchText.orSome('')), items);
 
   const previousItem = R.compose(R.filter(R.lte(0)), Maybe.Some, R.dec);
 
@@ -167,7 +176,12 @@
 <svelte:window
   on:click={event => {
     const itemNodes = node.querySelectorAll('.dropdownitem');
-    if (!R.includes(event.target, itemNodes) && event.target !== button) {
+    const searchInput = node.querySelectorAll('.selectsearch .input');
+    if (
+      !R.includes(event.target, itemNodes) &&
+      !R.includes(event.target, searchInput) &&
+      event.target !== button
+    ) {
       active = Maybe.None();
     }
   }} />
@@ -211,6 +225,23 @@
     {R.compose(Maybe.orSome($_(noneLabel)), R.map(format))(selected)}
   </div>
   {#if showDropdown}
+    {#if searchable}
+      <div class="w-full pt-2 px-2 bg-light shadow-dropdownlist selectsearch">
+        <Input
+          model={searchText}
+          format={Maybe.orSome('')}
+          parse={Parsers.optionalString}
+          lens={R.identity}
+          search={true}
+          on:input={evt => {
+            textCancel();
+            textCancel = Future.value(value => {
+              searchText = value;
+            }, Future.after(500, Maybe.fromEmpty(R.trim(evt.target.value))));
+          }} />
+      </div>
+    {/if}
+
     <DropdownList
       items={selectableItems}
       {active}

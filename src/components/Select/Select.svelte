@@ -127,7 +127,7 @@
     content: '*';
   }
 
-  div {
+  div:not(.selectsearch) {
     @apply relative;
   }
 
@@ -228,8 +228,9 @@
     {R.compose(Maybe.orSome($_(noneLabel)), R.map(format))(selected)}
   </div>
   {#if showDropdown}
-    {#if searchable}
-      <div class="w-full pt-2 px-2 bg-light shadow-dropdownlist selectsearch">
+    <div
+      class="absolute w-full pt-2 px-2 bg-light shadow-dropdownlist selectsearch">
+      {#if searchable}
         <Input
           model={searchText}
           format={Maybe.orSome('')}
@@ -242,27 +243,27 @@
               searchText = value;
             }, Future.after(500, Maybe.fromEmpty(R.trim(evt.target.value))));
           }} />
-      </div>
-    {/if}
+      {/if}
 
-    <DropdownList
-      items={selectableItems}
-      {active}
-      onclick={async (item, index) => {
-        if (allowNone && index === 0) {
-          model = R.set(lens, Maybe.None(), model);
-        } else {
-          model = R.compose(
-            R.set(lens, R.__, model),
-            parse,
-            R.nth(R.__, items),
-            R.when(R.always(allowNone), R.dec)
-          )(index);
-        }
-        active = Maybe.None();
-        await tick();
-        input.dispatchEvent(new Event('change', { bubbles: true }));
-      }} />
+      <DropdownList
+        items={selectableItems}
+        {active}
+        onclick={async (item, index) => {
+          if (allowNone && index === 0) {
+            model = R.set(lens, Maybe.None(), model);
+          } else {
+            model = R.compose(
+              R.set(lens, R.__, model),
+              parse,
+              R.nth(R.__, items),
+              R.when(R.always(allowNone), R.dec)
+            )(index);
+          }
+          active = Maybe.None();
+          await tick();
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        }} />
+    </div>
   {/if}
 
   {#if validation && required && Maybe.isNone(selected) && blurred}

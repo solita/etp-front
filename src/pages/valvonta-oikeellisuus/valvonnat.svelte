@@ -38,7 +38,6 @@
   import Select from '@Component/Select/Select';
   import Link from '@Component/Link/Link.svelte';
   import Input from '@Component/Input/Input';
-  import Autocomplete from '@Component/Autocomplete/Autocomplete.svelte';
 
   let resources = Maybe.None();
   let overlay = true;
@@ -49,9 +48,7 @@
 
   let valvontaCount = 0;
   let textCancel = () => {};
-  const formatLaatija = kayttaja =>
-    `${kayttaja.etunimi} ${kayttaja.sukunimi} | ${kayttaja.email}`;
-
+  const formatLaatija = kayttaja => `${kayttaja.etunimi} ${kayttaja.sukunimi}`;
   const parseLaatija = kayttajat =>
     R.compose(
       Maybe.toEither(R.applyTo(`${i18nRoot}.messages.laatija-not-found`)),
@@ -270,31 +267,21 @@
 
         <div
           class="flex flex-wrap items-end lg:space-x-4 lg:space-y-0 space-y-4 my-4">
-          <div class="lg:w-1/2 w-full">
-            <Autocomplete items={R.map(formatLaatija, laatijat)} size="10">
-              <Input
-                id={'oikeellisuus.laatija'}
-                name={'oikeellisuus.laatija'}
-                label={i18n(i18nRoot + '.laatija')}
-                model={query}
-                lens={R.lensProp('laatija-id')}
-                parse={Parsers.optionalParser(parseLaatija(laatijat))}
-                caret={true}
-                format={R.compose(
-                  Maybe.orSome(''),
-                  R.map(formatLaatija),
-                  R.chain(id => Maybe.findById(id, laatijat))
-                )}
-                on:input={evt => {
-                  const parse = Parsers.optionalParser(parseLaatija(laatijat));
-                  const laatijaId = parse(evt.target.value);
-                  R.forEach(id => {
-                    query = R.assoc('laatija-id', id, query);
-                  }, laatijaId);
-                }}
-                {i18n} />
-            </Autocomplete>
+          <div class="w-full lg:w-1/2">
+            <Select
+              disabled={overlay}
+              compact={false}
+              label={i18n(i18nRoot + '.laatija')}
+              bind:model={query}
+              lens={R.lensProp('laatija-id')}
+              items={R.pluck('id', laatijat)}
+              format={id =>
+                formatLaatija(Maybe.findById(id, laatijat).orSome(''))}
+              parse={Maybe.Some}
+              allowNone={true}
+              searchable={true} />
           </div>
+
           <div class="w-1/2 lg:w-1/4">
             <Select
               disabled={overlay}

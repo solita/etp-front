@@ -53,12 +53,15 @@
 
   $: showDropdown = Maybe.isSome(active);
 
-  $: selectableItems = allowNone
-    ? [$_(noneLabel), ...searchTextFilter(R.map(format, items))]
-    : searchTextFilter(R.map(format, items));
+  $: selectableItems = searchTextFilter(
+    allowNone ? [$_(noneLabel), ...R.map(format, items)] : R.map(format, items)
+  );
 
   $: searchTextFilter = items =>
-    R.filter(R.includes(searchText.orSome('')), items);
+    R.filter(
+      R.compose(R.includes(R.toLower(searchText.orSome(''))), R.toLower),
+      items
+    );
 
   const previousItem = R.compose(R.filter(R.lte(0)), Maybe.Some, R.dec);
 

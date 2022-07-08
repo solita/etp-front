@@ -11,6 +11,7 @@ import ValvontaKaytto from '@Pages/valvonta-kaytto';
 import NotFound from '@Pages/not-found/not-found';
 import MyInfo from '@Pages/kayttaja/my-info';
 import LandingPage from '@Pages/kayttaja/landing-page';
+import Sandbox from '@Pages/sandbox';
 
 export const buildRoutes = currentUser => ({
   '/': LandingPage,
@@ -28,5 +29,6 @@ export const buildRoutes = currentUser => ({
       whoami: currentUser
     }
   }),
+  '/sandbox': Sandbox,
   '*': NotFound
 });

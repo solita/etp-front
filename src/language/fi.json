@@ -197,6 +197,11 @@
     "perustiedot-header": "Perustiedot",
     "cancel": "Peruuta muutokset",
     "save": "Tallenna",
+    "api-key": {
+      "label": "Uusi rajapinta-avain",
+      "placeholder": "Ei muuteta",
+      "luo-uusi": "Aseta"
+    },
     "virtu": {
       "header": "Virtu kirjautumistiedot",
       "localid": "Käyttäjätunnus (Virtu Local ID)",
@@ -250,6 +255,9 @@
       "p-1": "Henkilötiedot on hyvä tarkistaa säännöllisin väliajoin. Tällä varmistat palvelun virheettömän toiminnan.",
       "p-2": "Jos tiedoissa on puutteita, niin korjaa virheelliset tiedot ja tallenna muutokset.",
       "p-3": "Jos tiedot ovat virheettömät, niin saat tämän muistutuksen pois painamalla alhaalta painiketta Tarkistettu."
+    },
+    "aineistoasiakas": {
+      "header": "Aineistoasiakas"
     }
   },
   "kayttajat": {

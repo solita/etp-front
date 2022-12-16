@@ -14,6 +14,7 @@
   import Input from '@Component/Input/Input';
   import Checkbox from '@Component/Checkbox/Checkbox.svelte';
   import Select from '@Component/Select/Select.svelte';
+  import ApiKey from './api-key.svelte';
 
   /*
    * Note: kayttaja.rooli :: Maybe[Id]
@@ -253,6 +254,11 @@
         {i18n} />
     </div>
   </div>
+
+  {#if R.lift(Kayttajat.isAineistoasiakasRole)(kayttaja.rooli)}
+    <H2 text={i18n('kayttaja.aineistoasiakas.header')} />
+    <ApiKey bind:dirty bind:kayttaja />
+  {/if}
 
   <div class="flex -mx-4 mt-10">
     <div class="px-4">

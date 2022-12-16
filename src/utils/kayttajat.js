@@ -29,7 +29,13 @@ import * as R from 'ramda';
 import * as dfns from 'date-fns';
 import * as Maybe from '@Utility/maybe-utils';
 
-const roles = ['laatija', 'patevyydentoteaja', 'paakayttaja', 'laskuttaja'];
+const roles = [
+  'laatija',
+  'patevyydentoteaja',
+  'paakayttaja',
+  'laskuttaja',
+  'aineistoasiakas'
+];
 
 /**
  * @enum {Rooli}
@@ -61,6 +67,10 @@ export const isLaskuttajaRole = R.equals(role.laskuttaja);
 /**
  * @sig Rooli -> boolean
  */
+export const isAineistoasiakasRole = R.equals(role.aineistoasiakas);
+/**
+ * @sig Rooli -> boolean
+ */
 export const isSystemRole = R.equals(-1);
 
 /**
@@ -89,6 +99,18 @@ export const isPaakayttaja = R.propSatisfies(isPaakayttajaRole, 'rooli');
  * @sig Kayttaja -> boolean
  */
 export const isLaskuttaja = R.propSatisfies(isLaskuttajaRole, 'rooli');
+/**
+ * @sig Kayttaja -> boolean
+ */
+export const isAineistoasiakas_ = R.propSatisfies(
+  isAineistoasiakasRole,
+  'rooli'
+);
+export const isAineistoasiakas = k => {
+  debugger;
+  const response = isAineistoasiakas_(k);
+  return response;
+};
 /**
  * @sig Kayttaja -> boolean
  */

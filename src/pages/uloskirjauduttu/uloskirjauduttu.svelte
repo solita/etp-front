@@ -2,6 +2,7 @@
   import { _ } from '@Language/i18n';
   import * as Maybe from '@Utility/maybe-utils';
   import Footer from '@Pages/footer/Footer';
+  import LanguageSelect from '@Pages/header/language-select';
   import Link from '@Component/Link/Link';
 
   import * as versionApi from '@Component/Version/version-api';
@@ -36,6 +37,7 @@
         <a href="/">
           <img class="mr-8" src="images/ara_logo_simple_nega.svg" alt="Ara" />
         </a>
+        <LanguageSelect />
       </div>
     </header>
   </div>

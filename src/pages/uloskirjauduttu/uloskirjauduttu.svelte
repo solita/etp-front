@@ -25,8 +25,13 @@
   .headercontainer {
     @apply bg-secondary;
   }
+
   header {
     @apply flex px-10 h-20 uppercase text-light justify-between items-center font-bold tracking-xl;
+  }
+
+  .footercontainer {
+    @apply w-full flex justify-center bg-background;
   }
 </style>
 

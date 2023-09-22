@@ -23,7 +23,8 @@ export const type = {
     'actual-decision': 8,
     'notice-first-mailing': 9,
     'notice-second-mailing': 10,
-    'waiting-for-deadline': 12
+    'waiting-for-deadline': 12,
+    'deadline-reached': 13
   },
   'penalty-decision': {
     'hearing-letter': 14

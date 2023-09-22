@@ -107,6 +107,16 @@ describe('Käskypäätös / odotetaan valitusajan umpeutumista', () => {
   });
 });
 
+describe('Käskypäätös / valitusaika umpeutunut', () => {
+  it('id is mapped correctly to the type key', () => {
+    assert.equal('decision-order-deadline-reached', Toimenpiteet.typeKey(13));
+  });
+
+  it('is not a type with a deadline', () => {
+    assert.isFalse(Toimenpiteet.hasDeadline({ 'type-id': 13 }));
+  });
+});
+
 describe('Sakkopäätös / Kuulemiskirje', () => {
   it('id is mapped correctly to the type key', () => {
     assert.equal('penalty-decision-hearing-letter', Toimenpiteet.typeKey(14));

@@ -1952,6 +1952,12 @@
           "description": "Kommentti (sv)",
           "publish-button": "Luo toimenpide (sv)"
         },
+        "decision-order-deadline-reached": {
+          "title": "Käskypäätös / valitusaika umpeutunut (sv)",
+          "info": "Valitusajan umpeuduttua tiedustellaan HaO:lta sähköpostitse, onko käskypäätöksestä valitettu. (sv)",
+          "description": "Kommentti (sv)",
+          "publish-button": "Luo toimenpide (sv)"
+        },
         "penalty-decision-hearing-letter": {
           "title": "Sakkopäätös / kuulemiskirje (sv)",
           "info": "Rakennuksen omistajilla on viimeinen mahdollisuus perustella, miksi energiatodistusta ei ole hankittu. (sv)",

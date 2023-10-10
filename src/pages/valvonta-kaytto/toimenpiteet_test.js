@@ -4,7 +4,6 @@ import * as Maybe from '@Utility/maybe-utils';
 import * as dfns from 'date-fns';
 import * as Toimenpiteet from './toimenpiteet';
 import { deserializeToimenpide } from '@Pages/valvonta-oikeellisuus/valvonta-api';
-import { type } from './toimenpiteet';
 
 describe('Toimenpiteet: ', () => {
   describe('deadline', () => {

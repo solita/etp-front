@@ -126,6 +126,19 @@ describe('Sakkopäätös / Kuulemiskirje', () => {
   });
 });
 
+describe('Sakkopäätös / tiedoksianto (ensimmäinen postitus)', () => {
+  it('id is mapped correctly to the type key', () => {
+    assert.equal(
+      'penalty-decision-notice-first-mailing',
+      Toimenpiteet.typeKey(16)
+    );
+  });
+
+  it('is a type with a deadline', () => {
+    assert.isTrue(Toimenpiteet.hasDeadline({ 'type-id': 16 }));
+  });
+});
+
 describe('Given toimenpidetypes', () => {
   it('find the ids of manually deliverable types', () => {
     assert.deepEqual(

@@ -1985,7 +1985,7 @@
         },
         "penalty-decision-notice-first-mailing": {
           "title": "Sakkopäätös tiedoksianto / (ensimmäinen postitus)",
-          "info": "Sakkopäätös postitetaan liitteineen kirjeitse kirjaamon kautta saantitodistuksella.",
+          "info": "Sakkopäätös postitetaan liitteineen (mukana myös sakkolappu) kirjeitse kirjaamon kautta saantitodistuksella.",
           "description": "Kommentti",
           "publish-button": "Luo toimenpide"
         },

@@ -27,8 +27,8 @@ describe('Toimenpiteet: ', () => {
       );
     });
 
-    it('is by default 37 days for types 8, 9, 10 and 15', () => {
-      [8, 9, 10, 15].forEach(typeId => {
+    it('is by default 37 days for types 8, 9, 10 and 16', () => {
+      [8, 9, 10, 16].forEach(typeId => {
         assert.isTrue(
           dfns.isSameDay(
             dfns.addDays(new Date(), 37),

@@ -28,7 +28,7 @@ export const type = {
   },
   'penalty-decision': {
     'hearing-letter': 14,
-    'notice-first-mailing': 15
+    'notice-first-mailing': 16
   }
 };
 
@@ -40,7 +40,7 @@ export const isType = R.propEq('type-id');
 
 const isDeadlineType = R.includes(
   R.__,
-  [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 14, 15]
+  [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 14, 16]
 );
 export const hasDeadline = R.propSatisfies(isDeadlineType, 'type-id');
 

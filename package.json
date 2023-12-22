@@ -29,7 +29,7 @@
     "@storybook/addon-links": "^5.3.14",
     "@storybook/addon-viewport": "^5.3.14",
     "@storybook/addons": "^5.3.14",
-    "@storybook/svelte": "^5.3.14",
+    "@storybook/svelte": "^7.6.6",
     "babel-loader": "^8.1.0",
     "babel-plugin-module-resolver": "^4.0.0",
     "chai": "^4.2.0",
@@ -57,7 +57,7 @@
     "tailwindcss": "^1.7.6",
     "terser-webpack-plugin": "^4.1.0",
     "webpack": "^4.47.0",
-    "webpack-bundle-analyzer": "^3.8.0",
+    "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
   },
